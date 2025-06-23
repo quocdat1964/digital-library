@@ -1,10 +1,10 @@
 import React from "react";
+import HomePage from "./pages/HomePage";
 
 const App = () => {
-    return(
-        <div className="text-blue-500 text-2xl font-bold text-center flex items-center justify-center">
-            Hello world
-        </div>
+
+    return (
+        <HomePage />
     )
 }
 
