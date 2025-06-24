@@ -15,7 +15,7 @@ const UserMenu = () => {
     }
 
     return (
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
             <div className="text-right hidden md:flex md:flex-col">
                 <p className="text-md text-gray-400">Xin chào</p>
                 <p className="text-md font-semibold text-white">{user.name}</p>

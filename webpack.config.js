@@ -43,6 +43,10 @@ module.exports = {
           'postcss-loader', // Xử lý CSS với PostCSS (cho Tailwind)
         ],
       },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: 'asset/resource',
+      },
     ],
   },
 

@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import avt from '../../assets/avt_nqd.jpg'
 const authInitialState = {
     isAuthenticated: true,
     user: {
         name: 'NGUYỄN QUỐC ĐẠT',
-        avatarUrl: 'https://placehold.co/40x40/EFEFEF/333?text=A'
+        avatarUrl: avt
     }
 }
 

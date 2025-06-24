@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const uiInitialState = {
-    isSidebarOpen: true,
+    isSidebarOpen: false,
 }
 
 const uiSlice = createSlice({

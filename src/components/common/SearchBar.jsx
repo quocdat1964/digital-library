@@ -22,9 +22,9 @@ const SearchBar = () => {
                 </div>
             </div>
             {/* Các nút lọc */}
-            <div className="flex items-center space-x-2 mt-3">
+            <div className="flex items-center gap-3 mt-3 max-xl:grid max-xl:grid-cols-4 max-md:grid-cols-3">
                 {fileTypes.map((type) => (
-                    <button
+                    <button 
                         key={type}
                         onClick={() => setActiveType(type)}
                         className={`px-4 py-0.5 text-md rounded-full border border-gray-200 font-medium transition-colors ${activeType === type

@@ -28,12 +28,13 @@ const Header = () => {
         <header className=" bg-[#201f2b] text-white p-4 flex justify-between items-center shadow-md">
 
             {/* Hamburger & Logo */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-2">
                 <button onClick={handleToggleSidebar} className="p-2 rounded-md hover:bg-gray-700">
                     <Menu className="h-6 w-6" />
                 </button>
-                <h1 className="text-xl font-bold tracking-wider">THƯ VIỆN SỐ</h1>
-                <button className="flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 px-2 rounded-lg transition-colors">
+                <h1 className="text-xl font-bold tracking-wider max-sm:text-sm">THƯ VIỆN SỐ</h1>
+                <button className="flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 px-2 rounded-lg transition-colors 
+                                    max-sm:text-sm">
                     <Plus className="h-5 w-5 mr-2" />
                     Upload
                 </button>
@@ -56,10 +57,10 @@ const Header = () => {
 
             {/* Ẩn/Hiện search bar khi ở màn hình nhỏ */}
             <div
-                className={`fixed top-20 right-0 bg-[#282733] flex flex-grow justify-center p-4 rounded-lg border border-gray-600 transition-all duration-300 ease-in-out transform 
+                className={`fixed top-20 right-0 bg-[#282733] flex flex-grow justify-center p-4 rounded-lg border border-gray-600 transition-all duration-200 ease-in-out transform 
                     ${showSearchbar
-                        ? 'opacity-100 scale-100 pointer-events-auto'
-                        : 'opacity-0 scale-95 pointer-events-none'
+                        ? 'opacity-100 scale-100 z-10 pointer-events-auto'
+                        : 'opacity-0 scale-95 z-10 pointer-events-none'
                     }`}
             >
                 <SearchBar />
