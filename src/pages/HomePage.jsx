@@ -53,7 +53,7 @@ const HomePage = () => {
     }
 
     return (
-        <div className="space-y-6 bg-gray-900 px-4 py-2 rounded-md relative">
+        <div className="space-y-6 bg-gray-900 px-4 py-2 rounded-md">
             <h1 className="text-lg font-semibold text-yellow-500">Trang chủ</h1>
             {sortedDates.map((dateKey) => (
                 <div key={dateKey}>

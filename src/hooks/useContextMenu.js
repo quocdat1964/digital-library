@@ -10,8 +10,24 @@ export const useContextMenu = () => {
 
     const showContextMenu = useCallback((event, file) => {
         event.preventDefault();
-        const x = event.pageX
-        const y = event.pageY
+
+        const menuWidth = 256
+        const menuHeight = 320
+        const margin = 10
+
+        const viewportX = event.clientX
+        const viewportY = event.clientY
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        const x = (viewportX + menuWidth > screenWidth)
+            ? screenWidth - menuWidth - margin
+            : viewportX
+
+        const y = (viewportY + menuHeight > screenHeight)
+            ? screenHeight - menuHeight - margin
+            : viewportY
+
         setMenuState({ show: true, x, y, file })
     }, [])
 
@@ -20,5 +36,5 @@ export const useContextMenu = () => {
             ...prevState, show: false
         }))
     }, [])
-    return {menuState, showContextMenu, closeContextMenu}
+    return { menuState, showContextMenu, closeContextMenu }
 }

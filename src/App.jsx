@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleSidebar } from "./features/ui/uiSlice";
 import Header from "./components/layout/Header";
 import Sidebar from "./components/layout/Sidebar";
+import FileDetailPanel from "./components/common/FileDetailPanel";
 import AppRoutes from "./routes";
 
 const App = () => {
@@ -32,7 +33,7 @@ const App = () => {
                     <>
                         <div className={`absolute inset-0 bg-black transition-opacity duration-300
                                         ${isSidebarOpen ? 'opacity-40' : 'opacity-0 pointer-events-none'}`}
-                            onClick={() => dispatch(toggleSidebar())}                
+                            onClick={() => dispatch(toggleSidebar())}
                         ></div>
                         <div className={`absolute top-0 left-0 h-full w-64 bg-gray-800
                                         transition-transform duration-300 ease-in-out
@@ -46,6 +47,7 @@ const App = () => {
                     <AppRoutes />
                 </main>
             </div>
+            <FileDetailPanel />
         </div>
     )
 }

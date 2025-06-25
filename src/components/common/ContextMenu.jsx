@@ -50,7 +50,7 @@ const ContextMenu = ({ menuState, closeMenu }) => {
     return (
         <div
             ref={menuRef}
-            className="absolute z-50 w-64 bg-[#2d2c35] rounded-lg shadow-lg p-2 text-white text-sm"
+            className="fixed z-50 w-64 bg-[#2d2c35] rounded-lg shadow-lg p-2 text-white text-sm"
             style={{ top: menuState.y, left: menuState.x }}
         >
             <div className="px-2 pb-2 mb-2 border-b border-gray-600">

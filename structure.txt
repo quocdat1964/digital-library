@@ -1,91 +1,9 @@
-my-digital-library/
-├── node_modules/
-├── public/
-│   └── index.html
-├── src/
-│   ├── api/
-│   │   ├── authApi.js         # (Mới) Chứa các hàm gọi API liên quan đến xác thực người dùng (đăng nhập, đăng xuất, lấy thông tin user).
-│   │   ├── fileApi.js         # (Mới) Chứa các hàm gọi API liên quan đến file (lấy danh sách, tải lên, tìm kiếm, xóa).
-│   │   └── axiosClient.js     # (Đổi tên từ axiosTodo.js) Cấu hình chung cho Axios (baseURL, headers).
-│   │
-│   ├── app/
-│   │   ├── rootSaga.js        # (Cập nhật) Kết hợp tất cả các saga của các feature lại với nhau.
-│   │   └── store.js           # (Cập nhật) Cấu hình Redux store, kết hợp tất cả các reducer (slice).
-│   │
-│   ├── assets/                # (Mới) Chứa các tài sản tĩnh như logo, icon, hình ảnh.
-│   │   └── images/
-│   │       └── logo.svg
-│   │
-│   ├── components/            # (Tái cấu trúc) Chứa các component UI chung, có thể tái sử dụng ở nhiều nơi.
-│   │   ├── common/            # (Mới) Các component rất chung và đơn giản.
-│   │   │   ├── Button.jsx
-│   │   │   ├── Input.jsx
-│   │   │   └── Modal.jsx
-│   │   └── layout/            # (Mới) Các component định hình bố cục chính của trang.
-│   │       ├── Header.jsx     # Component cho thanh header.
-│   │       ├── Sidebar.jsx    # Component cho thanh điều hướng bên trái.
-│   │       └── MainLayout.jsx # Bố cục chính, kết hợp Header, Sidebar và phần nội dung.
-│   │
-│   ├── features/              # (Tái cấu trúc) Nơi chứa code cho từng tính năng cụ thể. Mỗi thư mục con là một "feature".
-│   │   ├── auth/              # (Mới) Feature quản lý việc xác thực.
-│   │   │   ├── authSaga.js    # Saga xử lý logic bất đồng bộ cho auth (ví dụ: gọi API đăng nhập).
-│   │   │   ├── authSlice.js   # Redux slice quản lý state của người dùng (thông tin user, trạng thái đăng nhập).
-│   │   │   └── UserMenu.jsx   # Component hiển thị avatar, tên người dùng và nút đăng xuất.
-│   │   │
-│   │   ├── files/             # (Mới) Feature quản lý tất cả về file.
-│   │   │   ├── components/    # (Mới) Các component chỉ dành riêng cho tính năng quản lý file.
-│   │   │   │   ├── FileList.jsx
-│   │   │   │   ├── FileItem.jsx
-│   │   │   │   ├── SearchBar.jsx
-│   │   │   │   └── UploadButton.jsx
-│   │   │   ├── filesSaga.js   # Saga xử lý việc lấy danh sách file, upload file từ API.
-│   │   │   └── filesSlice.js  # Redux slice quản lý state của file (danh sách files, trạng thái loading, lỗi, tham số tìm kiếm).
-│   │   │
-│   │   └── ui/                # (Mới) Feature quản lý các trạng thái chung của UI.
-│   │       └── uiSlice.js     # Redux slice quản lý state của UI (ví dụ: trạng thái đóng/mở của sidebar).
-│   │
-│   ├── pages/                 # (Mới) Chứa các component tương ứng với một trang hoàn chỉnh.
-│   │   └── HomePage.jsx       # Component cho trang chủ, nơi bạn sẽ kết hợp các component nhỏ lại.
-│   │
-│   ├── App.jsx                # (Cập nhật) Component gốc, xử lý routing và áp dụng MainLayout.
-│   ├── index.css
-│   └── index.js
-│
-├── .babelrc
-├── .gitignore
-├── package-lock.json
-├── package.json
-├── postcss.config.js
-├── README.md
-├── tailwind.config.js
-└── webpack.config.js
+Note: 
+- Trang chủ: Hiển thị thông tin các file mà User đã đăng tải
+- Bộ sưu tập: Chia thành các thư mục và User có thể đẩy các file vào 
+- Kho lưu trữ: Tương tự bộ sưu tập nhưng User có thể chia sẻ cho người khác
+- Quản lí người dùng: Admin phân quyền và quản lí tài khoản
 
-Giải thích chi tiết:
-api/: Tách biệt các hàm gọi API theo từng loại tài nguyên (auth, file) để dễ quản lý. axiosClient.js sẽ là nơi bạn cấu hình các thông số chung cho mọi request.
-
-components/: Được chia thành 2 loại:
-
-layout/: Các thành phần lớn xây dựng nên bố cục của trang web (Header, Sidebar).
-
-common/: Các thành phần nhỏ, cơ bản và có thể dùng ở bất cứ đâu (nút bấm, ô nhập liệu).
-
-features/: Đây là phần quan trọng nhất.
-
-Mỗi tính năng (như files, auth) sẽ có thư mục riêng, bên trong chứa logic Redux (slice), logic bất đồng bộ (saga), và cả các component con chỉ liên quan đến tính năng đó.
-
-auth/: Quản lý trạng thái đăng nhập và thông tin người dùng. UserMenu.jsx là một component thuộc feature này.
-
-files/: Quản lý mọi thứ liên quan đến file. Trạng thái (danh sách file) được lưu trong filesSlice, hành động lấy dữ liệu từ server được xử lý trong filesSaga, và các component như SearchBar, FileList cũng được đặt ở đây.
-
-ui/: Quản lý các trạng thái giao diện chung không thuộc về một feature cụ thể nào, ví dụ như trạng thái đóng/mở của Sidebar.
-
-pages/: Mỗi file trong này đại diện cho một trang của ứng dụng. HomePage.jsx sẽ là nơi bạn "lắp ráp" MainLayout cùng với các component từ features/files/components để tạo thành trang chủ hoàn chỉnh.
-
-Các bước tiếp theo cho bạn:
-Tạo các thư mục và file mới theo cấu trúc trên.
-
-Bắt đầu code giao diện cho các component đã được định nghĩa (Header.jsx, Sidebar.jsx, SearchBar.jsx, FileList.jsx, v.v.).
-
-Khi bạn cần xử lý trạng thái (ví dụ: người dùng gõ vào ô tìm kiếm, nhấn nút upload), bạn sẽ định nghĩa các actions trong các file slice tương ứng (filesSlice.js) và xử lý chúng trong các component.
-
-Cấu trúc này có thể trông phức tạp hơn lúc đầu, nhưng nó sẽ giúp bạn tiết kiệm rất nhiều thời gian và công sức khi dự án phát triển lớn hơn. Nếu có bất kỳ câu hỏi nào trong quá trình triển khai, đừng ngần ngại hỏi tôi nhé!
+Tính năng:
+- Đăng nhập / Đăng kí: authSlice - authSaga
+- Get toàn bộ file / Get 1 file - Upload/Update/Delete 1 file: fileSlice - fileSaga

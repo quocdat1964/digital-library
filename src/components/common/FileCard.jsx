@@ -1,4 +1,9 @@
+import { useDispatch } from "react-redux";
+import { fetchFileDetails } from "../../features/files/fileDetailSlice";
+
 const FileCard = ({ file, onContextMenu }) => {
+    const dispatch = useDispatch()
+    
     const getFileTypeColor = (type) => {
         switch (type.toLowerCase()) {
             case 'pdf': return 'bg-red-500';
@@ -10,9 +15,15 @@ const FileCard = ({ file, onContextMenu }) => {
         }
     }
 
+    const handleCardClick = (e) => {
+        e.stopPropagation()
+        dispatch(fetchFileDetails(file.id))
+    }
+
     return (
         <div className="bg-[#2d2c35] rounded-lg overflow-hidden shadow-lg cursor-pointer group"
-            onContextMenu={(e)=>onContextMenu(e, file)}
+            onClick={handleCardClick}
+            onContextMenu={(e) => onContextMenu(e, file)}
         >
             <div className="relative">
                 <img
