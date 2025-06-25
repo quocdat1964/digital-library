@@ -1,4 +1,4 @@
-const FileCard = ({ file }) => {
+const FileCard = ({ file, onContextMenu }) => {
     const getFileTypeColor = (type) => {
         switch (type.toLowerCase()) {
             case 'pdf': return 'bg-red-500';
@@ -11,7 +11,9 @@ const FileCard = ({ file }) => {
     }
 
     return (
-        <div className="bg-[#2d2c35] rounded-lg overflow-hidden shadow-lg cursor-pointer group">
+        <div className="bg-[#2d2c35] rounded-lg overflow-hidden shadow-lg cursor-pointer group"
+            onContextMenu={(e)=>onContextMenu(e, file)}
+        >
             <div className="relative">
                 <img
                     src={file.thumbnailUrl}

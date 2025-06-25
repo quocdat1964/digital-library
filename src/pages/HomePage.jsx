@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchFiles } from "../features/files/fileSlice";
 import FileCard from "../components/common/FileCard";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
+import ContextMenu from "../components/common/ContextMenu";
+import { useContextMenu } from "../hooks/useContextMenu";
 
 const parseDateString = (dateStr) => {
     const [day, month, year] = dateStr.split('/')
@@ -12,13 +14,13 @@ const parseDateString = (dateStr) => {
 const HomePage = () => {
     const dispatch = useDispatch();
     const { filesByDate, status, error } = useSelector((state) => state.files)
-
     const [openSection, setOpenSection] = useState({})
+
+    const {menuState, showContextMenu, closeContextMenu} = useContextMenu();
 
     useEffect(() => {
         if (status === 'idle') {
             dispatch(fetchFiles())
-            console.log("Check var: ", filesByDate)
         }
     }, [status, dispatch])
 
@@ -51,12 +53,13 @@ const HomePage = () => {
     }
 
     return (
-        <div className="space-y-6 bg-gray-900 px-4 py-2 rounded-md">
-            <h1 className="text-2xl font-bold text-white">Trang chủ</h1>
+        <div className="space-y-6 bg-gray-900 px-4 py-2 rounded-md relative">
+            <h1 className="text-lg font-semibold text-yellow-500">Trang chủ</h1>
             {sortedDates.map((dateKey) => (
                 <div key={dateKey}>
                     <div
-                        className="flex items-center space-x-3 cursor-pointer mb-4"
+                        className="flex items-center space-x-3 cursor-pointer mb-4 p-2 rounded-md
+                                    hover:bg-gray-500 hover:bg-opacity-40 transition-colors duration-300"
                         onClick={() => toggleSection(dateKey)}
                     >
                         {openSection[dateKey] ? (
@@ -64,7 +67,7 @@ const HomePage = () => {
                         ) : (
                             <ChevronRightIcon className="h-6 w-6 text-gray-300" />
                         )}
-                        <h2 className="text-lg font-semibold text-gray-200">
+                        <h2 className="text-md font-medium text-gray-200">
                             Ngày {dateKey.replace(/\//g, '/')}
                         </h2>
                         <span className="text-sm text-yellow-500">
@@ -74,12 +77,13 @@ const HomePage = () => {
                     {openSection[dateKey] && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                             {filesByDate[dateKey].map((file) => (
-                                <FileCard key={file.id} file={file} />
+                                <FileCard key={file.id} file={file} onContextMenu={showContextMenu} />
                             ))}
                         </div>
                     )}
                 </div>
             ))}
+            <ContextMenu menuState={menuState} closeMenu={closeContextMenu}/>
         </div>
     );
 }
