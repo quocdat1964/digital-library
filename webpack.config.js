@@ -2,28 +2,25 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  // Điểm bắt đầu của ứng dụng
   entry: './src/index.js',
-
-  // Nơi lưu trữ file đã được bundle
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
-    clean: true, // Xóa thư mục dist trước mỗi lần build
+    publicPath: '/',
+    clean: true,
   },
 
-  // Cấu hình cho server phát triển
   devServer: {
     static: {
       directory: path.join(__dirname, 'public'),
     },
     compress: true,
     port: 3000,
-    open: true, // Tự động mở trình duyệt
-    hot: true, // Hot module replacement
+    open: true,
+    hot: true,
+    historyApiFallback: true
   },
 
-  // Cấu hình các module loader
   module: {
     rules: [
       // Rule cho file JavaScript và JSX
@@ -38,22 +35,47 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          'style-loader', // 2. Inject styles vào DOM
-          'css-loader',   // 1. Chuyển CSS thành CommonJS
-          'postcss-loader', // Xử lý CSS với PostCSS (cho Tailwind)
+          'style-loader',
+          'css-loader',
+          'postcss-loader',
         ],
       },
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
         type: 'asset/resource',
+        generator: {
+          filename: 'assets/images/[name][hash][ext][query]'
+        }
       },
+      {
+        test: /\.(mp4|webm|ogg)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/videos/[name][hash][ext][query]'
+        }
+      },
+      {
+        test: /\.(pdf|docx?|xlsx?)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/documents/[name][hash][ext][query]'
+        }
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/fonts/[name][hash][ext][query]'
+        }
+      },
+      
     ],
   },
 
   // Cấu hình plugin
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html', // Sử dụng file này làm template
+      template: './public/index.html',
       filename: './index.html',
     }),
   ],

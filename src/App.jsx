@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
 import { toggleSidebar } from "./features/ui/uiSlice";
 import Header from "./components/layout/Header";
 import Sidebar from "./components/layout/Sidebar";
@@ -18,20 +19,20 @@ const App = () => {
         }
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
-    })
+    }, [])
 
     return (
         <div className="flex flex-col h-screen">
             <Header />
             {/* Phần hiển thị sidebar tùy kích thước màn hình */}
-            <div className="flex flex-grow overflow-hidden relative">
+            <div className="flex flex-grow relative">
                 {isDesktop ? (
-                    <div className={`transition-all duration-500 ${isSidebarOpen ? 'w-64' : 'w-0'} overflow-hidden`}>
+                    <div className={`transition-all duration-500 ${isSidebarOpen ? 'w-64' : 'w-0'} overflow-hidden flex-shrink-0 bg-gray-800`}>
                         <Sidebar />
                     </div>
                 ) : (
                     <>
-                        <div className={`absolute inset-0 bg-black transition-opacity duration-300
+                        <div className={`fixed inset-0 bg-black transition-opacity duration-300
                                         ${isSidebarOpen ? 'opacity-40' : 'opacity-0 pointer-events-none'}`}
                             onClick={() => dispatch(toggleSidebar())}
                         ></div>
@@ -43,8 +44,10 @@ const App = () => {
                     </>
                 )}
                 {/* Nội dung chính */}
-                <main className="flex-grow p-4 bg-[#393844] text-white overflow-y-auto">
-                    <AppRoutes />
+                <main className="flex-grow bg-[#393844] text-white overflow-y-auto">
+                    <div className="p-4 sm:p-6">
+                        <AppRoutes />
+                    </div>
                 </main>
             </div>
             <FileDetailPanel />

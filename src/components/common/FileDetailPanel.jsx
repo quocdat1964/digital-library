@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useMediaQuery } from "react-responsive";
+import axios from "axios";
 import { closeFileDetailPanel, updateFileDetails } from "../../features/files/fileDetailSlice";
 import { XMarkIcon, ArrowDownTrayIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
 
 const FilePreviewer = ({ file }) => {
     if (!file || !file.contentUrl) {
-        return <div className="flex items-center justify-center h-full bg-gray-900 text-white">Không có nội dung xem trước</div>
+        return <div className="flex items-center justify-center h-full bg-gray-900 text-white p-4 text-center">Không có nội dung xem trước</div>
     }
 
     switch (file.type.toLowerCase()) {
@@ -19,7 +21,7 @@ const FilePreviewer = ({ file }) => {
         case 'mp4':
             return <video src={file.contentUrl} controls className="w-full h-full bg-black"></video>
         default:
-            return <div className="flex items-center justify-center h-full bg-gray-900 text-white">Xem trước không được hỗ trợ cho loại file này</div>;
+            return <div className="flex items-center justify-center h-full bg-gray-900 text-white p-4 text-center">Xem trước không được hỗ trợ cho loại file này</div>;
     }
 }
 
@@ -63,6 +65,7 @@ const FileDetailPanel = () => {
     const dispatch = useDispatch()
     const { isPanelOpen, selectedFile, status } = useSelector((state) => state.fileDetail)
     const [formData, setFormData] = useState({})
+    const isXlScreen = useMediaQuery({ query: '(min-width: 1280px)' });
 
     useEffect(() => {
         if (selectedFile) {
@@ -86,70 +89,106 @@ const FileDetailPanel = () => {
         dispatch(updateFileDetails({ ...selectedFile, ...formData }))
     }
 
+    const handleDownload = async () => {
+        if (!selectedFile || !selectedFile.contentUrl) return;
+        try {
+            const response = await axios({
+                url: selectedFile.contentUrl,
+                method: 'GET',
+                responseType: 'blob',
+            })
+
+            const blob = response.data
+
+            const url = window.URL.createObjectURL(blob)
+
+            const a = document.createElement('a')
+            a.style.display = 'none'
+            a.href = url
+            a.download = selectedFile.name
+            document.body.appendChild(a)
+            a.click()
+
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (error) {
+            console.error('Lỗi khi tải file bằng axios:', error);
+            alert('Không thể tải file. Vui lòng thử lại.');
+        }
+    }
+
     const isLoading = status === 'loading'
     const isUpdating = status === 'updating'
 
     return (
-        <div
-            className={`fixed top-0 right-0 h-full w-full lg:w-3/5 bg-[#2d2c35] shadow-2xl transition-transform duration-300 ease-in-out z-50 flex flex-col
-                        ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}
-                        `}
-        >
-            {/* Header của Panel */}
-            <header className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
-                <h2 className="text-lg font-semibold text-white truncate">
-                    {isLoading ? 'Đang tải...' : selectedFile?.name || ''}
-                </h2>
-                <div className="flex items-center space-x-4">
-                    <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 rounded-md hover:bg-green-700">
-                        <ArrowDownTrayIcon className="h-5 w-5" />
-                        <span>Tải xuống</span>
-                    </button>
-                    <button onClick={handleClose} className="text-gray-400 hover:text-white">
-                        <XMarkIcon className="h-6 w-6" />
-                    </button>
-                </div>
-            </header>
+        <>
+            {!isXlScreen && isPanelOpen && (
+                <div
+                    className="fixed top-16 left-0 w-full h-full bg-black/60 z-40"
+                    onClick={handleClose}
+                ></div>
+            )}
 
-            {/* Nội dung Panel */}
-            <div className="flex-grow overflow-hidden flex flex-col">
-                {isLoading ? (
-                    <div className="flex items-center justify-center h-full text-white">Đang tải chi tiết file...</div>
-                ) : selectedFile ? (
-                    <>
-                        {/* Vùng xem trước file */}
-                        <div className="flex-1 bg-black overflow-auto">
-                            <FilePreviewer file={selectedFile} />
-                        </div>
+            <div
+                className={`fixed top-16 right-0 h-[calc(100%-4rem)] bg-[#2d2c35] shadow-2xl transition-transform duration-300 ease-in-out z-50 flex flex-col
+                            ${isXlScreen ? 'w-[40%]' : 'w-full sm:w-4/5 md:w-3/5'}
+                            ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}
+                            `}
+            >
+                <header className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
+                    <h2 className="text-lg font-semibold text-white truncate pr-4">
+                        {isLoading ? 'Đang tải...' : selectedFile?.name || ''}
+                    </h2>
+                    <div className="flex items-center space-x-4 text-white flex-shrink-0">
+                        <button
+                            onClick={handleDownload}
+                            disabled={!selectedFile}
+                            className="flex items-center space-x-2 px-3 py-2 bg-green-600 rounded-md hover:bg-green-700 disabled:bg-gray-500 disabled:cursor-not-allowed"
+                        >
+                            <ArrowDownTrayIcon className="h-5 w-5" />
+                            <span className="hidden sm:inline">Tải xuống</span>
+                        </button>
+                        <button onClick={handleClose} className="text-gray-400 hover:text-white">
+                            <XMarkIcon className="h-6 w-6" />
+                        </button>
+                    </div>
+                </header>
 
-                        {/* Vùng thông tin file */}
-                        <div className="p-6 overflow-y-auto h-1/3 flex-shrink-0 text-white">
-                            <dl className="space-y-4">
-                                <EditableInfoRow label="Tiêu đề" value={formData.title} onChange={(e) => handleInputChange(e, 'title')} />
-                                <EditableInfoRow label="Mô tả" value={formData.description} onChange={(e) => handleInputChange(e, 'description')} />
-                                <EditableInfoRow label="Tác giả" value={formData.author} onChange={(e) => handleInputChange(e, 'author')} />
-
-                                {/* Thông tin không chỉnh sửa */}
-                                <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Ngày</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{new Date(selectedFile.createdAt).toLocaleString('vi-VN')}</dd></div>
-                                <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Người tải lên</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.uploader}</dd></div>
-                                <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Số lượt tải</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.downloadCount}</dd></div>
-                            </dl>
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    onClick={handleSaveChanges}
-                                    className="px-6 py-2 bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-gray-500"
-                                    disabled={isUpdating}
-                                >
-                                    {isUpdating ? 'Đang lưu...' : 'Lưu thay đổi'}
-                                </button>
+                <div className="flex-grow overflow-hidden flex flex-col">
+                    {isLoading ? (
+                        <div className="flex items-center justify-center h-full text-white">Đang tải chi tiết file...</div>
+                    ) : selectedFile ? (
+                        <>
+                            <div className="flex-1 bg-black overflow-auto min-h-0">
+                                <FilePreviewer file={selectedFile} />
                             </div>
-                        </div>
-                    </>
-                ) : (
-                    <div className="flex items-center justify-center h-full text-red-500">Không thể tải thông tin file.</div>
-                )}
+
+                            <div className="p-6 overflow-y-auto h-auto max-h-1/2 md:max-h-1/3 flex-shrink-0 text-white">
+                                <dl className="space-y-4">
+                                    <EditableInfoRow label="Tiêu đề" value={formData.title} onChange={(e) => handleInputChange(e, 'title')} />
+                                    <EditableInfoRow label="Mô tả" value={formData.description} onChange={(e) => handleInputChange(e, 'description')} />
+                                    <EditableInfoRow label="Tác giả" value={formData.author} onChange={(e) => handleInputChange(e, 'author')} />
+                                    <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Ngày</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{new Date(selectedFile.createdAt).toLocaleString('vi-VN')}</dd></div>
+                                    <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Người tải lên</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.uploader}</dd></div>
+                                    <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Số lượt tải</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.downloadCount}</dd></div>
+                                </dl>
+                                <div className="mt-6 flex justify-end">
+                                    <button
+                                        onClick={handleSaveChanges}
+                                        className="px-6 py-2 bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-gray-500 disabled:cursor-not-allowed"
+                                        disabled={isUpdating}
+                                    >
+                                        {isUpdating ? 'Đang lưu...' : 'Lưu thay đổi'}
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-red-500">Không thể tải thông tin file.</div>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     )
 }
 
