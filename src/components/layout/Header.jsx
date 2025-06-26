@@ -25,7 +25,7 @@ const Header = () => {
     }, [showSearchbar])
 
     return (
-        <header className=" bg-[#201f2b] text-white p-4 flex justify-between items-center shadow-md">
+        <header className=" bg-[#201f2b] text-white p-3 flex justify-between items-center shadow-md">
 
             {/* Hamburger & Logo */}
             <div className="flex items-center gap-2">

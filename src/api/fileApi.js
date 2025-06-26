@@ -1,5 +1,6 @@
 import testImg from '../assets/avt_nqd.jpg'
 import testPdf from '../assets/2022_MT_KHMT.pdf'
+import testDoc from '../assets/Student_InTaiLieu_LichSuIn.docx'
 // const mockFiles = [
 //     { id: '1', name: '2022_MT_KHMT', type: 'pdf', createdAt: '2025-06-23T10:00:00Z', thumbnailUrl: 'https://placehold.co/100x100/393844/FFF?text=PDF+Preview' },
 //     { id: '2', name: 'tailoc', type: 'jpg', createdAt: '2025-06-23T11:30:00Z', thumbnailUrl: 'https://placehold.co/100x100/2d2c35/FFF?text=Meo+Anh' },
@@ -22,7 +23,7 @@ import testPdf from '../assets/2022_MT_KHMT.pdf'
 const mockFiles = [
   { id: '1', name: '2022_MT_KHMT', type: 'pdf', createdAt: '2025-06-23T10:00:00Z', thumbnailUrl: 'https://placehold.co/400x300/393844/FFF?text=Báo+cáo' },
   { id: '2', name: 'tailoc_meo_anh', type: 'jpg', createdAt: '2025-06-23T11:30:00Z', thumbnailUrl: 'https://placehold.co/400x300/2d2c35/FFF?text=Ảnh+mèo' },
-  { id: '3', name: 'hop_dong_lao_dong', type: 'word', createdAt: '2025-06-20T15:00:00Z', thumbnailUrl: 'https://placehold.co/400x300/393844/FFF?text=Hợp+đồng' },
+  { id: '3', name: 'Lich_su_in', type: 'word', createdAt: '2025-06-20T15:00:00Z', thumbnailUrl: 'https://placehold.co/400x300/393844/FFF?text=Hợp+đồng' },
   { id: '4', name: 'logo_cong_ty', type: 'png', createdAt: '2025-06-25T09:00:00Z', thumbnailUrl: 'https://placehold.co/400x300/2d2c35/FFF?text=Logo.png' },
   { id: '5', name: 'video_gioi_thieu', type: 'mp4', createdAt: '2025-06-19T09:00:00Z', thumbnailUrl: 'https://placehold.co/400x300/393844/FFF?text=Video.mp4' },
 ];
@@ -41,7 +42,7 @@ const mockFileDetails = {
     // Bổ sung dữ liệu chi tiết cho file ID '3'
     '3': { 
         id: '3', title: 'Hợp đồng lao động mẫu', description: '', author: 'Phòng nhân sự', uploader: 'Nguyễn Quốc Đạt', downloadCount: 2, storageLocation: '1', collection: 'Tài liệu', status: 'On resource', tags: [], type: 'word', name: 'hop_dong_lao_dong', createdAt: '2025-06-20T15:00:00Z', 
-        contentUrl: '' // Word không có xem trước nên để trống
+        contentUrl: testDoc // Word không có xem trước nên để trống
     },
     // Bổ sung dữ liệu chi tiết cho file ID '4'
     '4': { 
@@ -71,7 +72,7 @@ export const fileApi = {
                 const details = mockFileDetails[fileId] || null
                 console.log('API: Details fetched:', details);
                 resolve(details)
-            }, 500)
+            }, 0)
         })
     },
     updateFileDetails: (fileData)=>{
