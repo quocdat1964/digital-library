@@ -54,13 +54,12 @@ const Header = () => {
 
                 <UserMenu />
             </div>
-
             {/* Ẩn/Hiện search bar khi ở màn hình nhỏ */}
             <div
                 className={`fixed top-20 right-0 bg-[#282733] flex flex-grow justify-center p-4 rounded-lg border border-gray-600 transition-all duration-200 ease-in-out transform 
                     ${showSearchbar
-                        ? 'opacity-100 scale-100 z-10 pointer-events-auto'
-                        : 'opacity-0 scale-95 z-10 pointer-events-none'
+                        ? 'opacity-100 scale-100 z-20 pointer-events-auto'
+                        : 'opacity-0 scale-95 z-20 pointer-events-none'
                     }`}
             >
                 <SearchBar />

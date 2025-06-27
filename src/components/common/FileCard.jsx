@@ -25,11 +25,11 @@ const FileCard = ({ file, onContextMenu }) => {
             onClick={handleCardClick}
             onContextMenu={(e) => onContextMenu(e, file)}
         >
-            <div className="relative">
+            <div className="relative aspect-square">
                 <img
                     src={file.thumbnailUrl}
                     alt={file.name}
-                    className="w-full h-32 object-cover"
+                    className="w-full h-full object-cover"
                 />
                 <div className="absolute top-2 right-2 px-2 py-1 text-xs text-white rounded-md" style={{ backgroundColor: getFileTypeColor(file.type) }}>
                     {file.type.toUpperCase()}

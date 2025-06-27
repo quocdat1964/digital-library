@@ -24,6 +24,7 @@ const App = () => {
     return (
         <div className="flex flex-col h-screen">
             <Header />
+            <div className="h-4 bg-[#393844] static"></div>
             {/* Phần hiển thị sidebar tùy kích thước màn hình */}
             <div className="flex flex-1 overflow-hidden">
                 {isDesktop ? (
@@ -32,7 +33,7 @@ const App = () => {
                     </div>
                 ) : (
                     <>
-                        <div className={`absolute inset-0 bg-black transition-opacity duration-300
+                        <div className={`absolute inset-0 bg-black transition-opacity duration-300 z-10
                                         ${isSidebarOpen ? 'opacity-40' : 'opacity-0 pointer-events-none'}`}
                             onClick={() => dispatch(toggleSidebar())}
                         ></div>
@@ -45,12 +46,11 @@ const App = () => {
                 )}
                 {/* Nội dung chính */}
                 <main className="flex-grow bg-[#393844] text-white overflow-y-auto">
-                    <div className="p-4">
+                    <div className="px-4 pb-4">
                         <AppRoutes />
                     </div>
                 </main>
             </div>
-            {/* <FileDetailPanel /> */}
         </div>
     )
 }

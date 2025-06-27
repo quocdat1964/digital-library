@@ -122,7 +122,8 @@ const FileDetailPanel = () => {
 
     return (
         
-        <div className="bg-[#2d2c35] rounded-lg flex flex-col">
+        <div className="bg-[#2d2c35] rounded-lg flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto">
+        {/* <div className="bg-[#2d2c35] rounded-lg flex flex-col h-full"> */}
             <header className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
                 <h2 className="text-lg font-semibold text-white truncate pr-4">
                     {isLoading ? 'Đang tải...' : selectedFile?.name || ''}
@@ -142,12 +143,13 @@ const FileDetailPanel = () => {
                 </div>
             </header>
 
+            {/* <div className="flex-grow flex flex-col overflow-y-auto"> */}
             <div className="flex-grow flex flex-col">
                 {isLoading ? (
                     <div className="flex items-center justify-center h-96 text-white">Đang tải chi tiết file...</div>
                 ) : selectedFile ? (
                     <>
-                        <div className="bg-black aspect-video">
+                        <div className="bg-black aspect-video flex-shrink-0">
                             <FilePreviewer file={selectedFile} />
                         </div>
 
