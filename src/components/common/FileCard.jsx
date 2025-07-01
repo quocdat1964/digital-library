@@ -1,9 +1,9 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchFileDetails } from "../../features/files/fileDetailSlice";
 
-const FileCard = ({ file, onContextMenu }) => {
+const FileCard = ({ file, onContextMenu, isSelected }) => {
     const dispatch = useDispatch()
-    
+
     const getFileTypeColor = (type) => {
         switch (type.toLowerCase()) {
             case 'pdf': return 'bg-red-500';
@@ -21,7 +21,12 @@ const FileCard = ({ file, onContextMenu }) => {
     }
 
     return (
-        <div className="bg-[#2d2c35] rounded-lg overflow-hidden shadow-lg cursor-pointer group"
+        // <div className="bg-[#2d2c35] rounded-lg overflow-hidden shadow-lg cursor-pointer group"
+        <div className={`
+                bg-[#2d2c35] rounded-lg overflow-hidden shadow-lg cursor-pointer group
+                transition-all duration-200
+                ${isSelected ? 'ring-2 ring-red-500' : 'ring-2 ring-transparent'}
+            `}
             onClick={handleCardClick}
             onContextMenu={(e) => onContextMenu(e, file)}
         >

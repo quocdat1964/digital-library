@@ -8,10 +8,10 @@ import {
     PencilIcon,
     PencilSquareIcon,
     TrashIcon,
-    ChevronRightIcon
+    ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
-const ContextMenu = ({ menuState, closeMenu }) => {
+const ContextMenu = ({ menuState, closeMenu, onDeleteClick }) => {
     const menuRef = useRef(null)
 
     useEffect(() => {
@@ -39,13 +39,22 @@ const ContextMenu = ({ menuState, closeMenu }) => {
     const menuItems = [
         { label: 'Di chuyển vào kho', icon: ArchiveBoxArrowDownIcon },
         { label: 'Thêm vào Bộ sưu tập', icon: FolderPlusIcon },
-        { label: 'Gửi nhà in', icon: PrinterIcon },
-        { label: 'Thêm từ khóa', icon: TagIcon },
-        { label: 'Tải xuống', icon: ArrowDownTrayIcon, hasMore: true },
-        { label: 'Đổi tên', icon: PencilIcon, isHighlighted: true },
-        { label: 'Chỉnh sửa', icon: PencilSquareIcon },
+        // { label: 'Gửi nhà in', icon: PrinterIcon },
+        // { label: 'Thêm từ khóa', icon: TagIcon },
+        // { label: 'Tải xuống', icon: ArrowDownTrayIcon, hasMore: true },
+        // { label: 'Đổi tên', icon: PencilIcon, isHighlighted: true },
+        // { label: 'Chỉnh sửa', icon: PencilSquareIcon },
         { label: 'Xóa file', icon: TrashIcon, isDestructive: true },
     ];
+
+    const handleItemClick = (label) => {
+        if (label === 'Xóa file') {
+            if (onDeleteClick) {
+                onDeleteClick(menuState.file)
+            }
+        }
+        closeMenu()
+    }
 
     return (
         <div
@@ -62,6 +71,7 @@ const ContextMenu = ({ menuState, closeMenu }) => {
                 {menuItems.map((item, index) => (
                     <li
                         key={index}
+                        onClick={() => handleItemClick(item.label)}
                         className={`
                             flex items-center justify-between p-2 rounded-md cursor-pointer
                             ${item.isDestructive ? 'text-red-500 hover:bg-red-500/20' : 'hover:bg-gray-600/50'}

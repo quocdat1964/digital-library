@@ -6,12 +6,33 @@ import ContextMenu from '../common/ContextMenu';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { closeFileDetailPanel } from '../../features/files/fileDetailSlice';
+import { deleteFile } from '../../features/files/fileSlice';
+import ConfirmationModal from '../common/ConfirmationModal';
+
 
 const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
-  const { isPanelOpen } = useSelector((state) => state.fileDetail);
+  const { isPanelOpen, selectedFile } = useSelector((state) => state.fileDetail);
   const { menuState, showContextMenu, closeContextMenu } = useContextMenu();
   const [openSections, setOpenSections] = useState({});
   const dispatch = useDispatch()
+
+  // Quản lí modal xóa file
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, file: null })
+
+  const handleOpenDeleteModal = (file) => {
+    setDeleteModal({ isOpen: true, file: file });
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModal({ isOpen: false, file: null });
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteModal.file) {
+      dispatch(deleteFile(deleteModal.file.id));
+    }
+    handleCloseDeleteModal();
+  };
 
   useEffect(() => {
 
@@ -48,12 +69,12 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
   }
 
   return (
-    <div className="space-y-4 bg-[#201F2B] px-4 rounded-md">
+    <div className="space-y-4 bg-[#201F2B] px-2 rounded-md">
       <div className="sticky bg-[#201f2b] top-0 z-10 p-2 w-full">
         <h1 className="text-xl font-semibold text-yellow-500 w-full">{pageTitle}</h1>
       </div>
 
-      <div className="flex flex-row items-start justify-between gap-4">
+      <div className="flex flex-row items-start justify-between gap-4 px-2">
         <div className={`transition-all duration-300 ${isPanelOpen ? 'w-full xl:w-[65%]' : 'w-full'}`}>
           {sortedDates.map((dateKey) => (
             <div key={dateKey} className="mb-6">
@@ -65,7 +86,12 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
               {openSections[dateKey] && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                   {filesByDate[dateKey].map((file) => (
-                    <FileCard key={file.id} file={file} onContextMenu={showContextMenu} />
+                    <FileCard
+                      key={file.id}
+                      file={file}
+                      onContextMenu={showContextMenu}
+                      isSelected={selectedFile?.id === file.id}
+                    />
                   ))}
                 </div>
               )}
@@ -79,9 +105,6 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
           transition-all duration-300 ease-in-out
           ${isPanelOpen ? 'w-[35%] opacity-100' : 'w-0 opacity-0'}
         `}>
-          {/* <div className="h-32"> 
-            <FileDetailPanel />
-          </div> */}
           <FileDetailPanel />
         </div>
       </div>
@@ -96,7 +119,7 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
         ></div>
         {/* Panel chính */}
         <div className={`
-          fixed top-16 right-0 h-[100vh] w-full sm:w-[70%] md:w-[60%] lg:w-[50%] z-50
+          fixed top-16 right-0 h-[100vh] w-full sm:w-[60%] md:w-[50%] lg:w-[40%] z-50
           transition-transform duration-300 ease-in-out
           ${isPanelOpen ? 'translate-x-0' : 'translate-x-full'}
         `}>
@@ -104,7 +127,22 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
         </div>
       </div>
 
-      <ContextMenu menuState={menuState} closeMenu={closeContextMenu} />
+      <ContextMenu
+        menuState={menuState}
+        closeMenu={closeContextMenu}
+        onDeleteClick={handleOpenDeleteModal}
+      />
+
+      {/* Render modal xác nhận */}
+      <ConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        title="Xác nhận xóa file"
+      >
+        <p>Bạn có chắc chắn muốn xóa file <strong className="text-white">{deleteModal.file?.name}</strong> không?</p>
+        <p className="mt-2 text-sm text-red-400">Hành động này không thể hoàn tác.</p>
+      </ConfirmationModal>
     </div>
   );
 };

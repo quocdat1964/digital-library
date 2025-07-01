@@ -122,7 +122,7 @@ const FileDetailPanel = () => {
 
     return (
         
-        <div className="bg-[#2d2c35] rounded-lg flex flex-col max-h-[35rem] overflow-y-auto mb-4">
+        <div className="bg-[#2d2c35] rounded-lg flex flex-col max-h-[35rem] max-xl:max-h-[42rem] overflow-y-auto mb-4">
         {/* <div className="bg-[#2d2c35] rounded-lg flex flex-col h-full"> */}
             <header className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
                 <h2 className="text-lg font-semibold text-white truncate pr-4">

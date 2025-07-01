@@ -1,3 +1,5 @@
+// Thêm tính năng instant update sau(Để tạm để test trước, sau khi làm api thì tính tiếp)
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {

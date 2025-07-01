@@ -1,8 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import avt from '../../assets/avt_nqd.jpg'
 const authInitialState = {
-    isAuthenticated: false,
-    user: null,
+    isAuthenticated: true,
+    user: {
+        name: 'NGUYEN QUOC DAT',
+        avatarUrl: avt,
+        token: 'fake-jwt-token-12345',
+    },
     status: 'idle',
     error: null
 }
