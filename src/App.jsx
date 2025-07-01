@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Outlet } from "react-router-dom";
 
 import { toggleSidebar } from "./features/ui/uiSlice";
 import Header from "./components/layout/Header";
 import Sidebar from "./components/layout/Sidebar";
-import FileDetailPanel from "./components/common/FileDetailPanel";
-import AppRoutes from "./routes";
+
 
 const App = () => {
 
@@ -47,7 +47,7 @@ const App = () => {
                 {/* Nội dung chính */}
                 <main className="flex-grow bg-[#393844] text-white overflow-y-auto">
                     <div className="px-4 pb-4">
-                        <AppRoutes />
+                        <Outlet />
                     </div>
                 </main>
             </div>

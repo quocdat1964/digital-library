@@ -1,25 +1,44 @@
 import { createSlice } from "@reduxjs/toolkit";
 import avt from '../../assets/avt_nqd.jpg'
 const authInitialState = {
-    isAuthenticated: true,
-    user: {
-        name: 'NGUYỄN QUỐC ĐẠT',
-        avatarUrl: avt
-    }
+    isAuthenticated: false,
+    user: null,
+    status: 'idle',
+    error: null
 }
 
 const authSlice = createSlice({
     name: 'auth',
     initialState: authInitialState,
-    reducers:{
-        logout(state){
-            state.isAuthenticated = false,
-            state.user = null
+    reducers: {
+        loginStart(state, action) {
+            state.status = 'loading'
+            state.error = null
+        },
+        loginSuccess(state, action) {
+            state.isAuthenticated = true;
+            state.status = 'succeeded';
+            state.user = action.payload;
+        },
+        loginFailure(state, action) {
+            state.isAuthenticated = false;
+            state.status = 'failed';
+            state.user = null;
+            state.error = action.payload;
+        },
+        logout(state) {
+            state.isAuthenticated = false;
+            state.user = null;
+            state.status = 'idle';
+            state.error = null;
         }
     }
 })
 
 export const {
+    loginStart,
+    loginSuccess,
+    loginFailure,
     logout
 } = authSlice.actions
 
