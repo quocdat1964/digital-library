@@ -86,5 +86,16 @@ export const fileApi = {
                 }
             }, 500);
         });
+    },
+    deleteMultipleFiles: (fileIds) => {
+        console.log('Delete multiple files with ids: ', fileIds)
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                mockFiles = mockFiles.filter(file => !fileIds.includes(file.id))
+                fileIds.forEach(id => delete mockFileDetails[id])
+                console.log('Doneeeee')
+                resolve({ success: true })
+            }, 500)
+        })
     }
 }

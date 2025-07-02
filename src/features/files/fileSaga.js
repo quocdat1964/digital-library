@@ -1,3 +1,5 @@
+// Chỉnh instant update/add/delete sau
+
 import { call, put, takeLatest, select, take } from 'redux-saga/effects'
 import { fileApi } from '../../api/fileApi';
 import { 
@@ -6,7 +8,10 @@ import {
     fetchFilesFailure,
     deleteFile,
     deleteFileSuccess,
-    deleteFileFailure
+    deleteFileFailure,
+    deleteMultipleFiles,
+    deleteMultipleFilesSuccess,
+    deleteMultipleFilesFailure
 } from "./fileSlice";
 import { closeFileDetailPanel } from './fileDetailSlice';
 
@@ -34,7 +39,24 @@ function* handleDeleteFile(action){
     }
 }
 
+function* handleDeleteMultipleFiles(action){
+    try {
+        const fileIdsToDelete = action.payload
+        yield call(fileApi.deleteMultipleFiles, fileIdsToDelete)
+        yield put(deleteMultipleFilesSuccess())
+
+        const selectedFile = yield select(state=> state.fileDetail.selectedFile)
+        if(selectedFile && fileIdsToDelete.includes(selectedFile.id)){
+            yield put(closeFileDetailPanel())
+        }
+        yield put(fetchFiles())
+    } catch (error) {
+        yield put(deleteMultipleFilesFailure(error.message))
+    }
+}
+
 export function* watchFetchFiles() {
     yield takeLatest(fetchFiles.type, handleFetchFiles)
     yield takeLatest(deleteFile.type, handleDeleteFile)
+    yield takeLatest(deleteMultipleFiles.type, handleDeleteMultipleFiles)
 }

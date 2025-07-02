@@ -33,6 +33,7 @@ const filterAndGroupFiles = (allFiles, searchTerm, fileTypeFilter) => {
 const initialState = {
     allFiles: [],
     filesByDate: {},
+    selectedFileIds: [],
     status: 'idle',
     deleteStatus: 'idle',
     error: null,
@@ -75,6 +76,30 @@ const fileSlice = createSlice({
         deleteFileFailure(state, action) {
             state.deleteStatus = 'failed'
             state.error = action.payload
+        },
+        toggleFileSelection(state, action) {
+            const fileId = action.payload
+            const selectedIndex = state.selectedFileIds.indexOf(fileId)
+            if (selectedIndex >= 0) {
+                state.selectedFileIds.splice(selectedIndex, 1)
+            } else {
+                state.selectedFileIds.push(fileId)
+            }
+        },
+        clearFileSelection(state){
+            state.selectedFileIds = []
+        },
+        deleteMultipleFiles(state, action){
+            state.deleteStatus = 'loading'
+            state.error = null
+        },
+        deleteMultipleFilesSuccess(state){
+            state.deleteStatus = 'succeeded'
+            state.selectedFileIds = []
+        },
+        deleteMultipleFilesFailure(state, action){
+            state.deleteStatus = 'failed'
+            state.error = action.payload
         }
     }
 })
@@ -87,7 +112,12 @@ export const {
     setFileTypeFilter,
     deleteFile,
     deleteFileSuccess,
-    deleteFileFailure
+    deleteFileFailure,
+    toggleFileSelection,
+    clearFileSelection,
+    deleteMultipleFiles,
+    deleteMultipleFilesSuccess,
+    deleteMultipleFilesFailure
 } = fileSlice.actions
 
 export default fileSlice.reducer

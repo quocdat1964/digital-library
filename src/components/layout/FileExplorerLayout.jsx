@@ -4,14 +4,19 @@ import FileCard from '../common/FileCard';
 import FileDetailPanel from '../common/FileDetailPanel';
 import ContextMenu from '../common/ContextMenu';
 import { useContextMenu } from '../../hooks/useContextMenu';
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { ChevronDownIcon, ChevronRightIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { closeFileDetailPanel } from '../../features/files/fileDetailSlice';
-import { deleteFile } from '../../features/files/fileSlice';
+import {
+  deleteFile,
+  deleteMultipleFiles,
+  clearFileSelection
+} from '../../features/files/fileSlice';
 import ConfirmationModal from '../common/ConfirmationModal';
 
 
 const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
   const { isPanelOpen, selectedFile } = useSelector((state) => state.fileDetail);
+  const selectedFileIds = useSelector((state) => state.files.selectedFileIds)
   const { menuState, showContextMenu, closeContextMenu } = useContextMenu();
   const [openSections, setOpenSections] = useState({});
   const dispatch = useDispatch()
@@ -33,6 +38,13 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
     }
     handleCloseDeleteModal();
   };
+
+  // Quản lí modal xóa nhiều file
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false)
+  const handleConfirmBulkDelete = () => {
+    dispatch(deleteMultipleFiles(selectedFileIds))
+    setIsBulkDeleteModalOpen(false)
+  }
 
   useEffect(() => {
 
@@ -72,6 +84,28 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
     <div className="space-y-4 bg-[#201F2B] px-2 rounded-md">
       <div className="sticky bg-[#201f2b] top-0 z-10 p-2 w-full">
         <h1 className="text-xl font-semibold text-yellow-500 w-full">{pageTitle}</h1>
+
+        {selectedFileIds.length > 0 && (
+          <div className='bg-gray-700 rounded-lg p-3 flex justify-between items-center animate-fade-in'>
+            <p className='font-semibold text-white'>{selectedFileIds.length} mục đã được chọn</p>
+            <div className='flex items-center space-x-4'>
+              <button
+                onClick={() => setIsBulkDeleteModalOpen(true)}
+                className='flex items-center space-x-2 text-red-400 hover:text-red-300 transition-colors'
+              >
+                <TrashIcon className='h-5 w-5' />
+                <span>Xóa mục đã chọn</span>
+              </button>
+              <button
+                onClick={() => dispatch(clearFileSelection())}
+                className='flex items-center space-x-2 text-gray-400 hover:text-white transition-colors'
+              >
+                <XMarkIcon className='w-5 h-5' />
+                <span>Bỏ chọn</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-row items-start justify-between gap-4 px-2">
@@ -90,7 +124,8 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
                       key={file.id}
                       file={file}
                       onContextMenu={showContextMenu}
-                      isSelected={selectedFile?.id === file.id}
+                      isSelected={selectedFileIds.includes(file.id)}
+                      isTicked={selectedFile?.id === file.id}
                     />
                   ))}
                 </div>
@@ -133,7 +168,7 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
         onDeleteClick={handleOpenDeleteModal}
       />
 
-      {/* Render modal xác nhận */}
+      {/* Modal xác nhận xóa 1 file */}
       <ConfirmationModal
         isOpen={deleteModal.isOpen}
         onClose={handleCloseDeleteModal}
@@ -141,6 +176,17 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
         title="Xác nhận xóa file"
       >
         <p>Bạn có chắc chắn muốn xóa file <strong className="text-white">{deleteModal.file?.name}</strong> không?</p>
+        <p className="mt-2 text-sm text-red-400">Hành động này không thể hoàn tác.</p>
+      </ConfirmationModal>
+
+      {/* Modal xác nhận xóa nhiều file */}
+      <ConfirmationModal
+        isOpen={isBulkDeleteModalOpen}
+        onClose={() => setIsBulkDeleteModalOpen(false)}
+        onConfirm={handleConfirmBulkDelete}
+        title="Xác nhận xóa hàng loạt"
+      >
+        <p>Bạn có chắc chắn muốn xóa <strong className="text-white">{selectedFileIds.length}</strong> mục đã chọn không?</p>
         <p className="mt-2 text-sm text-red-400">Hành động này không thể hoàn tác.</p>
       </ConfirmationModal>
     </div>
