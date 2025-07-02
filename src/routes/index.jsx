@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import NotFoundPage from "../pages/NotFoundPage";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
+import ArchivePage from "../pages/ArchivePage";
 import ProtectedRoute from "./ProtectedRoute";
 import App from "../App";
 
@@ -13,6 +14,7 @@ const AppRoutes = () => {
             <Route element={<ProtectedRoute />}>
                 <Route path="/" element={<App />}>
                     <Route index element={<HomePage />} />
+                    <Route path="archive" element={<ArchivePage />} />
                 </Route>
             </Route>
 

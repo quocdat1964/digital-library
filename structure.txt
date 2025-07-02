@@ -1,7 +1,7 @@
 Note: 
 - Trang chủ: Hiển thị thông tin các file mà User đã đăng tải
 - Bộ sưu tập: Chia thành các thư mục và User có thể đẩy các file vào 
-- Kho lưu trữ: Tương tự bộ sưu tập nhưng User có thể chia sẻ cho người khác
+- Kho lưu trữ: Tương tự bộ sưu tập nhưng User có thể chia sẻ cho người khác(Chỉ hiện folder public cho người khác, còn private thì chỉ hiện cho mình)
 - Quản lí người dùng: Admin phân quyền và quản lí tài khoản
 
 Tính năng:
