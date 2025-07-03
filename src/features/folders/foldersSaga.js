@@ -18,7 +18,6 @@ import {
 function* handleFetchFolders() {
     try {
         const folders = yield call(folderApi.fetchFolders)
-        console.log("Check folder: ", folders)
         yield put(fetchFoldersSuccess(folders))
     } catch (error) {
         yield put(fetchFoldersFailure(error.message))
@@ -29,8 +28,8 @@ function* handleCreateFolder(action) {
     try {
         const folderData = action.payload
         yield call(folderApi.createFolder, folderData)
-        yield put(createFolderSuccess(folderData))
-        yield put(fetchFolders) //Chỗ này sẽ sửa lại thành instant add chứ không dùng như này nữa
+        yield put(createFolderSuccess())
+        yield put(fetchFolders()) //Chỗ này sẽ sửa lại thành instant add chứ không dùng như này nữa
     } catch (error) {
         yield put(createFolderFailure(error.message))
     }
@@ -51,8 +50,10 @@ function* handleDeleteFolder(action){
     try {
         const folderId = action.payload
         yield call(folderApi.deleteFolder, folderId)
+        yield put(deleteFolderSuccess())
+        yield put(fetchFolders())
     } catch (error) {
-        
+        yield put(deleteFolderFailure(error.message))        
     }
 }
 

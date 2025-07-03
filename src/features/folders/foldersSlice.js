@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 const initialState = {
     folderList: [],
     status: 'idle',
+    updateStatus: 'idle',
     error: null
 }
 
@@ -25,7 +27,7 @@ const foldersSlice = createSlice({
             // có thể add tạm folder vào luôn
         },
         createFolderSuccess(state, action) {
-            state.folderList.push(action.payload)
+            // state.folderList.push(action.payload)
         },
         createFolderFailure(state, action) {
             state.error = action.payload
