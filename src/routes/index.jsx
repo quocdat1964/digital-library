@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage";
 import ArchivePage from "../pages/ArchivePage";
 import ProtectedRoute from "./ProtectedRoute";
 import App from "../App";
+import CollectionsPage from "../pages/CollectionsPage";
 
 const AppRoutes = () => {
     return (
@@ -15,6 +16,7 @@ const AppRoutes = () => {
                 <Route path="/" element={<App />}>
                     <Route index element={<HomePage />} />
                     <Route path="archive" element={<ArchivePage />} />
+                    <Route path="collections" element={<CollectionsPage />} />
                 </Route>
             </Route>
 

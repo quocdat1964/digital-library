@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { XMarkIcon, GlobeAltIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 
-const EditFolderModal = ({ isOpen, onClose, onSave, folder }) => {
+const EditFolderModal = ({ isOpen, onClose, onSave, folder, showPrivacyOptions = true }) => {
     const [name, setName] = useState('')
     const [isPublic, setIsPublic] = useState(true)
 
     useEffect(() => {
         if (folder) {
             setName(folder.name)
-            setIsPublic(folder.isPublic)
+            setIsPublic(folder.isPublic !== undefined ? folder.isPublic : true);
         }
     }, [folder])
 
@@ -39,19 +39,22 @@ const EditFolderModal = ({ isOpen, onClose, onSave, folder }) => {
                             className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-red-500 focus:border-red-500"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Chế độ hiển thị</label>
-                        <div className="flex items-center space-x-4">
-                            <button onClick={() => setIsPublic(true)} className={`flex-1 p-3 rounded-md border-2 ${isPublic ? 'border-red-500 bg-red-900/50' : 'border-gray-600 bg-gray-700 hover:bg-gray-600'}`}>
-                                <GlobeAltIcon className="h-6 w-6 mx-auto mb-1" />
-                                <span className="text-sm">Công khai</span>
-                            </button>
-                            <button onClick={() => setIsPublic(false)} className={`flex-1 p-3 rounded-md border-2 ${!isPublic ? 'border-red-500 bg-red-900/50' : 'border-gray-600 bg-gray-700 hover:bg-gray-600'}`}>
-                                <LockClosedIcon className="h-6 w-6 mx-auto mb-1" />
-                                <span className="text-sm">Riêng tư</span>
-                            </button>
+                    {showPrivacyOptions && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Chế độ hiển thị</label>
+                            <div className="flex items-center space-x-4">
+                                <button onClick={() => setIsPublic(true)} className={`flex-1 p-3 rounded-md border-2 ${isPublic ? 'border-red-500 bg-red-900/50' : 'border-gray-600 bg-gray-700 hover:bg-gray-600'}`}>
+                                    <GlobeAltIcon className="h-6 w-6 mx-auto mb-1" />
+                                    <span className="text-sm">Công khai</span>
+                                </button>
+                                <button onClick={() => setIsPublic(false)} className={`flex-1 p-3 rounded-md border-2 ${!isPublic ? 'border-red-500 bg-red-900/50' : 'border-gray-600 bg-gray-700 hover:bg-gray-600'}`}>
+                                    <LockClosedIcon className="h-6 w-6 mx-auto mb-1" />
+                                    <span className="text-sm">Riêng tư</span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
+
                 </div>
                 <div className="flex justify-end p-4 bg-gray-800/50 border-t border-gray-700 space-x-3">
                     <button onClick={onClose} className="bg-gray-600 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700">Hủy</button>
