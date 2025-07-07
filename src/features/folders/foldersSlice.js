@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     folderList: [],
+    currentFolder: null,
     status: 'idle',
     updateStatus: 'idle',
     error: null
@@ -49,12 +50,24 @@ const foldersSlice = createSlice({
             state.error = null;
         },
         deleteFolderSuccess(state) {
-            
+
         },
         deleteFolderFailure(state, action) {
             state.status = 'failed';
             state.error = action.payload;
-        }
+        },
+        fetchFolderDetails(state, action) {
+            state.status = 'loading'
+            state.currentFolder = null
+        },
+        fetchFolderDetailsSuccess(state, action) {
+            state.status = 'succeeded';
+            state.currentFolder = action.payload;
+        },
+        fetchFolderDetailsFailure(state, action) {
+            state.status = 'failed';
+            state.error = action.payload;
+        },
     }
 })
 
@@ -70,7 +83,10 @@ export const {
     updateFolderFailure,
     deleteFolder,
     deleteFolderSuccess,
-    deleteFolderFailure
+    deleteFolderFailure,
+    fetchFolderDetails,
+    fetchFolderDetailsSuccess,
+    fetchFolderDetailsFailure
 } = foldersSlice.actions
 
 export default foldersSlice.reducer

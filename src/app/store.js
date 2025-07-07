@@ -8,6 +8,7 @@ import filesReducer from '../features/files/fileSlice'
 import fileDetailReducer from '../features/files/fileDetailSlice'
 import foldersReducer from '../features/folders/foldersSlice'
 import collectionsReducer from '../features/collections/collectionSlice'
+import uploadReducer from '../features/upload/uploadSlice'
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -19,6 +20,7 @@ export const store = configureStore({
         fileDetail: fileDetailReducer,
         folders: foldersReducer,
         collections: collectionsReducer,
+        upload: uploadReducer,
     },
 
     middleware: (getDefaultMiddleware) =>

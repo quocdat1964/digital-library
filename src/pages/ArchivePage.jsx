@@ -46,8 +46,7 @@ const ArchivePage = () => {
         setDeleteModal({ isOpen: false, folder: null });
     };
     const handleFolderClick = (folderId) => {
-        console.log(`Navigating to folder ${folderId}`);
-        // navigate(`/archive/${folderId}`);
+        navigate(`/archive/${folderId}`);
     };
     return (
         <div className="p-4">

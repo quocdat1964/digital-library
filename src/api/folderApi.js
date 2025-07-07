@@ -1,56 +1,145 @@
-let mockFolders = []
+// const getFolders = () => JSON.parse(localStorage.getItem('mockFolders')) || []
+
+// const saveFolders = (folders) => {
+//     localStorage.setItem('mockFolders', JSON.stringify(folders))
+// }
+
+// export const folderApi = {
+//     fetchFolders: () => {
+//         console.log("API: Reading folders directly from localStorage...");
+//         return new Promise((resolve) => {
+//             setTimeout(() => {
+//                 const folders = getFolders();
+//                 resolve(folders);
+//             }, 200);
+//         });
+//     },
+//     createFolder: ({ name, isPublic }) => {
+//         console.log("API: Creating new folder...");
+//         return new Promise((resolve) => {
+//             setTimeout(() => {
+//                 const folders = getFolders(); // Luôn lấy dữ liệu mới nhất
+//                 const newFolder = {
+//                     id: `folder_${new Date().getTime()}`,
+//                     name: name,
+//                     isPublic: isPublic,
+//                     createdAt: new Date().toISOString(),
+//                 };
+//                 const newFolders = [...folders, newFolder];
+//                 saveFolders(newFolders); // Lưu lại mảng mới
+//                 resolve(newFolder);
+//             }, 200);
+//         });
+//     },
+//     updateFolder: (folderData) => {
+//         console.log('API: Updating folder...');
+//         return new Promise((resolve, reject) => {
+//             setTimeout(() => {
+//                 let folders = getFolders(); // Luôn lấy dữ liệu mới nhất
+//                 const index = folders.findIndex(f => f.id === folderData.id);
+//                 if (index > -1) {
+//                     const updatedFolders = folders.map(folder =>
+//                         folder.id === folderData.id
+//                             ? { ...folder, ...folderData }
+//                             : folder
+//                     );
+//                     saveFolders(updatedFolders); // Lưu lại mảng mới
+//                     resolve(updatedFolders.find(f => f.id === folderData.id));
+//                 } else {
+//                     reject(new Error('Update failed: Folder not found'));
+//                 }
+//             }, 200);
+//         });
+//     },
+//     deleteFolder: (folderId) => {
+//         console.log('API: Deleting folder...');
+//         return new Promise((resolve) => {
+//             setTimeout(() => {
+//                 let folders = getFolders(); // Luôn lấy dữ liệu mới nhất
+//                 folders = folders.filter(f => f.id !== folderId);
+//                 saveFolders(folders); // Lưu lại mảng đã được cập nhật
+//                 resolve({ success: true, id: folderId });
+//             }, 200);
+//         });
+//     }
+// }
+
+// Hàm tiện ích để đọc dữ liệu một cách an toàn
+const getFolders = () => JSON.parse(localStorage.getItem('mockFolders')) || [];
+
+// Hàm tiện ích để lưu dữ liệu
+const saveFolders = (folders) => {
+    localStorage.setItem('mockFolders', JSON.stringify(folders));
+};
 
 export const folderApi = {
     fetchFolders: () => {
-        console.log("Fetch folder")
+        console.log("API: Reading folders directly from localStorage...");
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve([...mockFolders])
-            }, 500)
-        })
+                const folders = getFolders();
+                resolve(folders);
+            }, 200);
+        });
     },
     createFolder: ({ name, isPublic }) => {
-        console.log("Create new folder")
+        console.log("API: Creating new folder...");
         return new Promise((resolve) => {
             setTimeout(() => {
+                const folders = getFolders();
                 const newFolder = {
                     id: `folder_${new Date().getTime()}`,
                     name: name,
                     isPublic: isPublic,
-                    createAt: new Date().toISOString(),
-                }
-                mockFolders.push(newFolder)
-                resolve(newFolder)
-            }, 500)
-        })
+                    createdAt: new Date().toISOString(),
+                };
+                // <-- THAY ĐỔI: Tạo một mảng mới chứa tất cả folder cũ và folder mới
+                const newFolders = [...folders, newFolder];
+                saveFolders(newFolders); // Lưu lại mảng mới
+                resolve(newFolder);
+            }, 200);
+        });
     },
     updateFolder: (folderData) => {
-        console.log('Update folder')
+        console.log('API: Updating folder...');
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                console.log("I dunno: ", folderData)
-                
-                const index = mockFolders.findIndex(f => f.id === folderData.id)
-                console.log("CHeck index: ", index)
+                let folders = getFolders();
+                const index = folders.findIndex(f => f.id === folderData.id);
                 if (index > -1) {
-                    console.log("Index here: ", index)
-                    mockFolders[index] = { ...mockFolders[index], ...folderData }
-                    resolve(mockFolders[index])
+                    // <-- THAY ĐỔI: Dùng map() để tạo một mảng mới, không sửa trực tiếp
+                    const updatedFolders = folders.map(folder =>
+                        folder.id === folderData.id
+                            ? { ...folder, ...folderData }
+                            : folder
+                    );
+                    saveFolders(updatedFolders); // Lưu lại mảng mới
+                    resolve(updatedFolders.find(f => f.id === folderData.id));
                 } else {
-                    reject(new Error('Update failed'))
+                    reject(new Error('Update failed: Folder not found'));
                 }
-                console.log("Check folder list: ", mockFolders)
-            }, 500)
-        })
+            }, 200);
+        });
     },
     deleteFolder: (folderId) => {
-        console.log('Delete folder')
+        console.log('API: Deleting folder...');
         return new Promise((resolve) => {
             setTimeout(() => {
-                console.log("I dunno 2: ", folderId)
-                mockFolders = mockFolders.filter(f => f.id !== folderId)
-                resolve({ success: true, id: folderId })
-            }, 500)
-        })
+                let folders = getFolders();
+                const newFolders = folders.filter(f => f.id !== folderId);
+                saveFolders(newFolders); // Lưu lại mảng mới
+                resolve({ success: true, id: folderId });
+            }, 200);
+        });
+    },
+    fetchFolderDetails: (folderId) => {
+        console.log(`API: Fetching details for FOLDER ID: ${folderId}`);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const folders = getFolders();
+                const folder = folders.find(f => f.id === folderId);
+                resolve(folder || null);
+            }, 200);
+        });
     }
-}
+};

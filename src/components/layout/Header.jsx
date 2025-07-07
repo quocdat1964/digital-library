@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
 import { Menu, Plus, Search } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toggleSidebar } from "../../features/ui/uiSlice";
 import SearchBar from "../common/SearchBar";
 import UserMenu from "../../features/auth/UserMenu";
@@ -33,11 +34,18 @@ const Header = () => {
                     <Menu className="h-6 w-6" />
                 </button>
                 <h1 className="text-xl font-bold tracking-wider max-sm:text-sm">THƯ VIỆN SỐ</h1>
-                <button className="flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 px-2 rounded-lg transition-colors 
+                {/* <button className="flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 px-2 rounded-lg transition-colors 
                                     max-sm:text-sm">
                     <Plus className="h-5 w-5 mr-2" />
                     Upload
-                </button>
+                </button> */}
+                <Link
+                    to="/upload"
+                    className="flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 px-2 rounded-lg transition-colors max-sm:text-sm"
+                >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Upload
+                </Link>
             </div>
 
             {/* Search Bar */}

@@ -12,7 +12,10 @@ import {
     updateFolderFailure,
     deleteFolder,
     deleteFolderSuccess,
-    deleteFolderFailure
+    deleteFolderFailure,
+    fetchFolderDetails,
+    fetchFolderDetailsSuccess,
+    fetchFolderDetailsFailure
 } from './foldersSlice'
 
 function* handleFetchFolders() {
@@ -57,10 +60,20 @@ function* handleDeleteFolder(action){
     }
 }
 
+function* handleFetchFolderDetails(action){
+    try {
+        const folderId = action.payload
+        const folderDetails = yield call(folderApi.fetchFolderDetails, folderId)
+        yield put(fetchFolderDetailsSuccess(folderDetails))
+    } catch (error) {
+        yield put(fetchFolderDetailsFailure(error.message))
+    }
+}
+
 export function* watchFolders() {
     yield takeLatest(fetchFolders.type, handleFetchFolders)
     yield takeLatest(createFolder.type, handleCreateFolder)
     yield takeLatest(updateFolder.type, handleUpdateFolder)
     yield takeLatest(deleteFolder.type, handleDeleteFolder)
-
+    yield takeLatest(fetchFolderDetails.type, handleFetchFolderDetails)
 }

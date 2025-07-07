@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchFiles } from '../features/files/fileSlice';
-import FileExplorerLayout from '../components/layout/fileExplorerLayout';
+import FileExplorerLayout from '../components/layout/FileExplorerLayout';
 
 const HomePage = () => {
   const dispatch = useDispatch();

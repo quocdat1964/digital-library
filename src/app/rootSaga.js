@@ -4,6 +4,7 @@ import { watchFileDetail } from '../features/files/fileDetailSaga';
 import { watchLogin } from '../features/auth/authSaga';
 import { watchFolders } from '../features/folders/foldersSaga';
 import { watchCollections } from '../features/collections/collectionSaga';
+import { watchUploads } from '../features/upload/uploadSaga';
 
 export default function* rootSaga() {
     yield all([
@@ -12,5 +13,6 @@ export default function* rootSaga() {
         watchLogin(),
         watchFolders(),
         watchCollections(),
+        watchUploads(),
     ]);
 }

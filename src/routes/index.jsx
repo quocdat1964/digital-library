@@ -3,6 +3,8 @@ import NotFoundPage from "../pages/NotFoundPage";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import ArchivePage from "../pages/ArchivePage";
+import UploadPage from "../pages/UploadPage";
+import FolderDetailPage from "../pages/FolderDetailPage";
 import ProtectedRoute from "./ProtectedRoute";
 import App from "../App";
 import CollectionsPage from "../pages/CollectionsPage";
@@ -16,7 +18,9 @@ const AppRoutes = () => {
                 <Route path="/" element={<App />}>
                     <Route index element={<HomePage />} />
                     <Route path="archive" element={<ArchivePage />} />
+                    <Route path="archive/:folderId" element={<FolderDetailPage />} />
                     <Route path="collections" element={<CollectionsPage />} />
+                    <Route path="upload" element={<UploadPage />} />
                 </Route>
             </Route>
 

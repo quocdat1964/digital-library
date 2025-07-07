@@ -1,4 +1,8 @@
-let mockCollections = []
+let mockCollections = JSON.parse(localStorage.getItem('mockCollections')) || []
+
+const saveCollections = () => {
+    localStorage.setItem('mockCollections', JSON.stringify(mockCollections))
+}
 
 export const collectionApi = {
     fetchCollections: () => {
@@ -19,6 +23,7 @@ export const collectionApi = {
                     createAt: new Date().toISOString(),
                 }
                 mockCollections.push(newCollection)
+                saveCollections()
                 resolve(newCollection)
             }, 500)
         })
@@ -33,11 +38,12 @@ export const collectionApi = {
                     mockCollections = mockCollections.map(c =>
                         c.id === collectionData.id ? { ...c, name: collectionData.name } : c
                     );
+                    saveCollections()
                     resolve(mockCollections.find(c => c.id === collectionData.id));
                 } else {
                     reject(new Error("Không tìm thấy bộ sưu tập để cập nhật."));
                 }
-                
+
             }, 500)
         })
     },
@@ -46,8 +52,19 @@ export const collectionApi = {
         return new Promise((resolve) => {
             setTimeout(() => {
                 mockCollections = mockCollections.filter(c => c.id !== collectionId)
+                saveCollections()
                 resolve({ success: true, id: collectionId })
             }, 500)
         })
-    }
+    },
+    fetchCollectionDetails: (collectionId) => {
+        console.log(`API: Fetching details for COLLECTION ID: ${collectionId}`);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const collections = getCollections(); // Giả sử có hàm này
+                const collection = collections.find(c => c.id === collectionId);
+                resolve(collection || null);
+            }, 200);
+        });
+    },
 }
