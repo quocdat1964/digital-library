@@ -41,9 +41,9 @@ const CollectionsPage = () => {
         setDeleteModal({ isOpen: false, folder: null })
     }
 
-    const handleClick = (id) => {
-        console.log(`Navigating to collection ${id}`);
-    }
+    const handleClick = (collectionId) => {
+        navigate(`/collections/${collectionId}`);
+    };
 
     return (
         <div className="p-4">

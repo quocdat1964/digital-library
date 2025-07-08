@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage";
 import ArchivePage from "../pages/ArchivePage";
 import UploadPage from "../pages/UploadPage";
 import FolderDetailPage from "../pages/FolderDetailPage";
+import CollectionDetailPage from "../pages/CollectionDetailPage";
 import ProtectedRoute from "./ProtectedRoute";
 import App from "../App";
 import CollectionsPage from "../pages/CollectionsPage";
@@ -20,6 +21,7 @@ const AppRoutes = () => {
                     <Route path="archive" element={<ArchivePage />} />
                     <Route path="archive/:folderId" element={<FolderDetailPage />} />
                     <Route path="collections" element={<CollectionsPage />} />
+                    <Route path="collections/:collectionId" element={<CollectionDetailPage />} />
                     <Route path="upload" element={<UploadPage />} />
                 </Route>
             </Route>

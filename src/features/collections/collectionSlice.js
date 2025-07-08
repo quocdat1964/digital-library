@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     collectionList: [],
+    currentCollection: null,
     status: 'idle',
     updateStatus: 'idle',
     error: null
@@ -41,15 +42,27 @@ const collectionSlice = createSlice({
             state.updateStatus = 'failed'
             state.error = action.payload
         },
-        deleteCollection:(state,action)=>{
-            state.status='loading'
+        deleteCollection: (state, action) => {
+            state.status = 'loading'
         },
-        deleteCollectionSuccess:(state,action)=>{
+        deleteCollectionSuccess: (state, action) => {
 
         },
-        deleteCollectionFailure:(state,action)=>{
-            state.status='failed'
-            state.error=action.payload
+        deleteCollectionFailure: (state, action) => {
+            state.status = 'failed'
+            state.error = action.payload
+        },
+        fetchCollectionDetails(state, action) {
+            state.status = 'loading'
+            state.currentCollection = null
+        },
+        fetchCollectionDetailsSuccess(state, action) {
+            state.status = 'succeeded'
+            state.currentCollection = action.payload
+        },
+        fetchCollectionDetailsFailure(state, action) {
+            state.status = 'failed'
+            state.error = action.payload
         }
     }
 })
@@ -59,6 +72,7 @@ export const {
     createCollection, createCollectionFailure, createCollectionSuccess,
     updateCollection, updateCollectionFailure, updateCollectionSuccess,
     deleteCollection, deleteCollectionFailure, deleteCollectionSuccess,
+    fetchCollectionDetails, fetchCollectionDetailsFailure, fetchCollectionDetailsSuccess,
 } = collectionSlice.actions
 
 export default collectionSlice.reducer

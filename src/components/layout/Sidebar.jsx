@@ -1,12 +1,38 @@
+import { NavLink } from "react-router-dom"
+import { Home, Archive, Library, UploadCloud } from "lucide-react"
 
 const Sidebar = () => {
+
+    const navLinks = [
+        { to: '/', label: 'Home Page', icon: Home },
+        { to: '/archive', label: 'Archive', icon: Archive },
+        { to: '/collections', label: 'Collection', icon: Library },
+        { to: '/upload', label: 'Upload', icon: UploadCloud },
+    ]
+
+    const getLinkClass = ({ isActive }) => {
+        return `flex items-center p-3 rounded-lg transition-colors text-md font-medium
+        ${isActive
+                ? 'bg-red-600 text-white shadow-lg'
+                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+            }
+        `
+    }
     return (
         <aside className="w-64 bg-[#282733] h-full text-white p-4 transition-all duration-300">
-            <h2 className="font-bold mb-4">Resource</h2>
-            <ul>
-                <li className="mb-2 p-2 rounded-md hover:bg-gray-700 cursor-pointer">Homepage</li>
-                <li className="mb-2 p-2 rounded-md hover:bg-gray-700 cursor-pointer">Storage</li>
-            </ul>
+            <nav className="space-y-2">
+                {navLinks.map((link) => (
+                    <NavLink
+                        key={link.to}
+                        to={link.to}
+                        end={link.to === '/'}
+                        className={getLinkClass}
+                    >
+                        <link.icon className="h-5 w-5 mr-3 flex-shrink-0" />
+                        <span>{link.label}</span>
+                    </NavLink>
+                ))}
+            </nav>
         </aside>
     )
 }

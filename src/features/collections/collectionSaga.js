@@ -4,7 +4,8 @@ import {
     fetchCollections, fetchCollectionsFailure, fetchCollectionsSuccess,
     createCollection, createCollectionFailure, createCollectionSuccess,
     updateCollection, updateCollectionFailure, updateCollectionSuccess,
-    deleteCollection, deleteCollectionFailure, deleteCollectionSuccess
+    deleteCollection, deleteCollectionFailure, deleteCollectionSuccess,
+    fetchCollectionDetails, fetchCollectionDetailsFailure, fetchCollectionDetailsSuccess
 } from './collectionSlice'
 
 function* handleFetchCollections() {
@@ -46,9 +47,20 @@ function* handleDeleteCollection(action) {
     }
 }
 
+function* handleFetchCollectionDetails(action){
+    try {
+        const collectionId = action.payload
+        const collectionDetails = yield call(collectionApi.fetchCollectionDetails, collectionId)
+        yield put(fetchCollectionDetailsSuccess(collectionDetails))
+    } catch (error) {
+        yield put(fetchCollectionDetailsFailure(error.message))
+    }
+}
+
 export function* watchCollections() {
     yield takeLatest(fetchCollections.type, handleFetchCollections)
     yield takeLatest(createCollection.type, handleCreateCollection)
     yield takeLatest(updateCollection.type, handleUpdateCollection)
     yield takeLatest(deleteCollection.type, handleDeleteCollection)
+    yield takeLatest(fetchCollectionDetails.type, handleFetchCollectionDetails)
 }
