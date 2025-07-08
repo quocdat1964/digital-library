@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, Link } from 'react-router-dom';
 import { fetchFolderDetails } from '../features/folders/foldersSlice';
 import { fetchFiles } from '../features/files/fileSlice';
+import { closeFileDetailPanel } from '../features/files/fileDetailSlice';
 import FileExplorerLayout from '../components/layout/FileExplorerLayout';
 import { format } from 'date-fns';
+import { ChevronRightIcon } from '@heroicons/react/24/solid';
 
 const FolderDetailPage = () => {
     const dispatch = useDispatch()
@@ -14,6 +16,7 @@ const FolderDetailPage = () => {
     const { allFiles, status: fileStatus } = useSelector(state => state.files)
 
     useEffect(() => {
+        dispatch(closeFileDetailPanel())
         if (folderId) {
             dispatch(fetchFolderDetails(folderId))
         }
@@ -48,9 +51,19 @@ const FolderDetailPage = () => {
         )
     }
 
+    const breadcrumbTitle = (
+        <div className="flex items-center space-x-2 text-2xl font-bold">
+            <Link to='/archive' className='text-gray-400 hover:text-white hover:underline transition-colors'>
+                Kho lưu trữ
+            </Link>
+            <ChevronRightIcon className='h-6 w-6 text-gray-500 flex-shrink-0'/>
+            <span className='text-white truncate'>{currentFolder.name}</span>
+        </div>
+    )
+
     return (
         <FileExplorerLayout 
-            pageTitle={currentFolder.name}
+            pageTitle={breadcrumbTitle}
             filesByDate={filesForThisFolder}
             status='succeeded'
             error={null}

@@ -12,14 +12,51 @@ import {
   clearFileSelection
 } from '../../features/files/fileSlice';
 import ConfirmationModal from '../common/ConfirmationModal';
-
+import AssignmentModal from '../common/AssignmentModal';
+import { updateFileDetails } from '../../features/files/fileDetailSlice';
+import { fetchFolders } from '../../features/folders/foldersSlice'
+import { fetchCollections } from '../../features/collections/collectionSlice'
 
 const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
   const { isPanelOpen, selectedFile } = useSelector((state) => state.fileDetail);
+  const { folderList } = useSelector(state => state.folders)
+  const { collectionList } = useSelector(state => state.collections)
   const selectedFileIds = useSelector((state) => state.files.selectedFileIds)
   const { menuState, showContextMenu, closeContextMenu } = useContextMenu();
   const [openSections, setOpenSections] = useState({});
   const dispatch = useDispatch()
+
+  //Quản lí modal  di chuyển file
+  const [assignmentModal, setAssignmentModal] = useState({
+    isOpen: false,
+    type: null, // 'folder' hoặc 'collection'
+    file: null,
+  });
+
+  const handleOpenMoveToFolderModal = (file) => {
+    setAssignmentModal({ isOpen: true, type: 'folder', file });
+  };
+
+  const handleOpenAddToCollectionModal = (file) => {
+    setAssignmentModal({ isOpen: true, type: 'collection', file });
+  };
+
+  const handleCloseAssignmentModal = () => {
+    setAssignmentModal({ isOpen: false, type: null, file: null });
+  };
+
+  const handleConfirmAssignment = (selectedId) => {
+    const { file, type } = assignmentModal
+    if (!file || !type || !selectedId) return
+
+    const updatedFile = type === 'folder'
+      ? { ...file, folderId: selectedId }
+      : { ...file, collectionId: selectedId }
+
+    dispatch(updateFileDetails(updatedFile))
+    handleCloseAssignmentModal()
+  }
+  // Kết thúc modal di chuyển file
 
   // Quản lí modal xóa file
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, file: null })
@@ -166,6 +203,17 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
         menuState={menuState}
         closeMenu={closeContextMenu}
         onDeleteClick={handleOpenDeleteModal}
+        onMoveToFolderClick={handleOpenMoveToFolderModal}
+        onAddToCollectionClick={handleOpenAddToCollectionModal}
+      />
+
+      <AssignmentModal
+        isOpen={assignmentModal.isOpen}
+        onClose={handleCloseAssignmentModal}
+        onAssign={handleConfirmAssignment}
+        title={assignmentModal.type === 'folder' ? 'Di chuyen vao kho luu tru' : 'Them vao bo suu tap'}
+        items={assignmentModal.type === 'folder' ? folderList : collectionList}
+        currentItemId={assignmentModal.type === 'folder' ? assignmentModal.file?.folderId : assignmentModal.file?.collectionId}
       />
 
       {/* Modal xác nhận xóa 1 file */}

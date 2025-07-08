@@ -11,7 +11,7 @@ import {
     ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
-const ContextMenu = ({ menuState, closeMenu, onDeleteClick }) => {
+const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick, onAddToCollectionClick }) => {
     const menuRef = useRef(null)
 
     useEffect(() => {
@@ -36,22 +36,32 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick }) => {
         return null
     }
 
-    const menuItems = [
-        { label: 'Di chuyển vào kho', icon: ArchiveBoxArrowDownIcon },
-        { label: 'Thêm vào Bộ sưu tập', icon: FolderPlusIcon },
-        // { label: 'Gửi nhà in', icon: PrinterIcon },
-        // { label: 'Thêm từ khóa', icon: TagIcon },
-        // { label: 'Tải xuống', icon: ArrowDownTrayIcon, hasMore: true },
-        // { label: 'Đổi tên', icon: PencilIcon, isHighlighted: true },
-        // { label: 'Chỉnh sửa', icon: PencilSquareIcon },
-        { label: 'Xóa file', icon: TrashIcon, isDestructive: true },
-    ];
+    // const menuItems = [
+    //     { label: 'Di chuyển vào kho', icon: ArchiveBoxArrowDownIcon },
+    //     { label: 'Thêm vào Bộ sưu tập', icon: FolderPlusIcon },
+    //     // { label: 'Gửi nhà in', icon: PrinterIcon },
+    //     // { label: 'Thêm từ khóa', icon: TagIcon },
+    //     // { label: 'Tải xuống', icon: ArrowDownTrayIcon, hasMore: true },
+    //     // { label: 'Đổi tên', icon: PencilIcon, isHighlighted: true },
+    //     // { label: 'Chỉnh sửa', icon: PencilSquareIcon },
+    //     { label: 'Xóa file', icon: TrashIcon, isDestructive: true },
+    // ];
 
-    const handleItemClick = (label) => {
-        if (label === 'Xóa file') {
-            if (onDeleteClick) {
-                onDeleteClick(menuState.file)
-            }
+    const handleItemClick = (action) => {
+        const file = menuState.file
+        if (!file) return
+        switch (action) {
+            case 'delete':
+                onDeleteClick(file)
+                break;
+            case 'moveToFolder':
+                onMoveToFolderClick(file)
+                break
+            case 'addToCollection':
+                onAddToCollectionClick(file)
+                break
+            default:
+                break
         }
         closeMenu()
     }
@@ -68,23 +78,19 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick }) => {
             </div>
 
             <ul>
-                {menuItems.map((item, index) => (
-                    <li
-                        key={index}
-                        onClick={() => handleItemClick(item.label)}
-                        className={`
-                            flex items-center justify-between p-2 rounded-md cursor-pointer
-                            ${item.isDestructive ? 'text-red-500 hover:bg-red-500/20' : 'hover:bg-gray-600/50'}
-                            ${item.isHighlighted ? 'bg-gray-600/70' : ''}
-                        `}
-                    >
-                        <div className="flex items-center space-x-3">
-                            <item.icon className="h-5 w-5" />
-                            <span>{item.label}</span>
-                        </div>
-                        {item.hasMore && <ChevronRightIcon className="h-4 w-4 text-gray-400" />}
-                    </li>
-                ))}
+                <li onClick={() => handleItemClick('moveToFolder')} className="flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-600/50">
+                    <ArchiveBoxArrowDownIcon className="h-5 w-5 mr-3" />
+                    <span>Di chuyển vào kho</span>
+                </li>
+                <li onClick={() => handleItemClick('addToCollection')} className="flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-600/50">
+                    <FolderPlusIcon className="h-5 w-5 mr-3" />
+                    <span>Thêm vào bộ sưu tập</span>
+                </li>
+                {/* ... (Các mục menu cũ như Đổi tên, Chỉnh sửa...) */}
+                <li onClick={() => handleItemClick('delete')} className="flex items-center p-2 rounded-md cursor-pointer text-red-400 hover:bg-red-500/20">
+                    <TrashIcon className="h-5 w-5 mr-3" />
+                    <span>Xóa file</span>
+                </li>
             </ul>
 
         </div>

@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, Link } from 'react-router-dom';
 import { fetchCollectionDetails } from '../features/collections/collectionSlice';
 import { fetchFiles } from '../features/files/fileSlice';
+import { closeFileDetailPanel } from '../features/files/fileDetailSlice';
 import FileExplorerLayout from '../components/layout/FileExplorerLayout';
 import { format } from 'date-fns';
+import { ChevronRightIcon } from '@heroicons/react/24/solid';
 
 const CollectionDetailPage = () => {
     const dispatch = useDispatch()
@@ -14,6 +16,7 @@ const CollectionDetailPage = () => {
     const { allFiles, status: fileStatus } = useSelector(state => state.files)
 
     useEffect(() => {
+        dispatch(closeFileDetailPanel())
         if (collectionId) {
             dispatch(fetchCollectionDetails(collectionId))
         }
@@ -48,9 +51,19 @@ const CollectionDetailPage = () => {
         )
     }
 
+    const breadcrumbTitle = (
+        <div className="flex items-center space-x-2 text-2xl font-bold">
+            <Link to='/collections' className='text-gray-400 hover:text-white hover:underline transition-colors'>
+                Bộ sưu tập
+            </Link>
+            <ChevronRightIcon className='h-6 w-6 text-gray-500 flex-shrink-0'/>
+            <span className='text-white truncate'>{currentCollection.name}</span>
+        </div>
+    )
+
     return (
         <FileExplorerLayout 
-            pageTitle={currentCollection.name}
+            pageTitle={breadcrumbTitle}
             filesByDate={filesForThisCollection}
             status='succeeded'
             error={null}

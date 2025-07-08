@@ -50,6 +50,9 @@ export const fileApi = {
         return new Promise((resolve) => {
             setTimeout(() => {
                 mockFileDetails[fileData.id] = { ...mockFileDetails[fileData.id], ...fileData }
+                mockFiles = mockFiles.map(file => 
+                    file.id === fileData.id ? {...file, ...fileData} : file
+                )
                 saveFiles()
                 resolve(mockFileDetails[fileData.id])
             }, 500)
