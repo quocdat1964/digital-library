@@ -6,6 +6,8 @@ import ArchivePage from "../pages/ArchivePage";
 import UploadPage from "../pages/UploadPage";
 import FolderDetailPage from "../pages/FolderDetailPage";
 import CollectionDetailPage from "../pages/CollectionDetailPage";
+import UserManagementPage from "../pages/UserManagementPage";
+import AdminRoute from './AdminRoute'
 import ProtectedRoute from "./ProtectedRoute";
 import App from "../App";
 import CollectionsPage from "../pages/CollectionsPage";
@@ -23,6 +25,11 @@ const AppRoutes = () => {
                     <Route path="collections" element={<CollectionsPage />} />
                     <Route path="collections/:collectionId" element={<CollectionDetailPage />} />
                     <Route path="upload" element={<UploadPage />} />
+                    
+                    {/* Trang riêng cho admin và boss */}
+                    <Route element={<AdminRoute />}>
+                        <Route path="users" element={<UserManagementPage />} />
+                    </Route>
                 </Route>
             </Route>
 

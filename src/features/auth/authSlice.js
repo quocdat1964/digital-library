@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import avt from '../../assets/avt_nqd.jpg'
 const authInitialState = {
-    isAuthenticated: true,
+    isAuthenticated: false,
     user: null,
     token: null,
     status: 'idle',

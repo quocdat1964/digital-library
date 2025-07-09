@@ -1,0 +1,138 @@
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUsers, createUser, updateUserRole, deleteUser } from "../features/users/userSlice";
+import { UserPlusIcon, ShieldCheck, TrashIcon, MoreVertical } from "lucide-react";
+import CreateUserModal from "../components/common/CreateUserModal";
+import ConfirmationModal from '../components/common/ConfirmationModal'
+
+const UserManagementPage = () => {
+    const dispatch = useDispatch()
+    const { userList, status, error } = useSelector((state) => state.users)
+    const { user: currentUser } = useSelector((state) => state.auth)
+
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, user: null });
+
+    useEffect(() => {
+        dispatch(fetchUsers())
+    }, [dispatch])
+
+    const handleCreateUser = (userData) => {
+        dispatch(createUser(userData))
+    }
+
+    const handleRoleChange = (userId, newRole) => {
+        if (window.confirm(`Bạn có chắc muốn đổi vai trò của người dùng này thành ${newRole}?`)) {
+            dispatch(updateUserRole({ userId, newRole }));
+        }
+    }
+
+    const handleDeleteUser = (user) => {
+        setDeleteModal({ isOpen: true, user })
+    }
+
+    const confirmDelete = () => {
+        if (deleteModal.user) {
+            dispatch(deleteModal(deleteModal.user.id))
+        }
+        setDeleteModal({ isOpen: false, user: null })
+    }
+
+    const getRoleBadge = (role) => {
+        switch (role) {
+            case 'boss': return 'bg-yellow-500 text-black';
+            case 'admin': return 'bg-sky-500 text-white';
+            default: return 'bg-gray-500 text-white';
+        }
+    }
+
+    return (
+        <div className="p-4">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold text-white">Quan li nguoi dung</h1>
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg"
+                >
+                    <UserPlusIcon className="h-5 w-5 mr-2" />
+                </button>
+            </div>
+
+            <div className="bg-gray-800 rounded-lg shadow overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-700">
+                    <thead className="bg-gray-700/50">
+                        <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Tên</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Vai trò</th>
+                            <th scope="col" className="relative px-6 py-3"><span className="sr-only">Hành động</span></th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-gray-800 divide-y divide-gray-700">
+                        {userList.map((user) => (
+                            <tr key={user.id}>
+                                {/* Tên, avatar, email */}
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex items-center">
+                                        <div className="flex-shrink-0 h-10 w-10">
+                                            <img className="h-10 w-10 rounded-full object-cover" src={user.avatarUrl} alt="" />
+                                        </div>
+                                        <div className="ml-4">
+                                            <div className="text-sm font-medium text-white">{user.name}</div>
+                                            <div className="text-sm text-gray-400">{user.email}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                {/* Vai trò */}
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadge(user.role)}`}>
+                                        {user.role}
+                                    </span>
+                                </td>
+                                {/* Hành động */}
+                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    {currentUser.role === 'boss' && user.role !== 'boss' && (
+                                        <div className="relative inline-block text-left group">
+                                            <button className="p-1 rounded-full hover:bg-gray-700"><MoreVertical size={20} /></button>
+                                            <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-gray-900 ring-1 ring-black ring-opacity-5 z-10 opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto">
+                                                <div className="py-1">
+                                                    {user.role === 'user' && <a href="#" onClick={() => handleRoleChange(user.id, 'admin')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành Admin</a>}
+                                                    {user.role === 'admin' && <a href="#" onClick={() => handleRoleChange(user.id, 'user')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành User</a>}
+                                                    <a href="#" onClick={() => handleDeleteUser(user)} className="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">Xóa người dùng</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {currentUser.role === 'admin' && user.role === 'user' && (
+                                        <button
+                                            onClick={() => handleDeleteUser(user)}
+                                            className="text-red-400 hover:text-red-500 p-1 rounded-full hover:bg-gray-700"
+                                        >
+                                            <TrashIcon size={20} />
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <CreateUserModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onCreate={handleCreateUser}
+            />
+            <ConfirmationModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, user: null })}
+                onConfirm={confirmDelete}
+                title='Xác nhận xóa người dùng'
+            >
+                <p>Bạn có chắc chắn muốn xóa người dùng <strong className="text-white">{deleteModal.user?.name}</strong> không?</p>
+                <p className="mt-2 text-sm text-red-400">Hành động này không thể hoàn tác.</p>
+            </ConfirmationModal>
+        </div>
+    )
+}
+
+export default UserManagementPage

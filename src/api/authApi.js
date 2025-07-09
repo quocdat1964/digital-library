@@ -81,5 +81,7 @@ export const authApi = {
                 reject(new Error("Khong the giai ma token"))
             }
         })
-    }
+    },
+    getMockUsers: () => mockUsers,
+    setMockUsers: (newUsers) => { mockUsers = newUsers; },
 }

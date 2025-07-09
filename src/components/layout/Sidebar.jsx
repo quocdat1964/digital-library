@@ -1,14 +1,19 @@
 import { NavLink } from "react-router-dom"
-import { Home, Archive, Library, UploadCloud } from "lucide-react"
+import { useSelector } from "react-redux"
+import { Home, Archive, Library, UploadCloud, Users } from "lucide-react"
 
 const Sidebar = () => {
+
+    const { user } = useSelector((state) => state.auth)
+    const isAdminOrBoss = user && (user.role === 'admin' || user.role === 'boss')
 
     const navLinks = [
         { to: '/', label: 'Home Page', icon: Home },
         { to: '/archive', label: 'Archive', icon: Archive },
         { to: '/collections', label: 'Collection', icon: Library },
         { to: '/upload', label: 'Upload', icon: UploadCloud },
-    ]
+        isAdminOrBoss && {to: '/users', label: 'Account', icon: Users}
+    ].filter(Boolean)
 
     const getLinkClass = ({ isActive }) => {
         return `flex items-center p-3 rounded-lg transition-colors text-md font-medium
