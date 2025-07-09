@@ -1,6 +1,15 @@
-// Hàm tiện ích để đọc dữ liệu một cách an toàn
-const getFolders = () => JSON.parse(localStorage.getItem('mockFolders')) || [];
+const BOSS_ID = 'user-boss-001';
+const ADMIN_ID = 'user-admin-002';
+const USER1_ID = 'user-normal-003';
+const USER2_ID = 'user-normal-004';
 
+const getFolders = () => JSON.parse(localStorage.getItem('mockFolders')) || [
+    // Thêm một vài thư mục mẫu có sẵn với chủ sở hữu
+    { id: 'folder_1', name: 'Tài liệu Marketing', isPublic: true, createdAt: new Date().toISOString(), ownerId: ADMIN_ID },
+    { id: 'folder_2', name: 'Báo cáo cá nhân', isPublic: false, createdAt: new Date().toISOString(), ownerId: USER1_ID },
+    { id: 'folder_3', name: 'Dự án bí mật', isPublic: false, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
+    { id: 'folder_4', name: 'Ảnh du lịch', isPublic: true, createdAt: new Date().toISOString(), ownerId: USER2_ID },
+];
 // Hàm tiện ích để lưu dữ liệu
 const saveFolders = (folders) => {
     localStorage.setItem('mockFolders', JSON.stringify(folders));
@@ -16,7 +25,7 @@ export const folderApi = {
             }, 200);
         });
     },
-    createFolder: ({ name, isPublic }) => {
+    createFolder: ({ name, isPublic, ownerId }) => {
         console.log("API: Creating new folder...");
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -26,8 +35,8 @@ export const folderApi = {
                     name: name,
                     isPublic: isPublic,
                     createdAt: new Date().toISOString(),
+                    ownerId: ownerId,
                 };
-                // <-- THAY ĐỔI: Tạo một mảng mới chứa tất cả folder cũ và folder mới
                 const newFolders = [...folders, newFolder];
                 saveFolders(newFolders); // Lưu lại mảng mới
                 resolve(newFolder);
@@ -41,7 +50,7 @@ export const folderApi = {
                 let folders = getFolders();
                 const index = folders.findIndex(f => f.id === folderData.id);
                 if (index > -1) {
-                    // <-- THAY ĐỔI: Dùng map() để tạo một mảng mới, không sửa trực tiếp
+                   
                     const updatedFolders = folders.map(folder =>
                         folder.id === folderData.id
                             ? { ...folder, ...folderData }
