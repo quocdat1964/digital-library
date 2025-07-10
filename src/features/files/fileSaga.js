@@ -2,9 +2,9 @@
 
 import { call, put, takeLatest, select, take } from 'redux-saga/effects'
 import { fileApi } from '../../api/fileApi';
-import { 
-    fetchFiles, 
-    fetchFilesSuccess, 
+import {
+    fetchFiles,
+    fetchFilesSuccess,
     fetchFilesFailure,
     deleteFile,
     deleteFileSuccess,
@@ -17,20 +17,25 @@ import { closeFileDetailPanel } from './fileDetailSlice';
 
 function* handleFetchFiles() {
     try {
-        const files = yield call(fileApi.fetchFiles)
+        const currentUser = yield select(state => state.auth.user)
+        if (!currentUser) {
+            yield put(fetchFilesSuccess([]))
+            return
+        }
+        const files = yield call(fileApi.fetchFiles, { userId: currentUser.id })
         yield put(fetchFilesSuccess(files))
     } catch (error) {
         yield put(fetchFilesFailure(error.message))
     }
 }
 
-function* handleDeleteFile(action){
+function* handleDeleteFile(action) {
     try {
         const fileIdToDelete = action.payload
-        const selectedFile = yield select(state=>state.fileDetail.selectedFile)
+        const selectedFile = yield select(state => state.fileDetail.selectedFile)
         yield call(fileApi.deleteFile, fileIdToDelete)
         yield put(deleteFileSuccess())
-        if(selectedFile && selectedFile.id === fileIdToDelete){
+        if (selectedFile && selectedFile.id === fileIdToDelete) {
             yield put(closeFileDetailPanel())
         }
         yield put(fetchFiles())
@@ -39,14 +44,14 @@ function* handleDeleteFile(action){
     }
 }
 
-function* handleDeleteMultipleFiles(action){
+function* handleDeleteMultipleFiles(action) {
     try {
         const fileIdsToDelete = action.payload
         yield call(fileApi.deleteMultipleFiles, fileIdsToDelete)
         yield put(deleteMultipleFilesSuccess())
 
-        const selectedFile = yield select(state=> state.fileDetail.selectedFile)
-        if(selectedFile && fileIdsToDelete.includes(selectedFile.id)){
+        const selectedFile = yield select(state => state.fileDetail.selectedFile)
+        if (selectedFile && fileIdsToDelete.includes(selectedFile.id)) {
             yield put(closeFileDetailPanel())
         }
         yield put(fetchFiles())

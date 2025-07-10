@@ -5,19 +5,14 @@ import FileExplorerLayout from '../components/layout/FileExplorerLayout';
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  
-  // Component này chỉ cần lấy đúng phần state mà nó cần
+  const { user: currentUser } = useSelector((state) => state.auth)
   const { filesByDate, status, error } = useSelector((state) => state.files);
-
-  // Gọi API khi component được mount
   useEffect(() => {
-    // Thêm điều kiện để không fetch lại nếu dữ liệu đã có
     if (status === 'idle') {
       dispatch(fetchFiles());
     }
   }, [status, dispatch]);
 
-  // Giao diện và logic phức tạp đã được đưa vào FileExplorerLayout
   return (
     <FileExplorerLayout
       pageTitle="Trang chủ"

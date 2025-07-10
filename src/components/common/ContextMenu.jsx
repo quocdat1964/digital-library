@@ -11,7 +11,7 @@ import {
     ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
-const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick, onAddToCollectionClick }) => {
+const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick, onAddToCollectionClick, currentUser }) => {
     const menuRef = useRef(null)
 
     useEffect(() => {
@@ -36,16 +36,11 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick,
         return null
     }
 
-    // const menuItems = [
-    //     { label: 'Di chuyển vào kho', icon: ArchiveBoxArrowDownIcon },
-    //     { label: 'Thêm vào Bộ sưu tập', icon: FolderPlusIcon },
-    //     // { label: 'Gửi nhà in', icon: PrinterIcon },
-    //     // { label: 'Thêm từ khóa', icon: TagIcon },
-    //     // { label: 'Tải xuống', icon: ArrowDownTrayIcon, hasMore: true },
-    //     // { label: 'Đổi tên', icon: PencilIcon, isHighlighted: true },
-    //     // { label: 'Chỉnh sửa', icon: PencilSquareIcon },
-    //     { label: 'Xóa file', icon: TrashIcon, isDestructive: true },
-    // ];
+    const file = menuState.file
+    if (!file) return null
+
+    const canPerformActions = currentUser && file &&
+        (currentUser.id === file.ownerId || currentUser.role === 'admin' || currentUser.role === 'boss');
 
     const handleItemClick = (action) => {
         const file = menuState.file
@@ -77,21 +72,25 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick,
                 <p className="text-xs text-gray-400">Ngày: {new Date(menuState.file?.createAt).toLocaleString('vi-VN')}</p>
             </div>
 
-            <ul>
-                <li onClick={() => handleItemClick('moveToFolder')} className="flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-600/50">
-                    <ArchiveBoxArrowDownIcon className="h-5 w-5 mr-3" />
-                    <span>Di chuyển vào kho</span>
-                </li>
-                <li onClick={() => handleItemClick('addToCollection')} className="flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-600/50">
-                    <FolderPlusIcon className="h-5 w-5 mr-3" />
-                    <span>Thêm vào bộ sưu tập</span>
-                </li>
-                {/* ... (Các mục menu cũ như Đổi tên, Chỉnh sửa...) */}
-                <li onClick={() => handleItemClick('delete')} className="flex items-center p-2 rounded-md cursor-pointer text-red-400 hover:bg-red-500/20">
-                    <TrashIcon className="h-5 w-5 mr-3" />
-                    <span>Xóa file</span>
-                </li>
-            </ul>
+            {canPerformActions ? (
+                <ul>
+                    <li onClick={() => handleItemClick('moveToFolder')} className="flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-600/50">
+                        <ArchiveBoxArrowDownIcon className="h-5 w-5 mr-3" />
+                        <span>Di chuyển vào kho</span>
+                    </li>
+                    <li onClick={() => handleItemClick('addToCollection')} className="flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-600/50">
+                        <FolderPlusIcon className="h-5 w-5 mr-3" />
+                        <span>Thêm vào bộ sưu tập</span>
+                    </li>
+                    <div className="my-1 h-px bg-gray-700"></div> {/* Dòng kẻ phân cách */}
+                    <li onClick={() => handleItemClick('delete')} className="flex items-center p-2 rounded-md cursor-pointer text-red-400 hover:bg-red-500/20">
+                        <TrashIcon className="h-5 w-5 mr-3" />
+                        <span>Xóa file</span>
+                    </li>
+                </ul>
+            ) : (
+                <div>Bạn không có quyền thực hiện trên file này</div>
+            )}
 
         </div>
     )

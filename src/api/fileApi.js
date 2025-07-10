@@ -30,13 +30,19 @@ const saveFiles = () => {
     localStorage.setItem('mockFileDetails', JSON.stringify(mockFileDetails));
 };
 
+const getCurrentUser = () => JSON.parse(localStorage.getItem('currentUser'))
+
 export const fileApi = {
-    fetchFiles: () => {
-        console.log("Fake api")
+    fetchFiles: ({ userId }) => {
         return new Promise((resolve) => {
             setTimeout(() => {
                 console.log('API: Files fetched successfully');
-                resolve([...mockFiles]);
+                let allFiles = [...mockFiles]
+                const currentUser = getCurrentUser()
+                const visibleFiles = (currentUser && currentUser.role === 'boss')
+                    ? allFiles
+                    : allFiles.filter(file => file.ownerId === userId)
+                resolve(visibleFiles);
             }, 500);
         });
     },
@@ -55,8 +61,8 @@ export const fileApi = {
         return new Promise((resolve) => {
             setTimeout(() => {
                 mockFileDetails[fileData.id] = { ...mockFileDetails[fileData.id], ...fileData }
-                mockFiles = mockFiles.map(file => 
-                    file.id === fileData.id ? {...file, ...fileData} : file
+                mockFiles = mockFiles.map(file =>
+                    file.id === fileData.id ? { ...file, ...fileData } : file
                 )
                 saveFiles()
                 resolve(mockFileDetails[fileData.id])

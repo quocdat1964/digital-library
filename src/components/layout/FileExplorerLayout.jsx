@@ -25,6 +25,7 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
   const { menuState, showContextMenu, closeContextMenu } = useContextMenu();
   const [openSections, setOpenSections] = useState({});
   const dispatch = useDispatch()
+  const {user: currentUser} = useSelector((state) => state.auth)
 
   //Quản lí modal  di chuyển file
   const [assignmentModal, setAssignmentModal] = useState({
@@ -83,16 +84,16 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
     setIsBulkDeleteModalOpen(false)
   }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (filesByDate) {
-      const initialOpenState = Object.keys(filesByDate).reduce((acc, dateKey) => {
-        acc[dateKey] = true;
-        return acc;
-      }, {});
-      setOpenSections(initialOpenState);
-    }
-  }, [filesByDate]);
+  //   if (filesByDate) {
+  //     const initialOpenState = Object.keys(filesByDate).reduce((acc, dateKey) => {
+  //       acc[dateKey] = true;
+  //       return acc;
+  //     }, {});
+  //     setOpenSections(initialOpenState);
+  //   }
+  // }, [filesByDate]);
 
   const toggleSection = (dateKey) => {
     setOpenSections(prev => ({ ...prev, [dateKey]: !prev[dateKey] }));
@@ -202,6 +203,7 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
       <ContextMenu
         menuState={menuState}
         closeMenu={closeContextMenu}
+        currentUser={currentUser}
         onDeleteClick={handleOpenDeleteModal}
         onMoveToFolderClick={handleOpenMoveToFolderModal}
         onAddToCollectionClick={handleOpenAddToCollectionModal}

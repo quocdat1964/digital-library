@@ -13,20 +13,42 @@ const FolderDetailPage = () => {
     const { folderId } = useParams()
 
     const { currentFolder, status: folderStatus } = useSelector(state => state.folders)
-    const { allFiles, status: fileStatus } = useSelector(state => state.files)
+    const { allFiles, status: fileStatus, searchTerm, fileTypeFilter } = useSelector(state => state.files)
 
     useEffect(() => {
         dispatch(closeFileDetailPanel())
+
         if (folderId) {
             dispatch(fetchFolderDetails(folderId))
         }
-        dispatch(fetchFiles())
-    }, [dispatch, folderId])
+        if (fileStatus === 'idle') {
+            dispatch(fetchFiles())
+        }
+
+    }, [dispatch, folderId, fileStatus])
 
     const filesForThisFolder = useMemo(() => {
         if (!allFiles || allFiles.length === 0) return {}
+        //Lọc theo folder
+        let filtered = allFiles.filter(file => file.folderId === folderId)
 
-        const filtered = allFiles.filter(file => file.folderId === folderId)
+        //Lọc theo loại file
+        if (fileTypeFilter && fileTypeFilter !== 'all') {
+            const imageTypes = ['jpg', 'jpeg', 'png', 'gif'];
+            if (fileTypeFilter === 'image') {
+                filtered = filtered.filter(file => imageTypes.includes(file.type.toLowerCase()));
+            } else {
+                filtered = filtered.filter(file => file.type.toLowerCase() === fileTypeFilter.toLowerCase());
+            }
+        }
+
+        //Lọc theo thanh tìm kiếm
+        if (searchTerm) {
+            const lowercasedTerm = searchTerm.toLowerCase();
+            filtered = filtered.filter(file =>
+                file.name.toLowerCase().includes(lowercasedTerm)
+            );
+        }
 
         return filtered.reduce((acc, file) => {
             const dateKey = format(new Date(file.createdAt), 'dd/MM/yyyy')
@@ -34,7 +56,7 @@ const FolderDetailPage = () => {
             acc[dateKey].push(file)
             return acc
         }, {})
-    }, [allFiles, folderId])
+    }, [allFiles, folderId, searchTerm, fileTypeFilter])
 
     const isLoading = folderStatus === 'loading' || fileStatus === 'loading'
 
@@ -56,13 +78,13 @@ const FolderDetailPage = () => {
             <Link to='/archive' className='text-gray-400 hover:text-white hover:underline transition-colors'>
                 Kho lưu trữ
             </Link>
-            <ChevronRightIcon className='h-6 w-6 text-gray-500 flex-shrink-0'/>
+            <ChevronRightIcon className='h-6 w-6 text-gray-500 flex-shrink-0' />
             <span className='text-white truncate'>{currentFolder.name}</span>
         </div>
     )
 
     return (
-        <FileExplorerLayout 
+        <FileExplorerLayout
             pageTitle={breadcrumbTitle}
             filesByDate={filesForThisFolder}
             status='succeeded'
