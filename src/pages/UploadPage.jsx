@@ -12,7 +12,7 @@ const UploadPage = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [stagedFiles, setStagedFiles] = useState([])
-
+    const {user: currentUser} = useSelector((state) => state.auth)
     const { folderList = [] } = useSelector(state => state.folders || {})
 
     const { status: uploadStatus, progress, error: uploadError } = useSelector(state => state.upload)
@@ -62,6 +62,7 @@ const UploadPage = () => {
     }
 
     const handleSave = () => {
+        if(!currentUser) return
         const filesToSave = stagedFiles.filter(f => f.isSelectedToSave)
         if (filesToSave.length === 0) {
             toast.error('Vui long chon it nhat 1 file de luu')
@@ -73,7 +74,12 @@ const UploadPage = () => {
             toast.error('Vui long chon kho luu tru cho tat ca file duoc chon')
             return
         }
-        dispatch(uploadFiles(filesToSave))
+        const payload = filesToSave.map(file => ({
+            ...file,
+            ownerId: currentUser.id,
+            uploaderName: currentUser.name,
+        }))
+        dispatch(uploadFiles(payload))
     }
 
     useEffect(() => {

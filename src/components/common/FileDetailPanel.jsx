@@ -25,7 +25,7 @@ const FilePreviewer = ({ file }) => {
     }
 }
 
-const EditableInfoRow = ({ label, value, onChange }) => {
+const EditableInfoRow = ({ label, value, onChange, disabled }) => {
     const [isEditing, setIsEditing] = useState(false)
 
     if (isEditing) {
@@ -41,6 +41,7 @@ const EditableInfoRow = ({ label, value, onChange }) => {
                         onKeyDown={(e) => { if (e.key === 'Enter') setIsEditing(false) }}
                         className="w-full bg-gray-700 border border-gray-600 rounded-md px-2 py-1 focus:ring-indigo-500 focus:border-indigo-500"
                         autoFocus
+                        disabled={disabled}
                     />
                 </dd>
             </div>
@@ -50,7 +51,7 @@ const EditableInfoRow = ({ label, value, onChange }) => {
     return (
         <div
             className="grid grid-cols-3 gap-4 items-center group cursor-pointer"
-            onClick={() => setIsEditing(true)}
+            onClick={() => !disabled && setIsEditing(true)}
         >
             <dt className="text-sm font-medium text-gray-400">{label}</dt>
             <dd className="col-span-2 mt-1 text-sm text-gray-200 flex justify-between items-center">
@@ -64,6 +65,7 @@ const EditableInfoRow = ({ label, value, onChange }) => {
 const FileDetailPanel = () => {
     const dispatch = useDispatch()
     const { isPanelOpen, selectedFile, status } = useSelector((state) => state.fileDetail)
+    const { user: currentUser } = useSelector((state) => state.auth)
     const [formData, setFormData] = useState({})
     const isXlScreen = useMediaQuery({ query: '(min-width: 1280px)' });
 
@@ -119,11 +121,13 @@ const FileDetailPanel = () => {
 
     const isLoading = status === 'loading'
     const isUpdating = status === 'updating'
+    const canEdit = selectedFile && currentUser &&
+        (selectedFile.ownerId === currentUser.id || currentUser.role === 'admin' || currentUser.role === 'boss');
 
     return (
-        
+
         <div className="bg-[#2d2c35] rounded-lg flex flex-col max-h-[35rem] max-xl:max-h-[42rem] overflow-y-auto mb-4">
-        {/* <div className="bg-[#2d2c35] rounded-lg flex flex-col h-full"> */}
+            {/* <div className="bg-[#2d2c35] rounded-lg flex flex-col h-full"> */}
             <header className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
                 <h2 className="text-lg font-semibold text-white truncate pr-4">
                     {isLoading ? 'Đang tải...' : selectedFile?.name || ''}
@@ -155,9 +159,9 @@ const FileDetailPanel = () => {
 
                         <div className="p-6 text-white">
                             <dl className="space-y-4">
-                                <EditableInfoRow label="Tiêu đề" value={formData.title} onChange={(e) => handleInputChange(e, 'title')} />
-                                <EditableInfoRow label="Mô tả" value={formData.description} onChange={(e) => handleInputChange(e, 'description')} />
-                                <EditableInfoRow label="Tác giả" value={formData.author} onChange={(e) => handleInputChange(e, 'author')} />
+                                <EditableInfoRow label="Tiêu đề" value={formData.title} onChange={(e) => handleInputChange(e, 'title')} disabled={!canEdit} />
+                                <EditableInfoRow label="Mô tả" value={formData.description} onChange={(e) => handleInputChange(e, 'description')} disabled={!canEdit} />
+                                <EditableInfoRow label="Tác giả" value={formData.author} onChange={(e) => handleInputChange(e, 'author')} disabled={!canEdit} />
                                 <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Ngày</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{new Date(selectedFile.createdAt).toLocaleString('vi-VN')}</dd></div>
                                 <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Người tải lên</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.uploader}</dd></div>
                                 <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Số lượt tải</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.downloadCount}</dd></div>
@@ -166,7 +170,7 @@ const FileDetailPanel = () => {
                                 <button
                                     onClick={handleSaveChanges}
                                     className="px-6 py-2 bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-gray-500 disabled:cursor-not-allowed"
-                                    disabled={isUpdating}
+                                    disabled={isUpdating || !canEdit}
                                 >
                                     {isUpdating ? 'Đang lưu...' : 'Lưu thay đổi'}
                                 </button>

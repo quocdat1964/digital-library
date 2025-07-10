@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUsers, createUser, updateUserRole, deleteUser } from "../features/users/userSlice";
 import { UserPlusIcon, ShieldCheck, TrashIcon, MoreVertical } from "lucide-react";
@@ -13,6 +13,19 @@ const UserManagementPage = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, user: null });
 
+    const [activeMenu, setActiveMenu] = useState(null)
+    const menuRef = useRef(null)
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (activeMenu && menuRef.current && !menuRef.current.contains(event.target)) {
+                setActiveMenu(null)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [activeMenu])
+
     useEffect(() => {
         dispatch(fetchUsers())
     }, [dispatch])
@@ -22,18 +35,18 @@ const UserManagementPage = () => {
     }
 
     const handleRoleChange = (userId, newRole) => {
-        if (window.confirm(`Bạn có chắc muốn đổi vai trò của người dùng này thành ${newRole}?`)) {
-            dispatch(updateUserRole({ userId, newRole }));
-        }
+        dispatch(updateUserRole({ userId, newRole }));
+        setActiveMenu(null);
     }
 
     const handleDeleteUser = (user) => {
         setDeleteModal({ isOpen: true, user })
+        setActiveMenu(null);
     }
 
     const confirmDelete = () => {
         if (deleteModal.user) {
-            dispatch(deleteModal(deleteModal.user.id))
+            dispatch(deleteUser(deleteModal.user.id))
         }
         setDeleteModal({ isOpen: false, user: null })
     }
@@ -58,7 +71,7 @@ const UserManagementPage = () => {
                 </button>
             </div>
 
-            <div className="bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div className="bg-gray-800 rounded-lg shadow">
                 <table className="min-w-full divide-y divide-gray-700">
                     <thead className="bg-gray-700/50">
                         <tr>
@@ -91,10 +104,17 @@ const UserManagementPage = () => {
                                 {/* Hành động */}
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     {currentUser.role === 'boss' && user.role !== 'boss' && (
-                                        <div className="relative inline-block text-left group">
-                                            <button className="p-1 rounded-full hover:bg-gray-700"><MoreVertical size={20} /></button>
-                                            <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-gray-900 ring-1 ring-black ring-opacity-5 z-10 opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto">
-                                                <div className="py-1">
+                                        <div className="relative inline-block text-left" ref={activeMenu === user.id ? menuRef : null}>
+                                            <button
+                                                onClick={() => setActiveMenu(activeMenu === user.id ? null : user.id)}
+                                                className="p-1 rounded-full hover:bg-gray-700"
+                                            >
+                                                <MoreVertical size={20} />
+                                            </button>
+                                            <div className={`origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-gray-900 ring-1 ring-black ring-opacity-5 z-10 transition-all duration-200
+                                                ${activeMenu === user.id ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`
+                                            }>
+                                                <div className="py-1" role="menu" aria-orientation="vertical">
                                                     {user.role === 'user' && <a href="#" onClick={() => handleRoleChange(user.id, 'admin')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành Admin</a>}
                                                     {user.role === 'admin' && <a href="#" onClick={() => handleRoleChange(user.id, 'user')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành User</a>}
                                                     <a href="#" onClick={() => handleDeleteUser(user)} className="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">Xóa người dùng</a>

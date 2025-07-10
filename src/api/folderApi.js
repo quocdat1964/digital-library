@@ -5,23 +5,31 @@ const USER2_ID = 'user-normal-004';
 
 const getFolders = () => JSON.parse(localStorage.getItem('mockFolders')) || [
     // Thêm một vài thư mục mẫu có sẵn với chủ sở hữu
-    { id: 'folder_1', name: 'Tài liệu Marketing', isPublic: true, createdAt: new Date().toISOString(), ownerId: ADMIN_ID },
-    { id: 'folder_2', name: 'Báo cáo cá nhân', isPublic: false, createdAt: new Date().toISOString(), ownerId: USER1_ID },
+    { id: 'folder_1', name: 'Tài liệu Marketing', isPublic: true, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
+    { id: 'folder_2', name: 'Báo cáo cá nhân', isPublic: false, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
     { id: 'folder_3', name: 'Dự án bí mật', isPublic: false, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
-    { id: 'folder_4', name: 'Ảnh du lịch', isPublic: true, createdAt: new Date().toISOString(), ownerId: USER2_ID },
+    { id: 'folder_4', name: 'Ảnh du lịch', isPublic: true, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
 ];
 // Hàm tiện ích để lưu dữ liệu
 const saveFolders = (folders) => {
     localStorage.setItem('mockFolders', JSON.stringify(folders));
 };
+const getCurrentUser = () => JSON.parse(localStorage.getItem('currentUser'))
 
 export const folderApi = {
     fetchFolders: () => {
         console.log("API: Reading folders directly from localStorage...");
         return new Promise((resolve) => {
             setTimeout(() => {
-                const folders = getFolders();
-                resolve(folders);
+                const currentUser = getCurrentUser()
+                if (!currentUser) {
+                    return resolve([])
+                }
+                const allFolders = getFolders();
+                const visibleFolders = currentUser.role === 'boss'
+                    ? allFolders
+                    : allFolders.filter(folder => folder.isPublic || folder.ownerId === currentUser.id)
+                resolve(visibleFolders)
             }, 200);
         });
     },
@@ -50,7 +58,7 @@ export const folderApi = {
                 let folders = getFolders();
                 const index = folders.findIndex(f => f.id === folderData.id);
                 if (index > -1) {
-                   
+
                     const updatedFolders = folders.map(folder =>
                         folder.id === folderData.id
                             ? { ...folder, ...folderData }

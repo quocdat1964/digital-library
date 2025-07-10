@@ -1,14 +1,13 @@
-import { authApi } from "./authApi";
-
-let mockUsers = authApi.getMockUsers()
-const saveUsers = () => authApi.setMockUsers(mockUsers)
+const getUsers = () => JSON.parse(localStorage.getItem('mockUsers')) || []
+const saveUsers = (users) => localStorage.setItem('mockUsers', JSON.stringify(users))
 
 export const userApi = {
     fetchUsers: () => {
         console.log("Fetch all users...")
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve([...mockUsers])
+                const users = getUsers()
+                resolve(users)
             }, 300)
         })
     },
@@ -17,7 +16,8 @@ export const userApi = {
         console.log("Creating user...", { email, role })
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                if (mockUsers.some(u => u.email === email)) {
+                const users = getUsers()
+                if (users.some(u => u.email === email)) {
                     return reject(new Error("Email da ton tai"))
                 }
                 const newUser = {
@@ -28,8 +28,8 @@ export const userApi = {
                     role,
                     avatarUrl: `https://placehold.co/100x100/393844/FFF?text=${name.charAt(0).toUpperCase()}`,
                 }
-                mockUsers.push(newUser)
-                saveUsers()
+                const newUsers = [...users, newUser]
+                saveUsers(newUsers)
                 resolve(newUser)
             }, 500)
         })
@@ -39,8 +39,9 @@ export const userApi = {
         console.log(`API: Updating role for ${userId} to ${newRole}`);
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                mockUsers = mockUsers.map(u => u.id === userId ? { ...u, role: newRole } : u)
-                saveUsers()
+                let users = getUsers()
+                const updatedUsers = users.map(u => u.id === userId ? { ...u, role: newRole } : u)
+                saveUsers(updatedUsers)
                 resolve({ success: true })
             }, 500)
         })
@@ -50,12 +51,13 @@ export const userApi = {
         console.log(`API: Deleting user ${userId}`);
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                const userToDelete = mockUsers.find(u => u.id === userId)
+                let users = getUsers()
+                const userToDelete = users.find(u => u.id === userId)
                 if (userToDelete && userToDelete === 'boss') {
                     return reject(new Error('Khong the xoa nguoi nay'))
                 }
-                mockUsers = mockUsers.filter(u => u.id !== userId)
-                saveUsers()
+                const newUsers = users.filter(u => u.id !== userId)
+                saveUsers(newUsers)
                 resolve({ success: true })
             }, 500)
         })

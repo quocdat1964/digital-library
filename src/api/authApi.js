@@ -1,5 +1,3 @@
-import avt from '../assets/avt_nqd.jpg'
-
 const mockUsers = [
     {
         id: 'user-boss-001',
@@ -35,12 +33,22 @@ const mockUsers = [
     },
 ]
 
+const getUsers = () => {
+    let users = JSON.parse(localStorage.getItem('mockUsers'))
+    if(!users){
+        localStorage.setItem('mockUsers', JSON.stringify(mockUsers))
+        return mockUsers
+    }
+    return users
+}
+
 export const authApi = {
     login: ({ email, password }) => {
         console.log("Fake api using: ", { email, password })
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                const user = mockUsers.find(u => u.email === email && u.password === password)
+                const users = getUsers()
+                const user = users.find(u => u.email === email && u.password === password)
 
                 if (user) {
                     console.log('API: Login successful for user:', user.name, 'with role:', user.role);
@@ -66,10 +74,11 @@ export const authApi = {
         console.log("validating token...")
         return new Promise((resolve, reject) => {
             try {
+                const users = getUsers()
                 const decodedPayload = JSON.parse(atob(token))
                 const { userId } = decodedPayload
 
-                const user = mockUsers.find(u => u.id === userId)
+                const user = users.find(u => u.id === userId)
                 if (user) {
                     console.log("API: Token is valid. User found:", user.name);
                     // Trong thực tế, backend sẽ trả về object user mới nhất
@@ -82,6 +91,4 @@ export const authApi = {
             }
         })
     },
-    getMockUsers: () => mockUsers,
-    setMockUsers: (newUsers) => { mockUsers = newUsers; },
 }
