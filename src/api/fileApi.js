@@ -10,19 +10,19 @@ const USER1_ID = 'user-normal-003'
 const USER2_ID = 'user-normal-004'
 
 let mockFiles = JSON.parse(localStorage.getItem('mockFiles')) || [
-    { id: '1', name: '2022_MT_KHMT', type: 'pdf', createdAt: '2025-06-23T10:00:00Z', thumbnailUrl: testPdf, folderId: 'folder_1', ownerId: ADMIN_ID },
-    { id: '2', name: 'tailoc_meo_anh', type: 'jpg', createdAt: '2025-06-23T11:30:00Z', thumbnailUrl: tailocqualon, folderId: 'folder_1', ownerId: USER1_ID },
-    { id: '3', name: 'Lich_su_in', type: 'docx', createdAt: '2025-06-20T15:00:00Z', thumbnailUrl: paimon, folderId: 'folder_2', ownerId: USER2_ID }, // Gán cho user mới
-    { id: '4', name: 'logo_cong_ty', type: 'png', createdAt: '2025-06-25T09:00:00Z', thumbnailUrl: 'https://placehold.co/400x300/2d2c35/FFF?text=Logo.png', folderId: 'folder_2', ownerId: BOSS_ID },
-    { id: '5', name: 'video_gioi_thieu', type: 'mp4', createdAt: '2025-06-19T09:00:00Z', thumbnailUrl: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', folderId: 'folder_1', ownerId: ADMIN_ID },
+    // { id: '1', name: '2022_MT_KHMT', type: 'pdf', createdAt: '2025-06-23T10:00:00Z', thumbnailUrl: testPdf, folderId: 'folder_1', ownerId: ADMIN_ID },
+    // { id: '2', name: 'tailoc_meo_anh', type: 'jpg', createdAt: '2025-06-23T11:30:00Z', thumbnailUrl: tailocqualon, folderId: 'folder_1', ownerId: USER1_ID },
+    // { id: '3', name: 'Lich_su_in', type: 'docx', createdAt: '2025-06-20T15:00:00Z', thumbnailUrl: paimon, folderId: 'folder_2', ownerId: USER2_ID }, // Gán cho user mới
+    // { id: '4', name: 'logo_cong_ty', type: 'png', createdAt: '2025-06-25T09:00:00Z', thumbnailUrl: 'https://placehold.co/400x300/2d2c35/FFF?text=Logo.png', folderId: 'folder_2', ownerId: BOSS_ID },
+    // { id: '5', name: 'video_gioi_thieu', type: 'mp4', createdAt: '2025-06-19T09:00:00Z', thumbnailUrl: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', folderId: 'folder_1', ownerId: ADMIN_ID },
 ];
 
 let mockFileDetails = JSON.parse(localStorage.getItem('mockFileDetails')) || {
-    '1': { id: '1', ownerId: ADMIN_ID, title: 'Báo cáo môn Kiến trúc máy tính', description: 'Đây là file báo cáo cuối kỳ môn học...', author: 'Nguyễn Văn A', uploader: 'Cán bộ Admin', downloadCount: 5, storageLocation: '3', collection: 'Báo cáo', status: 'On resource', tags: ['báo cáo', 'khmt'], type: 'pdf', name: '2022_MT_KHMT', createdAt: '2025-06-24T15:21:57Z', contentUrl: testPdf },
-    '2': { id: '2', ownerId: USER1_ID, title: '', description: '', author: '', uploader: 'Dân thường User', downloadCount: 10, storageLocation: '1', collection: null, status: 'On resource', tags: [], type: 'jpg', name: 'tailoc_meo_anh', createdAt: '2025-06-23T11:30:00Z', contentUrl: tailocqualon },
-    '3': { id: '3', ownerId: USER2_ID, title: 'Hợp đồng lao động mẫu', description: '', author: 'Phòng nhân sự', uploader: 'Dân bán chuyên', downloadCount: 2, storageLocation: '1', collection: 'Tài liệu', status: 'On resource', tags: [], type: 'docx', name: 'hop_dong_lao_dong', createdAt: '2025-06-20T15:00:00Z', contentUrl: testDoc },
-    '4': { id: '4', ownerId: BOSS_ID, title: 'Logo công ty chính thức', description: 'Logo dạng PNG nền trong suốt.', author: 'Team Design', uploader: 'TRÙM CUỐI', downloadCount: 20, storageLocation: '2', collection: 'Tài sản', status: 'On resource', tags: ['logo', 'brand'], type: 'png', name: 'logo_cong_ty', createdAt: '2025-06-25T09:00:00Z', contentUrl: 'https://placehold.co/1280x720/2d2c35/FFF?text=Logo+công+ty' },
-    '5': { id: '5', ownerId: ADMIN_ID, title: 'Video giới thiệu sản phẩm', description: 'Video giới thiệu sản phẩm mới ra mắt.', author: 'Team Marketing', uploader: 'Cán bộ Admin', downloadCount: 15, storageLocation: '1', collection: null, status: 'On resource', tags: [], type: 'mp4', name: 'video_gioi_thieu', createdAt: '2025-06-19T09:00:00Z', contentUrl: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+    // '1': { id: '1', ownerId: ADMIN_ID, title: 'Báo cáo môn Kiến trúc máy tính', description: 'Đây là file báo cáo cuối kỳ môn học...', author: 'Nguyễn Văn A', uploader: 'Cán bộ Admin', downloadCount: 5, storageLocation: '3', collection: 'Báo cáo', status: 'On resource', tags: ['báo cáo', 'khmt'], type: 'pdf', name: '2022_MT_KHMT', createdAt: '2025-06-24T15:21:57Z', contentUrl: testPdf },
+    // '2': { id: '2', ownerId: USER1_ID, title: '', description: '', author: '', uploader: 'Dân thường User', downloadCount: 10, storageLocation: '1', collection: null, status: 'On resource', tags: [], type: 'jpg', name: 'tailoc_meo_anh', createdAt: '2025-06-23T11:30:00Z', contentUrl: tailocqualon },
+    // '3': { id: '3', ownerId: USER2_ID, title: 'Hợp đồng lao động mẫu', description: '', author: 'Phòng nhân sự', uploader: 'Dân bán chuyên', downloadCount: 2, storageLocation: '1', collection: 'Tài liệu', status: 'On resource', tags: [], type: 'docx', name: 'hop_dong_lao_dong', createdAt: '2025-06-20T15:00:00Z', contentUrl: testDoc },
+    // '4': { id: '4', ownerId: BOSS_ID, title: 'Logo công ty chính thức', description: 'Logo dạng PNG nền trong suốt.', author: 'Team Design', uploader: 'TRÙM CUỐI', downloadCount: 20, storageLocation: '2', collection: 'Tài sản', status: 'On resource', tags: ['logo', 'brand'], type: 'png', name: 'logo_cong_ty', createdAt: '2025-06-25T09:00:00Z', contentUrl: 'https://placehold.co/1280x720/2d2c35/FFF?text=Logo+công+ty' },
+    // '5': { id: '5', ownerId: ADMIN_ID, title: 'Video giới thiệu sản phẩm', description: 'Video giới thiệu sản phẩm mới ra mắt.', author: 'Team Marketing', uploader: 'Cán bộ Admin', downloadCount: 15, storageLocation: '1', collection: null, status: 'On resource', tags: [], type: 'mp4', name: 'video_gioi_thieu', createdAt: '2025-06-19T09:00:00Z', contentUrl: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
 };
 
 const saveFiles = () => {
@@ -42,6 +42,8 @@ export const fileApi = {
                 const visibleFiles = (currentUser && currentUser.role === 'boss')
                     ? allFiles
                     : allFiles.filter(file => file.ownerId === userId)
+                console.log("Check current user: ", currentUser)
+                console.log("Check visible file: ", visibleFiles)
                 resolve(visibleFiles);
             }, 500);
         });

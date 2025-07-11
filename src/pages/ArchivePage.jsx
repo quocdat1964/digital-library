@@ -19,7 +19,7 @@ const ArchivePage = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { folderList, status } = useSelector((state) => state.folders)
-    const { user: currenUser } = useSelector((state) => state.auth)
+    const { user: currentUser } = useSelector((state) => state.auth)
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [editModal, setEditModal] = useState({ isOpen: false, folder: null })
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, folder: null })
@@ -31,10 +31,10 @@ const ArchivePage = () => {
     }, [dispatch])
 
     const handleCreateFolder = (folderData) => {
-        if (!currenUser) return
+        if (!currentUser) return
         const payload = {
             ...folderData,
-            ownerId: currenUser.id
+            ownerId: currentUser.id
         }
         dispatch(createFolder(payload))
     }
@@ -124,6 +124,7 @@ const ArchivePage = () => {
                 closeMenu={closeContextMenu}
                 onEditClick={(folder) => setEditModal({ isOpen: true, folder })}
                 onDeleteClick={(folder) => setDeleteModal({ isOpen: true, folder })}
+                currentUser={currentUser}
             />
         </div>
     )

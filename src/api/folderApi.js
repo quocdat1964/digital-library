@@ -5,10 +5,10 @@ const USER2_ID = 'user-normal-004';
 
 const getFolders = () => JSON.parse(localStorage.getItem('mockFolders')) || [
     // Thêm một vài thư mục mẫu có sẵn với chủ sở hữu
-    { id: 'folder_1', name: 'Tài liệu Marketing', isPublic: true, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
-    { id: 'folder_2', name: 'Báo cáo cá nhân', isPublic: false, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
-    { id: 'folder_3', name: 'Dự án bí mật', isPublic: false, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
-    { id: 'folder_4', name: 'Ảnh du lịch', isPublic: true, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
+    // { id: 'folder_1', name: 'Tài liệu Marketing', isPublic: true, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
+    // { id: 'folder_2', name: 'Báo cáo cá nhân', isPublic: false, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
+    // { id: 'folder_3', name: 'Dự án bí mật', isPublic: false, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
+    // { id: 'folder_4', name: 'Ảnh du lịch', isPublic: true, createdAt: new Date().toISOString(), ownerId: BOSS_ID },
 ];
 // Hàm tiện ích để lưu dữ liệu
 const saveFolders = (folders) => {
@@ -18,7 +18,6 @@ const getCurrentUser = () => JSON.parse(localStorage.getItem('currentUser'))
 
 export const folderApi = {
     fetchFolders: () => {
-        console.log("API: Reading folders directly from localStorage...");
         return new Promise((resolve) => {
             setTimeout(() => {
                 const currentUser = getCurrentUser()
@@ -34,7 +33,7 @@ export const folderApi = {
         });
     },
     createFolder: ({ name, isPublic, ownerId }) => {
-        console.log("API: Creating new folder...");
+        console.log("API: Creating new folder with ownerId: ", ownerId);
         return new Promise((resolve) => {
             setTimeout(() => {
                 const folders = getFolders();
@@ -55,28 +54,30 @@ export const folderApi = {
         console.log('API: Updating folder...');
         return new Promise((resolve, reject) => {
             setTimeout(() => {
+                const currentUser = getCurrentUser()
                 let folders = getFolders();
-                const index = folders.findIndex(f => f.id === folderData.id);
-                if (index > -1) {
+                const targetFolder = folders.find(f => f.id === folderData.id);
 
-                    const updatedFolders = folders.map(folder =>
-                        folder.id === folderData.id
-                            ? { ...folder, ...folderData }
-                            : folder
-                    );
-                    saveFolders(updatedFolders); // Lưu lại mảng mới
-                    resolve(updatedFolders.find(f => f.id === folderData.id));
-                } else {
-                    reject(new Error('Update failed: Folder not found'));
+                if (!targetFolder || targetFolder.ownerId !== currentUser.id) {
+                    return reject(new Error('Không phải chủ, không có quyền sửa.'));
                 }
+
+                const updatedFolders = folders.map(f => f.id === folderData.id ? { ...f, ...folderData } : f);
+                saveFolders(updatedFolders);
+                resolve(updatedFolders.find(f => f.id === folderData.id));
             }, 200);
         });
     },
     deleteFolder: (folderId) => {
-        console.log('API: Deleting folder...');
         return new Promise((resolve) => {
             setTimeout(() => {
+                const currentUser = getCurrentUser()
                 let folders = getFolders();
+                const targetFolder = folders.find(f => f.id === folderId)
+                if (!targetFolder || targetFolder.ownerId !== currentUser.id) {
+                    return reject(new Error('Không phải chủ, không có quyền xóa.'));
+                }
+
                 const newFolders = folders.filter(f => f.id !== folderId);
                 saveFolders(newFolders); // Lưu lại mảng mới
                 resolve({ success: true, id: folderId });
