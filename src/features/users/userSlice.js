@@ -1,9 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const filterUsers = (allUsers, roleFilter) => {
+    if (roleFilter === 'all') {
+        return allUsers
+    }
+    return allUsers.filter(u => u.role === roleFilter)
+}
+
 const initialState = {
     userList: [],
+    filteredUserList: [],
     status: 'idle',
-    error: null
+    error: null,
+    roleFilter: 'all',
+    currentPage: 1,
+    usersPerPage: 5
 }
 
 const userSlice = createSlice({
@@ -12,8 +23,21 @@ const userSlice = createSlice({
     reducers: {
         // Sau khi thực hiện xong api sẽ chỉnh lại cho instant update,add,...
         fetchUsers(state) { state.status = 'loading'; },
-        fetchUsersSuccess(state, action) { state.status = 'succeeded'; state.userList = action.payload; },
+        fetchUsersSuccess(state, action) {
+            state.status = 'succeeded'; 
+            state.userList = action.payload;
+            state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+        },
         fetchUsersFailure(state, action) { state.status = 'failed'; state.error = action.payload; },
+
+        setRoleFilter(state,action){
+            state.roleFilter = action.payload
+            state.currentPage = 1
+            state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+        },
+        setCurrentPage(state, action){
+            state.currentPage = action.payload
+        },
 
         createUser(state, action) { /* Có thể set status loading riêng */ },
         createUserSuccess(state) { /* Saga sẽ fetch lại list */ },
@@ -34,6 +58,7 @@ export const {
     createUser, createUserFailure, createUserSuccess,
     updateUserRole, updateUserRoleFailure, updateUserRoleSuccess,
     deleteUser, deleteUserFailure, deleteUserSuccess,
+    setRoleFilter, setCurrentPage,
 } = userSlice.actions
 
 export default userSlice.reducer

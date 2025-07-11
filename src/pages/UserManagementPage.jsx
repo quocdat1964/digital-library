@@ -1,13 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUsers, createUser, updateUserRole, deleteUser } from "../features/users/userSlice";
-import { UserPlusIcon, ShieldCheck, TrashIcon, MoreVertical } from "lucide-react";
+import { fetchUsers, createUser, updateUserRole, deleteUser, setCurrentPage, setRoleFilter } from "../features/users/userSlice";
+import { UserPlusIcon, ShieldCheck, TrashIcon, MoreVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import CreateUserModal from "../components/common/CreateUserModal";
 import ConfirmationModal from '../components/common/ConfirmationModal'
 
 const UserManagementPage = () => {
     const dispatch = useDispatch()
-    const { userList, status, error } = useSelector((state) => state.users)
+    const {
+        filteredUserList,
+        status,
+        roleFilter,
+        currentPage,
+        usersPerPage,
+    } = useSelector((state) => state.users)
     const { user: currentUser } = useSelector((state) => state.auth)
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -29,6 +35,20 @@ const UserManagementPage = () => {
     useEffect(() => {
         dispatch(fetchUsers())
     }, [dispatch])
+
+    const paginateUser = useMemo(() => {
+        const indexOfLastUser = currentPage * usersPerPage
+        const indexOfFirstUser = indexOfLastUser - usersPerPage
+        return filteredUserList.slice(indexOfFirstUser, indexOfLastUser)
+    }, [filteredUserList, currentPage, usersPerPage])
+
+    const totalPages = Math.ceil(filteredUserList.length / usersPerPage)
+
+    const paginate = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPages) {
+            dispatch(setCurrentPage(pageNumber))
+        }
+    }
 
     const handleCreateUser = (userData) => {
         dispatch(createUser(userData))
@@ -71,6 +91,19 @@ const UserManagementPage = () => {
                 </button>
             </div>
 
+            <div className="mb-4 flex justify-end">
+                <select
+                    value={roleFilter}
+                    onChange={(e) => dispatch(setRoleFilter(e.target.value))}
+                    className="bg-gray-700 text-white rounded-md px-3 py-2 border border-gray-600 focus:ring-red-500 focus:border-red-500"
+                >
+                    <option value="all">Tất cả vai trò</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+
+            </div>
+
             <div className="bg-gray-800 rounded-lg shadow">
                 <table className="min-w-full divide-y divide-gray-700">
                     <thead className="bg-gray-700/50">
@@ -81,7 +114,7 @@ const UserManagementPage = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-gray-800 divide-y divide-gray-700">
-                        {userList.map((user) => (
+                        {paginateUser.map((user) => (
                             <tr key={user.id}>
                                 {/* Tên, avatar, email */}
                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -136,6 +169,20 @@ const UserManagementPage = () => {
                     </tbody>
                 </table>
             </div>
+
+            {totalPages > 1 && (
+                <div className="flex items-center justify-end space-x-5 mt-4 text-white">
+                    <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="flex items-center px-3 py-1 bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
+                        <ChevronLeft size={16} className="mr-1" />
+                        Trước
+                    </button>
+                    <span>Trang {currentPage} / {totalPages}</span>
+                    <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} className="flex items-center px-3 py-1 bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
+                        Sau
+                        <ChevronRight size={16} className="ml-1" />
+                    </button>
+                </div>
+            )}
 
             <CreateUserModal
                 isOpen={isCreateModalOpen}

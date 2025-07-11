@@ -9,19 +9,41 @@ const CreateUserModal = ({ isOpen, onClose, onCreate }) => {
         role: 'user',
     })
 
+    const [errors, setErrors] = useState({})
+
     if (!isOpen) return null
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
+        if (errors[e.target.name]) {
+            setErrors({ ...errors, [e.target.name]: null })
+        }
+    }
+
+    const validate = () => {
+        const newErrors = {}
+        if (!formData.name.trim()) newErrors.name = 'Ho va ten khong duoc de trong'
+        if (!formData.email.trim()) {
+            newErrors.email = 'Email khong duoc de trong'
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = 'Dinh dang email khong hop le'
+        }
+        if (!formData.password) {
+            newErrors.password = "Mật khẩu không được để trống.";
+        } else if (formData.password.length < 3) {
+            newErrors.password = "Mật khẩu phải có ít nhất 3 ký tự.";
+        }
+        return newErrors;
     }
 
     const handleCreate = () => {
-        if (formData.email.trim() && formData.password.trim() && formData.name.trim()) {
-            onCreate(formData)
-            onClose()
-        } else {
-            alert('hay dien du thong tin')
+        const validationErrors = validate()
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors)
+            return
         }
+        onCreate(formData)
+        onClose()
     }
 
     return (
@@ -40,15 +62,18 @@ const CreateUserModal = ({ isOpen, onClose, onCreate }) => {
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Ho va ten</label>
                             <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-red-500 focus:border-red-500" />
+                            {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name}</p>}
                         </div>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email</label>
                             <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-red-500 focus:border-red-500" />
+                            {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email}</p>}
                         </div>
                     </div>
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">Mật khẩu</label>
                         <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-red-500 focus:border-red-500" />
+                        {errors.password && <p className="mt-1 text-xs text-red-400">{errors.password}</p>}
                     </div>
                     <div>
                         <label htmlFor="role" className="block text-sm font-medium text-gray-300 mb-1">Vai trò</label>

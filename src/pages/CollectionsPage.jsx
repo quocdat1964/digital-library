@@ -19,7 +19,7 @@ const CollectionsPage = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { collectionList, status } = useSelector((state) => state.collections)
-
+    const { user: currentUser } = useSelector((state) => state.auth)
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [editModal, setEditModal] = useState({ isOpen: false, folder: null })
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, folder: null })
@@ -29,7 +29,10 @@ const CollectionsPage = () => {
         dispatch(fetchCollections())
     }, [dispatch])
 
-    const handleCreate = (data) => dispatch(createCollection(data))
+    const handleCreate = (data) => {
+        if (!currentUser) return;
+        dispatch(createCollection({ ...data, ownerId: currentUser.id }));
+    };
     const handleUpdate = (data) => {
         dispatch(updateCollection(data))
         setEditModal({ isOpen: false, folder: null })

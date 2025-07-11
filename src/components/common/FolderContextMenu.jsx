@@ -23,7 +23,7 @@ const FolderContextMenu = ({ menuState, closeMenu, onEditClick, onDeleteClick, c
 
     if (!folder) return null
 
-    const isOwner = currentUser && folder && currentUser.id === folder.ownerId
+    const isOwner = currentUser ? folder && currentUser.id === folder.ownerId : true
 
     return (
         <div
