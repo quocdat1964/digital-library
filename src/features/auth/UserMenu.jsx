@@ -3,7 +3,7 @@ import { LogOut, User } from "lucide-react";
 import { logout } from "./authSlice";
 
 const UserMenu = () => {
-    const { user } = useSelector((state) => state.auth)
+    const { user, isAuthenticated } = useSelector((state) => state.auth)
     const dispatch = useDispatch()
 
     const handleLogout = () => {
@@ -22,7 +22,7 @@ const UserMenu = () => {
             </div>
             <div className="relative group">
                 <img
-                    src={user.avatarUrl}
+                    // src={user.avatarUrl}
                     alt="User Avatar"
                     className="w-10 h-10 rounded-full cursor-pointer border-2 border-gray-600"
                 />

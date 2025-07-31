@@ -1,33 +1,36 @@
 import { call, put, takeLatest } from "redux-saga/effects";
-import { authApi } from "../../api/authApi";
-import { loginStart, loginSuccess, loginFailure, logout, validateToken } from "./authSlice";
+import authService from "../../services/authService";
+import { loginStart, loginSuccess, loginFailure, logout, setAuthFromLocalStorage } from "./authSlice";
 
 function* handleLogin(action) {
     try {
-        const credentials = action.payload
-        const { user, token } = yield call(authApi.login, credentials)
-        localStorage.setItem('authToken', user.token)
-        yield put(loginSuccess({ user, token }))
+        const { email, password } = action.payload
+        const responseData = yield call(authService.login, email, password)
+        yield put(loginSuccess(responseData))
     } catch (error) {
-        yield put(loginFailure(error.message))
+        const errorMessage = error.response?.data?.message || error.message || "Đăng nhập thất bại.";
+        yield put(loginFailure(errorMessage));
     }
 }
 
 function* handleLogout() {
     try {
-        yield call(authApi.logout)
+        yield call(authService.logout)
     } catch (error) {
-        console.error("Logout API call failed, but proceeding with client-side logout.", error);
+        console.error("Lỗi khi đăng xuất API, nhưng đã xóa token phía client:", error);
     }
 }
 
-function* handleValidateToken(action) {
+function* checkAuthOnAppLoad() {
     try {
-        const token = action.payload
-        const { user } = yield call(authApi.validateToken, token)
-        yield put(loginSuccess({ user, token }))
+        const token = localStorage.getItem('jwtToken')
+        if (token) {
+            let user = null;
+            yield put(setAuthFromLocalStorage({ token, user }))
+        }
     } catch (error) {
-        console.error("Token validation failed:", error.message);
+        console.error("Lỗi khi kiểm tra xác thực từ localStorage:", error);
+        // Nếu có lỗi, đảm bảo state được reset để tránh các hành vi không mong muốn
         yield put(logout());
     }
 }
@@ -35,5 +38,5 @@ function* handleValidateToken(action) {
 export function* watchLogin() {
     yield takeLatest(loginStart.type, handleLogin)
     yield takeLatest(logout.type, handleLogout)
-    yield takeLatest(validateToken.type, handleValidateToken)
+    call(checkAuthOnAppLoad)
 }

@@ -5,7 +5,7 @@ import { Home, Archive, Library, UploadCloud, Users } from "lucide-react"
 const Sidebar = () => {
 
     const { user } = useSelector((state) => state.auth)
-    const isAdminOrBoss = user && (user.role === 'admin' || user.role === 'boss')
+    const isAdminOrBoss = user && (user.role === 'ADMIN' || user.role === 'BOSS')
 
     const navLinks = [
         { to: '/', label: 'Home Page', icon: Home },

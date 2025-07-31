@@ -6,7 +6,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreate }) => {
         email: '',
         password: '',
         name: '',
-        role: 'user',
+        role: 'USER',
     })
 
     const [errors, setErrors] = useState({})
@@ -78,8 +78,8 @@ const CreateUserModal = ({ isOpen, onClose, onCreate }) => {
                     <div>
                         <label htmlFor="role" className="block text-sm font-medium text-gray-300 mb-1">Vai trò</label>
                         <select name="role" id="role" value={formData.role} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-red-500 focus:border-red-500">
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
+                            <option value="USER">User</option>
+                            <option value="ADMIN">Admin</option>
                         </select>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import avt from '../../assets/avt_nqd.jpg'
+
 const authInitialState = {
     isAuthenticated: false,
     user: null,
@@ -19,8 +19,14 @@ const authSlice = createSlice({
         loginSuccess(state, action) {
             state.isAuthenticated = true;
             state.status = 'succeeded';
-            state.user = action.payload.user;
+            state.user = {
+                userId: action.payload.userId,
+                role: action.payload.role,
+                email: action.payload.email,
+                name: action.payload.name,
+            };
             state.token = action.payload.token;
+            state.error = null;
         },
         loginFailure(state, action) {
             state.isAuthenticated = false;
@@ -36,8 +42,11 @@ const authSlice = createSlice({
             state.status = 'idle';
             state.error = null;
         },
-        validateToken(state){
-            state.state = 'loading'
+        setAuthFromLocalStorage(state, action){
+            state.token = action.payload.token;
+            state.user = action.payload.user;
+            state.isAuthenticated = !!action.payload.token;
+            state.status = 'succeeded';
         }
     }
 })
@@ -47,7 +56,7 @@ export const {
     loginSuccess,
     loginFailure,
     logout,
-    validateToken,
+    setAuthFromLocalStorage
 } = authSlice.actions
 
 export const authReducer = authSlice.reducer

@@ -73,8 +73,8 @@ const UserManagementPage = () => {
 
     const getRoleBadge = (role) => {
         switch (role) {
-            case 'boss': return 'bg-yellow-500 text-black';
-            case 'admin': return 'bg-sky-500 text-white';
+            case 'BOSS': return 'bg-yellow-500 text-black';
+            case 'ADMIN': return 'bg-sky-500 text-white';
             default: return 'bg-gray-500 text-white';
         }
     }
@@ -98,8 +98,8 @@ const UserManagementPage = () => {
                     className="bg-gray-700 text-white rounded-md px-3 py-2 border border-gray-600 focus:ring-red-500 focus:border-red-500"
                 >
                     <option value="all">Tất cả vai trò</option>
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="USER">User</option>
                 </select>
 
             </div>
@@ -136,7 +136,7 @@ const UserManagementPage = () => {
                                 </td>
                                 {/* Hành động */}
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    {currentUser.role === 'boss' && user.role !== 'boss' && (
+                                    {currentUser.role === 'BOSS' && user.role !== 'BOSS' && (
                                         <div className="relative inline-block text-left" ref={activeMenu === user.id ? menuRef : null}>
                                             <button
                                                 onClick={() => setActiveMenu(activeMenu === user.id ? null : user.id)}
@@ -148,14 +148,14 @@ const UserManagementPage = () => {
                                                 ${activeMenu === user.id ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`
                                             }>
                                                 <div className="py-1" role="menu" aria-orientation="vertical">
-                                                    {user.role === 'user' && <a href="#" onClick={() => handleRoleChange(user.id, 'admin')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành Admin</a>}
-                                                    {user.role === 'admin' && <a href="#" onClick={() => handleRoleChange(user.id, 'user')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành User</a>}
+                                                    {user.role === 'USER' && <a href="#" onClick={() => handleRoleChange(user.id, 'ADMIN')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành Admin</a>}
+                                                    {user.role === 'ADMIN' && <a href="#" onClick={() => handleRoleChange(user.id, 'USER')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành User</a>}
                                                     <a href="#" onClick={() => handleDeleteUser(user)} className="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">Xóa người dùng</a>
                                                 </div>
                                             </div>
                                         </div>
                                     )}
-                                    {currentUser.role === 'admin' && user.role === 'user' && (
+                                    {currentUser.role === 'ADMIN' && user.role === 'USER' && (
                                         <button
                                             onClick={() => handleDeleteUser(user)}
                                             className="text-red-400 hover:text-red-500 p-1 rounded-full hover:bg-gray-700"

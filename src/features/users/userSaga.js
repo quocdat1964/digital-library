@@ -1,5 +1,5 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
-import { userApi } from '../../api/userApi'
+import userService from '../../services/userService'
 import {
     fetchUsers, fetchUsersFailure, fetchUsersSuccess,
     createUser, createUserFailure, createUserSuccess,
@@ -9,40 +9,43 @@ import {
 
 function* handleFetchUsers() {
     try {
-        const users = yield call(userApi.fetchUsers)
+        const users = yield call(userService.getAllUsers)
         yield put(fetchUsersSuccess(users))
     } catch (error) {
-        yield put(fetchUsersFailure(error.message))
+        const errorMessage = error.response?.data?.message || "Lỗi khi lấy danh sách người dùng.";
+        yield put(fetchUsersFailure(errorMessage));
     }
 }
 
 function* handleCreateUser(action) {
     try {
-        yield call(userApi.createUser, action.payload)
-        yield put(createUserSuccess())
-        yield put(fetchUsers()) //Bước này sau khi có api real sẽ bỏ đi
+        const newUser = yield call(userService.createUser, action.payload)
+        yield put(createUserSuccess(newUser))
     } catch (error) {
-        yield put(createUserFailure(error.message))
+        const errorMessage = error.response?.data?.message || "Lỗi khi tạo người dùng.";
+        yield put(createUserFailure(errorMessage));
     }
 }
 
 function* handleUpdateUserRole(action) {
     try {
-        yield call(userApi.updateUserRole, action.payload)
-        yield put(updateUserRoleSuccess())
-        yield put(fetchUsers())  //Bước này sau khi có api real sẽ bỏ đi
+        const { userId, newRole } = action.payload
+        const updatedUser = yield call(userService.updateUserRole, userId, newRole)
+        yield put(updateUserRoleSuccess(updatedUser))
     } catch (error) {
-        yield put(updateUserRoleFailure(error.message))
+        const errorMessage = error.response?.data?.message || "Lỗi khi cập nhật vai trò người dùng.";
+        yield put(updateUserRoleFailure(errorMessage));
     }
 }
 
 function* handleDeleteUser(action) {
     try {
-        yield call(userApi.deleteUser, action.payload)
-        yield put(deleteUserSuccess())
-        yield put(fetchUsers())  //Bước này sau khi có api real sẽ bỏ đi
+        const userId = action.payload
+        yield call(userService.deleteUser, userId)
+        yield put(deleteUserSuccess(userId))
     } catch (error) {
-        yield put(deleteUserFailure(error.message))
+        const errorMessage = error.response?.data?.message || "Lỗi khi xóa người dùng.";
+        yield put(deleteUserFailure(errorMessage));
     }
 }
 

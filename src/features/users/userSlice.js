@@ -24,32 +24,59 @@ const userSlice = createSlice({
         // Sau khi thực hiện xong api sẽ chỉnh lại cho instant update,add,...
         fetchUsers(state) { state.status = 'loading'; },
         fetchUsersSuccess(state, action) {
-            state.status = 'succeeded'; 
+            state.status = 'succeeded';
             state.userList = action.payload;
             state.filteredUserList = filterUsers(state.userList, state.roleFilter)
         },
         fetchUsersFailure(state, action) { state.status = 'failed'; state.error = action.payload; },
 
-        setRoleFilter(state,action){
+        setRoleFilter(state, action) {
             state.roleFilter = action.payload
             state.currentPage = 1
             state.filteredUserList = filterUsers(state.userList, state.roleFilter)
         },
-        setCurrentPage(state, action){
+        setCurrentPage(state, action) {
             state.currentPage = action.payload
         },
 
-        createUser(state, action) { /* Có thể set status loading riêng */ },
-        createUserSuccess(state) { /* Saga sẽ fetch lại list */ },
-        createUserFailure(state, action) { state.error = action.payload; },
+        createUser(state, action) { state.status = 'loading' },
+        createUserSuccess(state) {
+            state.status = 'succeeded'
+            const newUser = action.payload
+            state.userList.push(newUser)
+            state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+            state.error = null
+        },
+        createUserFailure(state, action) {
+            state.status = 'failed'
+            state.error = action.payload;
+        },
 
-        updateUserRole(state, action) { /* ... */ },
-        updateUserRoleSuccess(state) { /* ... */ },
+        updateUserRole(state, action) { state.status = 'loading' },
+        updateUserRoleSuccess(state) { /* ... */
+            state.status = 'succeeded'
+            const updatedUser = action.payload
+            const userIndex = state.userList.findIndex(u => u.userId === updatedUser.userId)
+            if (userIndex !== -1) {
+                state.userList[userIndex] = updatedUser
+                state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+            }
+            state.error = null
+        },
         updateUserRoleFailure(state, action) { state.error = action.payload; },
 
-        deleteUser(state, action) { /* ... */ },
-        deleteUserSuccess(state) { /* ... */ },
-        deleteUserFailure(state, action) { state.error = action.payload; },
+        deleteUser(state, action) { state.status = 'loading' },
+        deleteUserSuccess(state) {
+            state.status = 'succeeded'
+            const deletedUserId = action.payload
+            state.userList = state.userList.filter(u => u.userId !== deletedUserId)
+            state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+            state.error = null
+        },
+        deleteUserFailure(state, action) {
+            state.error = action.payload;
+            state.status = 'failed'
+        },
     },
 })
 
