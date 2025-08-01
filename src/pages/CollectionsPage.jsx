@@ -34,12 +34,13 @@ const CollectionsPage = () => {
         dispatch(createCollection({ ...data, ownerId: currentUser.id }));
     };
     const handleUpdate = (data) => {
+        console.log("CHeck data sent: ", data)
         dispatch(updateCollection(data))
         setEditModal({ isOpen: false, folder: null })
     }
     const handleConfirmDelete = () => {
         if (deleteModal.folder) {
-            dispatch(deleteCollection(deleteModal.folder.id))
+            dispatch(deleteCollection(deleteModal.folder.collectionId))
         }
         setDeleteModal({ isOpen: false, folder: null })
     }

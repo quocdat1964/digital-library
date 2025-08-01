@@ -1,5 +1,5 @@
 import { call, put, take, takeLatest } from 'redux-saga/effects'
-import { collectionApi } from '../../api/collectionApi'
+import collectionService from '../../services/collectionService'
 import {
     fetchCollections, fetchCollectionsFailure, fetchCollectionsSuccess,
     createCollection, createCollectionFailure, createCollectionSuccess,
@@ -10,50 +10,55 @@ import {
 
 function* handleFetchCollections() {
     try {
-        const collections = yield call(collectionApi.fetchCollections)
+        const collections = yield call(collectionService.getAllCollections)
         yield put(fetchCollectionsSuccess(collections))
     } catch (error) {
-        yield put(fetchCollectionsFailure(error.message))
+        const errorMessage = error.response?.data?.message || "Lỗi khi lấy danh sách collections.";
+        yield put(fetchCollectionsFailure(errorMessage));
     }
 }
 
 function* handleCreateCollection(action) {
     try {
-        yield call(collectionApi.createCollection, action.payload);
-        yield put(createCollectionSuccess());
-        yield put(fetchCollections());
+        const newCollection = yield call(collectionService.createCollection, action.payload)
+        yield put(createCollectionSuccess(newCollection))
     } catch (error) {
-        yield put(createCollectionFailure(error.message));
+        const errorMessage = error.response?.data?.message || "Lỗi khi tạo collection mới.";
+        yield put(createCollectionFailure(errorMessage));
     }
 }
 
 function* handleUpdateCollection(action) {
     try {
-        yield call(collectionApi.updateCollection, action.payload);
-        yield put(updateCollectionSuccess());
-        yield put(fetchCollections());
+        const collectionData = action.payload
+        console.log("Check Saga: ", collectionData.collectionId, collectionData.name)
+        const updatedCollection = yield call(collectionService.updateCollection, collectionData.collectionId, collectionData.name)
+        yield put(updateCollectionSuccess(updatedCollection))
     } catch (error) {
-        yield put(updateCollectionFailure(error.message));
+        const errorMessage = error.response?.data?.message || "Lỗi khi cập nhật collection.";
+        yield put(updateCollectionFailure(errorMessage));
     }
 }
 
 function* handleDeleteCollection(action) {
     try {
-        yield call(collectionApi.deleteCollection, action.payload);
-        yield put(deleteCollectionSuccess());
-        yield put(fetchCollections());
+        const collectionId = action.payload
+        yield call(collectionService.deleteCollection, collectionId)
+        yield put(deleteCollectionSuccess(collectionId))
     } catch (error) {
-        yield put(deleteCollectionFailure(error.message));
+        const errorMessage = error.response?.data?.message || "Lỗi khi xóa collection.";
+        yield put(deleteCollectionFailure(errorMessage));
     }
 }
 
-function* handleFetchCollectionDetails(action){
+function* handleFetchCollectionDetails(action) {
     try {
         const collectionId = action.payload
-        const collectionDetails = yield call(collectionApi.fetchCollectionDetails, collectionId)
+        const collectionDetails = yield call(collectionService.getCollectionById, collectionId)
         yield put(fetchCollectionDetailsSuccess(collectionDetails))
     } catch (error) {
-        yield put(fetchCollectionDetailsFailure(error.message))
+        const errorMessage = error.response?.data?.message || "Lỗi khi lấy chi tiết collection.";
+        yield put(fetchCollectionDetailsFailure(errorMessage));
     }
 }
 

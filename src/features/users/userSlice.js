@@ -53,7 +53,7 @@ const userSlice = createSlice({
         },
 
         updateUserRole(state, action) { state.status = 'loading' },
-        updateUserRoleSuccess(state) { /* ... */
+        updateUserRoleSuccess(state) {
             state.status = 'succeeded'
             const updatedUser = action.payload
             const userIndex = state.userList.findIndex(u => u.userId === updatedUser.userId)

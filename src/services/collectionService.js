@@ -12,7 +12,7 @@ const collectionService = {
     },
     updateCollection: async (collectionId, collectionData) => {
         try {
-            const response = await axiosInstance.put(`/collections/${collectionId}`, collectionData)
+            const response = await axiosInstance.put(`/collections/${collectionId}`, {name: collectionData})
             return response.data
         } catch (error) {
             console.error(`Failed to update collection with ID ${collectionId}:`, error.response?.data || error.message);

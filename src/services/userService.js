@@ -39,7 +39,7 @@ const userService = {
     },
     updateUserRole: async (userId, newRole) => {
         try {
-            const response = await axiosInstance.patch(`/users/${userId}/role`, { role: newRole })
+            const response = await axiosInstance.patch(`/users/${userId}/role`, { newRole: newRole })
             return response.data
         } catch (error) {
             console.error(`Failed to update role for user with ID ${userId}:`, error.response?.data || error.message);

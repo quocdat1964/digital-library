@@ -24,12 +24,15 @@ const collectionSlice = createSlice({
             state.error = action.payload
         },
         createCollection: (state, action) => {
-
+            state.updateStatus = 'loading'
         },
         createCollectionSuccess: (state, action) => {
-
+            state.updateStatus = 'succeeded'
+            const newCollection = action.payload
+            state.collectionList.push(newCollection)
         },
         createCollectionFailure: (state, action) => {
+            state.updateStatus = 'failed'
             state.error = action.payload
         },
         updateCollection: (state, action) => {
@@ -37,16 +40,29 @@ const collectionSlice = createSlice({
         },
         updateCollectionSuccess: (state, action) => {
             state.updateStatus = 'succeeded'
+            const updatedCollection = action.payload
+            const index = state.collectionList.findIndex(c => c.collectionId === updatedCollection.collectionId)
+            if (index !== -1) {
+                state.collectionList[index] = updatedCollection
+            }
+            if(state.currentCollection?.collectionId === updatedCollection.collectionId){
+                state.currentCollection = updatedCollection
+            }
         },
         updateCollectionFailure: (state, action) => {
             state.updateStatus = 'failed'
             state.error = action.payload
         },
         deleteCollection: (state, action) => {
-            state.status = 'loading'
+            state.updateStatus = 'loading'
         },
         deleteCollectionSuccess: (state, action) => {
-
+            state.updateStatus = 'succeeded'
+            const deletedId = action.payload
+            state.collectionList = state.collectionList.filter(c => c.collectionId !== deletedId)
+            if(state.currentCollection?.collectionId === deletedId){
+                state.currentCollection = null
+            }
         },
         deleteCollectionFailure: (state, action) => {
             state.status = 'failed'

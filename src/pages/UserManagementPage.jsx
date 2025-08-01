@@ -66,7 +66,8 @@ const UserManagementPage = () => {
 
     const confirmDelete = () => {
         if (deleteModal.user) {
-            dispatch(deleteUser(deleteModal.user.id))
+            console.log("Check delete user: ", deleteModal.user)
+            dispatch(deleteUser(deleteModal.user.userId))
         }
         setDeleteModal({ isOpen: false, user: null })
     }
@@ -137,19 +138,19 @@ const UserManagementPage = () => {
                                 {/* Hành động */}
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     {currentUser.role === 'BOSS' && user.role !== 'BOSS' && (
-                                        <div className="relative inline-block text-left" ref={activeMenu === user.id ? menuRef : null}>
+                                        <div className="relative inline-block text-left" ref={activeMenu === user.userId ? menuRef : null}>
                                             <button
-                                                onClick={() => setActiveMenu(activeMenu === user.id ? null : user.id)}
+                                                onClick={() => setActiveMenu(activeMenu === user.userId ? null : user.userId)}
                                                 className="p-1 rounded-full hover:bg-gray-700"
                                             >
                                                 <MoreVertical size={20} />
                                             </button>
                                             <div className={`origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-gray-900 ring-1 ring-black ring-opacity-5 z-10 transition-all duration-200
-                                                ${activeMenu === user.id ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`
+                                                ${activeMenu === user.userId ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`
                                             }>
                                                 <div className="py-1" role="menu" aria-orientation="vertical">
-                                                    {user.role === 'USER' && <a href="#" onClick={() => handleRoleChange(user.id, 'ADMIN')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành Admin</a>}
-                                                    {user.role === 'ADMIN' && <a href="#" onClick={() => handleRoleChange(user.id, 'USER')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành User</a>}
+                                                    {user.role === 'USER' && <a href="#" onClick={() => handleRoleChange(user.userId, 'ADMIN')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành Admin</a>}
+                                                    {user.role === 'ADMIN' && <a href="#" onClick={() => handleRoleChange(user.userId, 'USER')} className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Đổi thành User</a>}
                                                     <a href="#" onClick={() => handleDeleteUser(user)} className="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">Xóa người dùng</a>
                                                 </div>
                                             </div>

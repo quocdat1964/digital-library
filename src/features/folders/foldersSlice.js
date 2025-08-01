@@ -25,12 +25,15 @@ const foldersSlice = createSlice({
         },
 
         createFolder(state, action) {
-            // có thể add tạm folder vào luôn
+            state.updateStatus = 'loading'
         },
         createFolderSuccess(state, action) {
-            // state.folderList.push(action.payload)
+            state.updateStatus = 'succeeded'
+            const newFolder = action.payload
+            state.folderList.push(newFolder)
         },
         createFolderFailure(state, action) {
+            state.updateStatus = 'failed'
             state.error = action.payload
             // lỗi thì xóa bỏ ở hàm này sau
         },
@@ -40,6 +43,14 @@ const foldersSlice = createSlice({
         },
         updateFolderSuccess(state) {
             state.updateStatus = 'succeeded';
+            const updatedFolder = action.payload
+            const index = state.folderList.findIndex(f => f.folder === updatedFolder.folderId)
+            if (index !== -1) {
+                state.folderList[index] = updatedFolder
+            }
+            if (state.currentFolder?.folderId === updatedFolder.folderId) {
+                state.currentFolder = updatedFolder;
+            }
         },
         updateFolderFailure(state, action) {
             state.updateStatus = 'failed';
@@ -50,7 +61,12 @@ const foldersSlice = createSlice({
             state.error = null;
         },
         deleteFolderSuccess(state) {
-
+            state.updateStatus = 'succeeded'
+            const deletedId = action.payload
+            state.folderList = state.folderList.filter(f => f.folderId !== deletedId)
+            if (state.currentFolder?.folderId === deletedId) {
+                state.currentFolder = null
+            }
         },
         deleteFolderFailure(state, action) {
             state.status = 'failed';

@@ -16,8 +16,7 @@ const EditFolderModal = ({ isOpen, onClose, onSave, folder, showPrivacyOptions =
 
     const handleSave = () => {
         if (name.trim()) {
-            console.log("WTF: ", folder)
-            onSave({ ...folder, name, isPublic })
+            showPrivacyOptions ? onSave({ ...folder, name, isPublic }) : onSave({ ...folder, name })
         }
     }
 
@@ -25,12 +24,12 @@ const EditFolderModal = ({ isOpen, onClose, onSave, folder, showPrivacyOptions =
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             <div className="relative bg-gray-800 rounded-lg shadow-xl w-full max-w-md text-white">
                 <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                    <h3 className="text-lg font-semibold">Chỉnh sửa thư mục</h3>
+                    <h3 className="text-lg font-semibold"> {showPrivacyOptions ? "Chỉnh sửa thư mục" : "Chỉnh sửa bộ sưu tập"}</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-white"><XMarkIcon className="h-6 w-6" /></button>
                 </div>
                 <div className="p-6 space-y-4">
                     <div>
-                        <label htmlFor="edit-folder-name" className="block text-sm font-medium text-gray-300 mb-1">Tên thư mục</label>
+                        <label htmlFor="edit-folder-name" className="block text-sm font-medium text-gray-300 mb-1">{showPrivacyOptions ? "Tên thư mục" : "Tên bộ sưu tập"}</label>
                         <input
                             type="text"
                             id="edit-folder-name"
