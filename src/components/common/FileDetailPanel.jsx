@@ -49,7 +49,6 @@ const FilePreviewer = ({ file }) => {
         case 'gif':
             return <img src={filePreviewUrl} alt={file.fileName} className="w-full h-full object-contain" />;
         case 'pdf':
-            console.log("IM HEREEEEE")
             return <iframe src={filePreviewUrl} title={file.fileName} className="w-full h-full border-0" />;
         case 'mp4':
             return <video src={filePreviewUrl} controls className="w-full h-full bg-black"></video>;

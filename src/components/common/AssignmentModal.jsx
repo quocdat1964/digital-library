@@ -34,22 +34,23 @@ const AssignmentModal = ({ isOpen, onClose, onAssign, title, items = [], current
                     {items.length > 0 ? (
                         <div className='max-h-64 overflow-y-auto space-y-2 pr-2'>
                             {items.map(item => {
-                                // const id = item.folderId || item.collectionId;
-                                const id = item.folderId;
-                                <div
-                                    key={id}
-                                    onClick={() => setSelectedId(id)}
-                                    className={`flex items-center justify-between p-3 rounded-md cursor-pointer transition-colors border-2
+                                const id = item.folderId || item.collectionId;
+                                return (
+                                    <div
+                                        key={id}
+                                        onClick={() => setSelectedId(id)}
+                                        className={`flex items-center justify-between p-3 rounded-md cursor-pointer transition-colors border-2
                                         ${selectedId === id ? 'bg-red-900/50 border-red-500' : 'bg-gray-700 border-transparent hover:bg-gray-600'}
                                     `}
-                                >
-                                    <span>{item.name}</span>
-                                    {selectedId === item.id && <CheckCircleIcon className='h-6 w-6 text-red-400' />}
-                                </div>
+                                    >
+                                        <span>{item.name}</span>
+                                        {selectedId === id && <CheckCircleIcon className='h-6 w-6 text-red-400' />}
+                                    </div>
+                                )
                             })}
                         </div>
                     ) : (
-                        <p className='text-center text-gray-400'>Khong co muc nao de chon</p>
+                        <p className='text-center text-gray-400'>Không có mục để chọn</p>
                     )}
                 </div>
                 <div className='flex justify-end p-4 bg-gray-800/50 border-t border-gray-700'>
@@ -58,7 +59,7 @@ const AssignmentModal = ({ isOpen, onClose, onAssign, title, items = [], current
                         disabled={!selectedId}
                         className='bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700 disabled:bg-gray-500 disabled:cursor-not-allowed'
                     >
-                        Xac nhan
+                        Xác nhận
                     </button>
                 </div>
             </div>

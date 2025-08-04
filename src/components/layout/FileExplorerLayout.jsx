@@ -53,7 +53,7 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
     const updatedFile = type === 'folder'
       ? { ...file, folderId: selectedId }
       : { ...file, collectionId: selectedId }
-
+    console.log("Check updatedFile:", updatedFile)
     dispatch(updateFileDetails(updatedFile))
     handleCloseAssignmentModal()
   }

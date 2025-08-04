@@ -26,7 +26,6 @@ function* handleUpdateFileDetails(action) {
     try {
         
         const { fileId, title, description, author, thumbnailUrl, folderId } = action.payload
-        console.log("Check update data: ", fileId, title, description, author)
         const response = yield call(fileService.updateFile, fileId, {title: title, description: description, author: author, thumbnailUrl: thumbnailUrl, folderId: folderId})
         yield put(updateFileDetailsSuccess(response))
     } catch (error) {
