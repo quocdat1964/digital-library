@@ -5,13 +5,12 @@ import { format, parseISO } from 'date-fns'
 
 const filterAndGroupFiles = (allFiles, searchTerm, fileTypeFilter) => {
     let filteredFiles = [...allFiles]
-
     if (fileTypeFilter && fileTypeFilter !== 'all') {
-        const imgTypes = ['jpg', 'jpeg', 'png', 'gif']
+        const imgTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg']
         if (fileTypeFilter === 'image') {
-            filteredFiles = filteredFiles.filter(file => imgTypes.includes(file.type.toLowerCase()))
+            filteredFiles = filteredFiles.filter(file => imgTypes.includes(file.type?.toLowerCase()))
         } else {
-            filteredFiles = filteredFiles.filter(file => file.type.toLowerCase() === fileTypeFilter.toLowerCase())
+            filteredFiles = filteredFiles.filter(file => file.type?.toLowerCase() === fileTypeFilter.toLowerCase())
         }
     }
 
@@ -20,8 +19,7 @@ const filterAndGroupFiles = (allFiles, searchTerm, fileTypeFilter) => {
     }
 
     return filteredFiles.reduce((acc, file) => {
-        const dateKey = format(parseISO(file.createdAt), 'dd/MM/yyyy')
-        console.log("Check key: ", dateKey)
+        const dateKey = format(parseISO(file.uploadedAt), 'dd/MM/yyyy')
         if (!acc[dateKey]) {
             acc[dateKey] = []
         }
@@ -32,6 +30,8 @@ const filterAndGroupFiles = (allFiles, searchTerm, fileTypeFilter) => {
 
 const initialState = {
     allFiles: [],
+    allFolderFiles: [],
+    allCollectionFiles: [],
     filesByDate: {},
     selectedFileIds: [],
     status: 'idle',
@@ -58,6 +58,32 @@ const fileSlice = createSlice({
             state.status = 'failed'
             state.error = action.payload
         },
+        fetchFilesByFolder(state, action) {
+            state.status = 'loading'
+            state.error = null
+        },
+        fetchFilesByFolderSuccess(state, action) {
+            state.status = 'succeeded'
+            state.allFolderFiles = action.payload
+            state.filesByDate = filterAndGroupFiles(state.allFolderFiles, state.searchTerm, state.fileTypeFilter)
+        },
+        fetchFilesByFolderFailure(state, action) {
+            state.status = 'failed'
+            state.error = action.payload
+        },
+        fetchFilesByCollection(state) {
+            state.status = 'loading'
+            state.error = null
+        },
+        fetchFilesByCollectionSuccess(state, action) {
+            state.status = 'succeeded'
+            state.allCollectionFiles = action.payload
+            state.filesByDate = filterAndGroupFiles(state.allCollectionFiles, state.searchTerm, state.fileTypeFilter)
+        },
+        fetchFilesByCollectionFailure(state, action) {
+            state.status = 'failed'
+            state.error = action.payload
+        },
         setSearchTerm(state, action) {
             state.searchTerm = action.payload
             state.filesByDate = filterAndGroupFiles(state.allFiles, state.searchTerm, state.fileTypeFilter)
@@ -72,6 +98,8 @@ const fileSlice = createSlice({
         },
         deleteFileSuccess(state) {
             state.deleteStatus = 'succeeded'
+            state.allFiles = state.allFiles.filter(file => file.fileId !== action.payload)
+            state.filesByDate = filterAndGroupFiles(state.allFiles, state.searchTerm, state.fileTypeFilter)
         },
         deleteFileFailure(state, action) {
             state.deleteStatus = 'failed'
@@ -95,10 +123,26 @@ const fileSlice = createSlice({
         },
         deleteMultipleFilesSuccess(state){
             state.deleteStatus = 'succeeded'
+            const fileIdsToDelete = action.payload
+            state.allFiles = state.allFiles.filter(file => !fileIdsToDelete.includes(file.fileId))
+            state.filesByDate = filterAndGroupFiles(state.allFiles, state.searchTerm, state.fileTypeFilter)
             state.selectedFileIds = []
         },
         deleteMultipleFilesFailure(state, action){
             state.deleteStatus = 'failed'
+            state.error = action.payload
+        },
+        addFile(state){
+            state.status = 'loading'
+            state.error = null
+        },
+        addFileSuccess(state, action){
+            state.status = 'succeeded'
+            state.allFiles.push(action.payload)
+            state.filesByDate = filterAndGroupFiles(state.allFiles, state.searchTerm, state.fileTypeFilter)
+        },
+        addFileFailure(state, action){
+            state.status = 'failed'
             state.error = action.payload
         }
     }
@@ -108,6 +152,12 @@ export const {
     fetchFiles,
     fetchFilesSuccess,
     fetchFilesFailure,
+    fetchFilesByCollection,
+    fetchFilesByCollectionFailure,
+    fetchFilesByCollectionSuccess,
+    fetchFilesByFolder,
+    fetchFilesByFolderFailure,
+    fetchFilesByFolderSuccess,
     setSearchTerm,
     setFileTypeFilter,
     deleteFile,
@@ -117,7 +167,10 @@ export const {
     clearFileSelection,
     deleteMultipleFiles,
     deleteMultipleFilesSuccess,
-    deleteMultipleFilesFailure
+    deleteMultipleFilesFailure,
+    addFile,
+    addFileSuccess,
+    addFileFailure
 } = fileSlice.actions
 
 export default fileSlice.reducer

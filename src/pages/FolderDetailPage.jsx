@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, Link } from 'react-router-dom';
 import { fetchFolderDetails } from '../features/folders/foldersSlice';
-import { fetchFiles } from '../features/files/fileSlice';
+import { fetchFilesByFolder } from '../features/files/fileSlice';
 import { closeFileDetailPanel } from '../features/files/fileDetailSlice';
 import FileExplorerLayout from '../components/layout/FileExplorerLayout';
 import { format } from 'date-fns';
@@ -11,54 +11,12 @@ import { ChevronRightIcon } from '@heroicons/react/24/solid';
 const FolderDetailPage = () => {
     const dispatch = useDispatch()
     const { folderId } = useParams()
-
     const { currentFolder, status: folderStatus } = useSelector(state => state.folders)
-    const { allFiles, status: fileStatus, searchTerm, fileTypeFilter } = useSelector(state => state.files)
+    const { filesByDate, status, error} = useSelector((state) => state.files)
 
-    useEffect(() => {
-        dispatch(closeFileDetailPanel())
+    const isLoading = folderStatus === 'loading' || status === 'loading'
 
-        if (folderId) {
-            dispatch(fetchFolderDetails(folderId))
-        }
-        if (fileStatus === 'idle') {
-            dispatch(fetchFiles())
-        }
-
-    }, [dispatch, folderId, fileStatus])
-
-    const filesForThisFolder = useMemo(() => {
-        if (!allFiles || allFiles.length === 0) return {}
-        //Lọc theo folder
-        let filtered = allFiles.filter(file => file.folderId === folderId)
-
-        //Lọc theo loại file
-        if (fileTypeFilter && fileTypeFilter !== 'all') {
-            const imageTypes = ['jpg', 'jpeg', 'png', 'gif'];
-            if (fileTypeFilter === 'image') {
-                filtered = filtered.filter(file => imageTypes.includes(file.type.toLowerCase()));
-            } else {
-                filtered = filtered.filter(file => file.type.toLowerCase() === fileTypeFilter.toLowerCase());
-            }
-        }
-
-        //Lọc theo thanh tìm kiếm
-        if (searchTerm) {
-            const lowercasedTerm = searchTerm.toLowerCase();
-            filtered = filtered.filter(file =>
-                file.name.toLowerCase().includes(lowercasedTerm)
-            );
-        }
-
-        return filtered.reduce((acc, file) => {
-            const dateKey = format(new Date(file.createdAt), 'dd/MM/yyyy')
-            if (!acc[dateKey]) acc[dateKey] = []
-            acc[dateKey].push(file)
-            return acc
-        }, {})
-    }, [allFiles, folderId, searchTerm, fileTypeFilter])
-
-    const isLoading = folderStatus === 'loading' || fileStatus === 'loading'
+    console.log("Check cur folder:", currentFolder)
 
     if (isLoading) {
         return <div className='p-4 text-center'>Dang tai du lieu thu muc</div>
@@ -86,9 +44,9 @@ const FolderDetailPage = () => {
     return (
         <FileExplorerLayout
             pageTitle={breadcrumbTitle}
-            filesByDate={filesForThisFolder}
-            status='succeeded'
-            error={null}
+            filesByDate={filesByDate}
+            status={status}
+            error={error}
         />
     )
 }

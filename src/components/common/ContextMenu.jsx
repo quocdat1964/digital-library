@@ -40,7 +40,7 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick,
     if (!file) return null
 
     const canPerformActions = currentUser && file &&
-        (currentUser.id === file.ownerId || currentUser.role === 'ADMIN' || currentUser.role === 'BOSS');
+        (currentUser.userId === file.ownerId || currentUser.role === 'BOSS');
 
     const handleItemClick = (action) => {
         const file = menuState.file
@@ -68,8 +68,8 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick,
             style={{ top: menuState.y, left: menuState.x }}
         >
             <div className="px-2 pb-2 mb-2 border-b border-gray-600">
-                <p className="font-bold truncate">{menuState.file?.name}</p>
-                <p className="text-xs text-gray-400">Ngày: {new Date(menuState.file?.createAt).toLocaleString('vi-VN')}</p>
+                <p className="font-bold truncate">{menuState.file?.fileName}</p>
+                <p className="text-xs text-gray-400">Thời gian: {new Date(menuState.file?.uploadedAt).toLocaleString('vi-VN')}</p>
             </div>
 
             {canPerformActions ? (

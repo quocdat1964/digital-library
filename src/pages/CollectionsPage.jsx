@@ -6,6 +6,7 @@ import {
     createCollection,
     updateCollection,
     deleteCollection,
+    fetchCollectionDetails,
 } from "../features/collections/collectionSlice";
 import FolderCard from '../components/common/FolderCard'
 import CreateFolderModal from "../components/common/CreateFolderModal";
@@ -14,6 +15,8 @@ import ConfirmationModal from '../components/common/ConfirmationModal'
 import FolderContextMenu from '../components/common/FolderContextMenu'
 import { useContextMenu } from '../hooks/useContextMenu'
 import { FolderPlusIcon } from "@heroicons/react/24/solid";
+import { fetchFilesByCollection } from "../features/files/fileSlice";
+import { closeFileDetailPanel } from "../features/files/fileDetailSlice";
 
 const CollectionsPage = () => {
     const dispatch = useDispatch()
@@ -34,7 +37,6 @@ const CollectionsPage = () => {
         dispatch(createCollection({ ...data, ownerId: currentUser.id }));
     };
     const handleUpdate = (data) => {
-        console.log("CHeck data sent: ", data)
         dispatch(updateCollection(data))
         setEditModal({ isOpen: false, folder: null })
     }
@@ -46,6 +48,9 @@ const CollectionsPage = () => {
     }
 
     const handleClick = (collectionId) => {
+        dispatch(fetchCollectionDetails(collectionId))
+        dispatch(fetchFilesByCollection(collectionId))
+        dispatch(closeFileDetailPanel())
         navigate(`/collections/${collectionId}`);
     };
 
@@ -88,7 +93,7 @@ const CollectionsPage = () => {
                         <FolderCard
                             key={collection.id}
                             folder={collection}
-                            onClick={() => handleClick(collection.id)}
+                            onClick={() => handleClick(collection.collectionId)}
                             onContextMenu={showContextMenu}
                             showPrivacy={false}
                         />

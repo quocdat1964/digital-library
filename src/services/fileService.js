@@ -3,14 +3,14 @@ import axiosInstance from "../utils/axiosInstance";
 const fileService = {
     createFile: async (fileData) => {
         try {
-            const response = await axiosInstance('/files', fileData)
+            const response = await axiosInstance.post('/files', fileData)
             return response.data
         } catch (error) {
             console.error('Failed to create file metadata:', error.response?.data || error.message);
             throw error;
         }
     },
-    updateFile: async (FileDiffIcon, fileData) => {
+    updateFile: async (fileId, fileData) => {
         try {
             const response = await axiosInstance.put(`/files/${fileId}`, fileData)
             return response.data
@@ -117,7 +117,7 @@ const fileService = {
             let originalFileName = fileName
             if (contentDisposition) {
                 const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                if (fileNameMatch && fileNameMatch.lenght > 1) {
+                if (fileNameMatch && fileNameMatch.length > 1) {
                     originalFileName = fileNameMatch[1]
                 }
             }
@@ -129,6 +129,26 @@ const fileService = {
             return "File download initiated"
         } catch (error) {
             console.error(`Failed to download file ${fileName}:`, error.response?.data || error.message);
+            throw error;
+        }
+    },
+    viewFile: async (storagePath, fileType) => {
+        try {
+            const response = await axiosInstance.get(`/files/name/${storagePath}`, {
+                responseType: 'blob'
+            })
+
+            if (response.data) {
+                // const blob = new Blob([response.data], { type: fileType })
+                // const url = window.URL.createObjectURL(blob)
+                const url = window.URL.createObjectURL(response.data)
+                return url
+            } else {
+                throw new Error('No file data received')
+            }
+
+        } catch (error) {
+            console.error(`Failed to view file ${storagePath}:`, error.response?.data || error.message);
             throw error;
         }
     }

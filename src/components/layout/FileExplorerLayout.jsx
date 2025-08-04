@@ -72,7 +72,7 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
 
   const handleConfirmDelete = () => {
     if (deleteModal.file) {
-      dispatch(deleteFile(deleteModal.file.id));
+      dispatch(deleteFile(deleteModal.file.fileId));
     }
     handleCloseDeleteModal();
   };
@@ -83,17 +83,6 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
     dispatch(deleteMultipleFiles(selectedFileIds))
     setIsBulkDeleteModalOpen(false)
   }
-
-  // useEffect(() => {
-
-  //   if (filesByDate) {
-  //     const initialOpenState = Object.keys(filesByDate).reduce((acc, dateKey) => {
-  //       acc[dateKey] = true;
-  //       return acc;
-  //     }, {});
-  //     setOpenSections(initialOpenState);
-  //   }
-  // }, [filesByDate]);
 
   const toggleSection = (dateKey) => {
     setOpenSections(prev => ({ ...prev, [dateKey]: !prev[dateKey] }));
@@ -159,11 +148,11 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                   {filesByDate[dateKey].map((file) => (
                     <FileCard
-                      key={file.id}
+                      key={file.fileId}
                       file={file}
                       onContextMenu={showContextMenu}
-                      isSelected={selectedFileIds.includes(file.id)}
-                      isTicked={selectedFile?.id === file.id}
+                      isSelected={selectedFileIds.includes(file.fileId)}
+                      isTicked={selectedFile?.fileId === file.fileId}
                     />
                   ))}
                 </div>
@@ -213,7 +202,7 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
         isOpen={assignmentModal.isOpen}
         onClose={handleCloseAssignmentModal}
         onAssign={handleConfirmAssignment}
-        title={assignmentModal.type === 'folder' ? 'Di chuyen vao kho luu tru' : 'Them vao bo suu tap'}
+        title={assignmentModal.type === 'folder' ? 'Đổi kho lưu trữ' : 'Thêm vào bộ sưu tập'}
         items={assignmentModal.type === 'folder' ? folderList : collectionList}
         currentItemId={assignmentModal.type === 'folder' ? assignmentModal.file?.folderId : assignmentModal.file?.collectionId}
       />

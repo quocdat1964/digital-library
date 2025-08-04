@@ -4,7 +4,7 @@ import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 const FolderContextMenu = ({ menuState, closeMenu, onEditClick, onDeleteClick, currentUser }) => {
     const menuRef = useRef(null)
 
-    
+
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -23,7 +23,7 @@ const FolderContextMenu = ({ menuState, closeMenu, onEditClick, onDeleteClick, c
 
     if (!folder) return null
 
-    const isOwner = currentUser ? folder && currentUser.userId === folder.ownerId : true
+    const isOwnerOrBoss = currentUser ? folder && (currentUser.userId === folder.ownerId || currentUser.role === 'BOSS') : true
 
     return (
         <div
@@ -31,7 +31,7 @@ const FolderContextMenu = ({ menuState, closeMenu, onEditClick, onDeleteClick, c
             className="fixed z-50 w-48 bg-[#2d2c35] rounded-lg shadow-lg p-2 text-white text-sm"
             style={{ top: menuState.y, left: menuState.x }}
         >
-            {isOwner ? (
+            {isOwnerOrBoss ? (
                 <ul>
                     <li
                         onClick={() => { onEditClick(folder); closeMenu(); }}

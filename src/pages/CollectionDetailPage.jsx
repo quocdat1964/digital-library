@@ -13,30 +13,9 @@ const CollectionDetailPage = () => {
     const { collectionId } = useParams()
 
     const { currentCollection, status: collectionStatus } = useSelector(state => state.collections)
-    const { allFiles, status: fileStatus } = useSelector(state => state.files)
+    const { filesByDate, status, error} = useSelector((state) => state.files)
 
-    useEffect(() => {
-        dispatch(closeFileDetailPanel())
-        if (collectionId) {
-            dispatch(fetchCollectionDetails(collectionId))
-        }
-        dispatch(fetchFiles())
-    }, [dispatch, collectionId])
-
-    const filesForThisCollection = useMemo(() => {
-        if (!allFiles || allFiles.length === 0) return {}
-
-        const filtered = allFiles.filter(file => file.collectionId === collectionId)
-
-        return filtered.reduce((acc, file) => {
-            const dateKey = format(new Date(file.createdAt), 'dd/MM/yyyy')
-            if (!acc[dateKey]) acc[dateKey] = []
-            acc[dateKey].push(file)
-            return acc
-        }, {})
-    }, [allFiles, collectionId])
-
-    const isLoading = collectionStatus === 'loading' || fileStatus === 'loading'
+    const isLoading = collectionStatus === 'loading' || status === 'loading'
 
     if (isLoading) {
         return <div className='p-4 text-center'>Dang tai du lieu bo suu tap...</div>
@@ -64,9 +43,9 @@ const CollectionDetailPage = () => {
     return (
         <FileExplorerLayout 
             pageTitle={breadcrumbTitle}
-            filesByDate={filesForThisCollection}
-            status='succeeded'
-            error={null}
+            filesByDate={filesByDate}
+            status={status}
+            error={error}
         />
     )
 }

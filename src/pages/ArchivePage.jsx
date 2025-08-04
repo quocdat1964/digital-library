@@ -5,7 +5,8 @@ import {
     fetchFolders,
     createFolder,
     updateFolder,
-    deleteFolder
+    deleteFolder,
+    fetchFolderDetails
 } from "../features/folders/foldersSlice";
 import { FolderPlusIcon } from "@heroicons/react/24/solid";
 import FolderCard from '../components/common/FolderCard';
@@ -14,6 +15,8 @@ import ConfirmationModal from "../components/common/ConfirmationModal";
 import FolderContextMenu from "../components/common/FolderContextMenu";
 import EditFolderModal from "../components/common/EditFolderModal";
 import { useContextMenu } from "../hooks/useContextMenu";
+import { fetchFilesByFolder } from "../features/files/fileSlice";
+import { closeFileDetailPanel } from "../features/files/fileDetailSlice";
 
 const ArchivePage = () => {
     const dispatch = useDispatch()
@@ -39,18 +42,20 @@ const ArchivePage = () => {
         dispatch(createFolder(payload))
     }
 
-    const handleUpdateFolder = (folderData) => {
+    const handleUpdateFolder = (folderData) => {   
         dispatch(updateFolder(folderData));
-        console.log("huhihoheha: ", editModal.folder)
         setEditModal({ isOpen: false, folder: null });
     };
     const handleConfirmDelete = () => {
         if (deleteModal.folder) {
-            dispatch(deleteFolder(deleteModal.folder.id));
+            dispatch(deleteFolder(deleteModal.folder.folderId));
         }
         setDeleteModal({ isOpen: false, folder: null });
     };
     const handleFolderClick = (folderId) => {
+        dispatch(fetchFolderDetails(folderId))
+        dispatch(fetchFilesByFolder(folderId))
+        dispatch(closeFileDetailPanel())
         navigate(`/archive/${folderId}`);
     };
     return (
@@ -92,7 +97,7 @@ const ArchivePage = () => {
                         <FolderCard
                             key={folder.id}
                             folder={folder}
-                            onClick={() => handleFolderClick(folder.id)}
+                            onClick={() => handleFolderClick(folder.folderId)}
                             onContextMenu={showContextMenu}
                         />
                     ))}

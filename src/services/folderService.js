@@ -10,7 +10,7 @@ const folderService = {
             throw error;
         }
     },
-    updateFolder: async (FolderDotIcon, folderData) => {
+    updateFolder: async (folderId, folderData) => {
         try {
             const response = await axiosInstance.put(`/folders/${folderId}`, folderData)
             return response.data
@@ -21,6 +21,7 @@ const folderService = {
     },
     deleteFolder: async (folderId) => {
         try {
+            console.log("Checkkkkk: ",`/folders/${folderId}`)
             await axiosInstance.delete(`/folders/${folderId}`)
         } catch (error) {
             console.error(`Failed to delete folder with ID ${folderId}:`, error.response?.data || error.message);

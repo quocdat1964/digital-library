@@ -57,7 +57,7 @@ const foldersSlice = createSlice({
             state.error = action.payload;
         },
         deleteFolder(state, action) {
-            state.status = 'loading';
+            state.updateStatus = 'loading';
             state.error = null;
         },
         deleteFolderSuccess(state) {
@@ -69,7 +69,7 @@ const foldersSlice = createSlice({
             }
         },
         deleteFolderFailure(state, action) {
-            state.status = 'failed';
+            state.updateStatus = 'failed';
             state.error = action.payload;
         },
         fetchFolderDetails(state, action) {

@@ -4,9 +4,10 @@ import { toggleFileSelection } from "../../features/files/fileSlice";
 
 const FileCard = ({ file, onContextMenu, isSelected, isTicked }) => {
     const dispatch = useDispatch()
-
     const getFileTypeColor = (type) => {
-        switch (type.toLowerCase()) {
+        const typeSplit = type.split('/')
+
+        switch (typeSplit[0].toLowerCase()) {
             case 'pdf': return 'bg-red-500';
             case 'jpg':
             case 'jpeg':
@@ -18,12 +19,12 @@ const FileCard = ({ file, onContextMenu, isSelected, isTicked }) => {
 
     const handleCardClick = (e) => {
         e.stopPropagation()
-        dispatch(fetchFileDetails(file.id))
+        dispatch(fetchFileDetails(file.fileId))
     }
 
     const handleCheckboxChange = (e) => {
         e.stopPropagation();
-        dispatch(toggleFileSelection(file.id))
+        dispatch(toggleFileSelection(file.fileId))
     }
 
     return (
@@ -39,11 +40,11 @@ const FileCard = ({ file, onContextMenu, isSelected, isTicked }) => {
             <div className="relative aspect-square">
                 <img
                     src={file.thumbnailUrl}
-                    alt={file.name}
+                    alt={file.fileName}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute top-2 right-2 px-2 py-1 text-xs text-white rounded-md" style={{ backgroundColor: getFileTypeColor(file.type) }}>
-                    {file.type.toUpperCase()}
+                <div className="absolute top-2 right-2 px-2 py-1 text-xs text-white rounded-md" style={{ backgroundColor: getFileTypeColor(file.fileType) }}>
+                    {file.fileType.toUpperCase()}
                 </div>
                 <div className="absolute top-2 left-2" onClick={(e) => e.stopPropagation()}>
                     <input
@@ -55,7 +56,7 @@ const FileCard = ({ file, onContextMenu, isSelected, isTicked }) => {
                 </div>
             </div>
             <div className="p-3">
-                <p className="text-white text-sm truncate group-hover:underline">{file.name}</p>
+                <p className="text-white text-sm truncate group-hover:underline">{file.fileName}</p>
             </div>
         </div>
     )

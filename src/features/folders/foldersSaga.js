@@ -41,7 +41,7 @@ function* handleCreateFolder(action) {
 function* handleUpdateFolder(action) {
     try {
         const folderData = action.payload
-        const updatedFolder = yield call(folderService.updateFolder, folderData.folderId, folderData.name)
+        const updatedFolder = yield call(folderService.updateFolder, folderData.folderId, {name: folderData.name, isPublic: folderData.isPublic})
         yield put(updateFolderSuccess(updatedFolder))
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Lỗi khi cập nhật folder.";
@@ -52,14 +52,15 @@ function* handleUpdateFolder(action) {
 function* handleDeleteFolder(action) {
     try {
         const folderId = action.payload
-        yield call(folderService.deleteFolder, folderId)
-        yield put(deleteFolderSuccess(folderId))
+        const response = yield call(folderService.deleteFolder, folderId);
+        yield put(deleteFolderSuccess(folderId));
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Lỗi khi xóa folder.";
         yield put(deleteFolderFailure(errorMessage));
     }
 }
 
+// Chỗ này nên là getFilesByFolder
 function* handleFetchFolderDetails(action) {
     try {
         const folderId = action.payload

@@ -33,18 +33,20 @@ const AssignmentModal = ({ isOpen, onClose, onAssign, title, items = [], current
                 <div className='p-6'>
                     {items.length > 0 ? (
                         <div className='max-h-64 overflow-y-auto space-y-2 pr-2'>
-                            {items.map(item => (
+                            {items.map(item => {
+                                // const id = item.folderId || item.collectionId;
+                                const id = item.folderId;
                                 <div
-                                    key={item.id}
-                                    onClick={() => setSelectedId(item.id)}
+                                    key={id}
+                                    onClick={() => setSelectedId(id)}
                                     className={`flex items-center justify-between p-3 rounded-md cursor-pointer transition-colors border-2
-                                        ${selectedId === item.id ? 'bg-red-900/50 border-red-500' : 'bg-gray-700 border-transparent hover:bg-gray-600'}
+                                        ${selectedId === id ? 'bg-red-900/50 border-red-500' : 'bg-gray-700 border-transparent hover:bg-gray-600'}
                                     `}
                                 >
                                     <span>{item.name}</span>
                                     {selectedId === item.id && <CheckCircleIcon className='h-6 w-6 text-red-400' />}
                                 </div>
-                            ))}
+                            })}
                         </div>
                     ) : (
                         <p className='text-center text-gray-400'>Khong co muc nao de chon</p>

@@ -2,24 +2,57 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import axios from "axios";
-import { closeFileDetailPanel, updateFileDetails } from "../../features/files/fileDetailSlice";
+import { closeFileDetailPanel, updateFileDetails, fetchFilePreview } from "../../features/files/fileDetailSlice";
 import { XMarkIcon, ArrowDownTrayIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
 
 const FilePreviewer = ({ file }) => {
-    if (!file || !file.contentUrl) {
-        return <div className="flex items-center justify-center h-full bg-gray-900 text-white p-4 text-center">Không có nội dung xem trước</div>
+
+    const dispatch = useDispatch()
+    const { filePreviewUrl, previewStatus, previewError } = useSelector(state => state.fileDetail)
+
+    useEffect(() => {
+        if (file && file.storagePath) {
+            dispatch(fetchFilePreview({ storagePath: file.storagePath, fileType: file.fileType }))
+        }
+
+        return () => {
+            if (filePreviewUrl) {
+                window.URL.revokeObjectURL(filePreviewUrl)
+            }
+        }
+    }, [file, dispatch])
+
+    if (previewStatus === 'loading') {
+        return <div className="flex items-center justify-center h-full bg-gray-900 text-white p-4 text-center">Đang tải file...</div>;
     }
 
-    switch (file.type.toLowerCase()) {
+    // Hiển thị lỗi nếu không tải được file
+    if (previewError) {
+        return <div className="flex items-center justify-center h-full bg-gray-900 text-red-500 p-4 text-center">Lỗi: {previewError}</div>;
+    }
+
+    // Nếu không có URL, hiển thị thông báo mặc định
+    if (!filePreviewUrl) {
+        return <div className="flex items-center justify-center h-full bg-gray-900 text-white p-4 text-center">Không có nội dung xem trước</div>;
+    }
+
+    // Phân tích loại file để hiển thị đúng component
+    const typeSplit = file.fileType.split('/');
+    if(typeSplit[0] === 'text'){
+        return <iframe src={filePreviewUrl} title={file.fileName} className="w-full h-full border-0" />;
+
+    }
+    switch (typeSplit[1]) {
         case 'jpg':
         case 'jpeg':
         case 'png':
         case 'gif':
-            return <img src={file.contentUrl} alt={file.name} className="w-full h-full object-contain" />
+            return <img src={filePreviewUrl} alt={file.fileName} className="w-full h-full object-contain" />;
         case 'pdf':
-            return <iframe src={file.contentUrl} title={file.name} className="w-full h-full border-0" />
+            console.log("IM HEREEEEE")
+            return <iframe src={filePreviewUrl} title={file.fileName} className="w-full h-full border-0" />;
         case 'mp4':
-            return <video src={file.contentUrl} controls className="w-full h-full bg-black"></video>
+            return <video src={filePreviewUrl} controls className="w-full h-full bg-black"></video>;
         default:
             return <div className="flex items-center justify-center h-full bg-gray-900 text-white p-4 text-center">Xem trước không được hỗ trợ cho loại file này</div>;
     }
@@ -118,11 +151,10 @@ const FileDetailPanel = () => {
             alert('Không thể tải file. Vui lòng thử lại.');
         }
     }
-
     const isLoading = status === 'loading'
     const isUpdating = status === 'updating'
     const canEdit = selectedFile && currentUser &&
-        (selectedFile.ownerId === currentUser.id || currentUser.role === 'admin' || currentUser.role === 'boss');
+        (selectedFile.ownerId === currentUser.userId || currentUser.role === 'ADMIN' || currentUser.role === 'BOSS');
 
     return (
 
@@ -130,7 +162,7 @@ const FileDetailPanel = () => {
             {/* <div className="bg-[#2d2c35] rounded-lg flex flex-col h-full"> */}
             <header className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
                 <h2 className="text-lg font-semibold text-white truncate pr-4">
-                    {isLoading ? 'Đang tải...' : selectedFile?.name || ''}
+                    {isLoading ? 'Đang tải...' : selectedFile?.fileName || ''}
                 </h2>
                 <div className="flex items-center space-x-4 text-white flex-shrink-0">
                     <button
@@ -162,9 +194,8 @@ const FileDetailPanel = () => {
                                 <EditableInfoRow label="Tiêu đề" value={formData.title} onChange={(e) => handleInputChange(e, 'title')} disabled={!canEdit} />
                                 <EditableInfoRow label="Mô tả" value={formData.description} onChange={(e) => handleInputChange(e, 'description')} disabled={!canEdit} />
                                 <EditableInfoRow label="Tác giả" value={formData.author} onChange={(e) => handleInputChange(e, 'author')} disabled={!canEdit} />
-                                <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Ngày</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{new Date(selectedFile.createdAt).toLocaleString('vi-VN')}</dd></div>
-                                <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Người tải lên</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.uploader}</dd></div>
-                                <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Số lượt tải</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.downloadCount}</dd></div>
+                                <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Thời gian</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{new Date(selectedFile.uploadedAt).toLocaleString('vi-VN')}</dd></div>
+                                <div className="grid grid-cols-3 gap-4"><dt className="text-sm font-medium text-gray-400">Người tải lên</dt><dd className="col-span-2 mt-1 text-sm text-gray-200">{selectedFile.uploaderEmail}</dd></div>
                             </dl>
                             <div className="mt-6 flex justify-end">
                                 <button

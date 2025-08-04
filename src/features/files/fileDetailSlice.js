@@ -6,7 +6,10 @@ const initialState = {
     selectedFile: null,
     isPanelOpen: false,
     status: 'idle',
-    error: null
+    error: null,
+    filePreviewUrl: null,
+    previewStatus: 'idle',
+    previewError: null
 }
 
 const fileDetailSlice = createSlice({
@@ -31,6 +34,9 @@ const fileDetailSlice = createSlice({
             state.isPanelOpen = false;
             state.selectedFile = null;
             state.status = 'idle';
+            state.filePreviewUrl = null; // Reset URL khi đóng panel
+            state.previewStatus = 'idle';
+            state.previewError = null;
         },
         updateFileDetails(state, action) {
             state.status = 'updating';
@@ -42,6 +48,19 @@ const fileDetailSlice = createSlice({
         updateFileDetailsFailure(state, action) {
             state.status = 'failed';
             state.error = action.payload;
+        },
+        fetchFilePreview(state, action){
+            state.previewStatus = 'loading'
+            state.filePreviewUrl = null
+            state.previewError = null
+        },
+        fetchFilePreviewSuccess(state, action){
+            state.previewStatus = 'succeeded'
+            state.filePreviewUrl = action.payload
+        },
+        fetchFilePreviewFailure(state, action){
+            state.previewStatus = 'failed'
+            state.previewError = action.payload
         }
     }
 })
@@ -53,7 +72,10 @@ export const {
     closeFileDetailPanel,
     updateFileDetails,
     updateFileDetailsSuccess,
-    updateFileDetailsFailure
+    updateFileDetailsFailure,
+    fetchFilePreview,
+    fetchFilePreviewSuccess,
+    fetchFilePreviewFailure
 
 } = fileDetailSlice.actions
 
