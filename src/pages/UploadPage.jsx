@@ -17,8 +17,6 @@ const UploadPage = () => {
 
     const { status: uploadStatus, progress, error: uploadError } = useSelector(state => state.upload)
 
-    console.log('[UploadPage] Đang render. Số lượng thư mục (folderList):', folderList.length);
-
     useEffect(() => {
         dispatch(fetchFolders())
         dispatch(resetUploadState())

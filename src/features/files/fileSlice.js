@@ -33,6 +33,8 @@ const initialState = {
     allFolderFiles: [],
     allCollectionFiles: [],
     filesByDate: {},
+    filesByDateInFolder: {},
+    filesByDateInCollection: {},
     selectedFileIds: [],
     status: 'idle',
     deleteStatus: 'idle',
@@ -144,7 +146,42 @@ const fileSlice = createSlice({
         addFileFailure(state, action){
             state.status = 'failed'
             state.error = action.payload
-        }
+        },
+        addFileToCollection: (state) => {
+            state.status = 'loading';
+            state.error = null;
+        },
+        addFileToCollectionSuccess: (state, action) => {
+            state.status = 'succeeded';
+            // const updatedFile = action.payload;
+            // const index = state.files.findIndex(f => f.id === updatedFile.id);
+            // if (index !== -1) {
+            //     // Cập nhật file trong danh sách hiện tại
+            //     state.files[index] = updatedFile;
+            // }
+        },
+        addFileToCollectionFailure: (state, action) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        },
+        // Reducers mới để xử lý xóa file khỏi collection
+        removeFileFromCollection: (state) => {
+            state.status = 'loading';
+            state.error = null;
+        },
+        removeFileFromCollectionSuccess: (state, action) => {
+            state.status = 'succeeded';
+            // const { fileId, collectionId } = action.payload;
+            // const file = state.files.find(f => f.id === fileId);
+            // if (file) {
+            //     // Lọc bỏ collectionId khỏi mảng collections của file
+            //     file.collections = file.collections.filter(c => c !== collectionId);
+            // }
+        },
+        removeFileFromCollectionFailure: (state, action) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        },
     }
 })
 
@@ -170,7 +207,13 @@ export const {
     deleteMultipleFilesFailure,
     addFile,
     addFileSuccess,
-    addFileFailure
+    addFileFailure,
+    addFileToCollection,
+    addFileToCollectionFailure,
+    addFileToCollectionSuccess,
+    removeFileFromCollection,
+    removeFileFromCollectionFailure,
+    removeFileFromCollectionSuccess
 } = fileSlice.actions
 
 export default fileSlice.reducer

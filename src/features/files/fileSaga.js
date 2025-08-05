@@ -20,7 +20,13 @@ import {
     deleteMultipleFilesFailure,
     addFile,
     addFileSuccess,
-    addFileFailure
+    addFileFailure,
+    addFileToCollection,
+    addFileToCollectionFailure,
+    addFileToCollectionSuccess,
+    removeFileFromCollection,
+    removeFileFromCollectionFailure,
+    removeFileFromCollectionSuccess
 } from "./fileSlice";
 import { closeFileDetailPanel } from './fileDetailSlice';
 
@@ -62,9 +68,7 @@ function* handleFetchFilesByCollection(action) {
             yield put(fetchFilesByCollectionSuccess([]))
             return
         }
-        // console.log("Check point")
         const files = yield call(fileService.getFilesInCollection, collectionId)
-        // console.log("Check fileCollection:", files)
         yield put(fetchFilesByCollectionSuccess(files))
     } catch (error) {
         yield put(fetchFilesByCollectionFailure(error.message))
@@ -113,24 +117,37 @@ function* handleDeleteMultipleFiles(action) {
     }
 }
 
-// export function* watchFetchFiles() {
-//     yield takeLatest(fetchFiles.type, handleFetchFiles)
-//     yield takeLatest(fetchFilesByFolder.type, handleFetchFilesByFolder)
-//     yield takeLatest(fetchFilesByCollection.type, handleFetchFilesByCollection)
-//     yield takeLatest(addFile.type, handleAddFile)
-//     yield takeLatest(deleteFile.type, handleDeleteFile)
-//     yield takeLatest(deleteMultipleFiles.type, handleDeleteMultipleFiles)
-// }
+function* handleAddFileToCollection(action){
+    try {
+        const {fileId, collectionId} = action.payload
+        console.log("Here:", fileId, collectionId)
+        yield call(fileService.addFileToCollection, fileId, collectionId)
+        yield put(addFileToCollectionSuccess())
+    } catch (error) {
+        yield put(addFileToCollectionFailure(error.message))
+    }
+}
 
+function* handleRemoveFileFromCollection(action){
+    try {
+        const {fileId, collectionId} = action.payload
+        yield call(fileService.removeFileFromCollection, fileId, collectionId)
+        yield put(removeFileFromCollectionSuccess())
+    } catch (error) {
+        yield put(removeFileFromCollectionFailure(error.message))        
+    }
+}
 
 function* authenticatedFileTasks() {
     yield all([
-        yield takeLatest(fetchFiles.type, handleFetchFiles),
-        yield takeLatest(fetchFilesByFolder.type, handleFetchFilesByFolder),
-        yield takeLatest(fetchFilesByCollection.type, handleFetchFilesByCollection),
-        yield takeLatest(addFile.type, handleAddFile),
-        yield takeLatest(deleteFile.type, handleDeleteFile),
-        yield takeLatest(deleteMultipleFiles.type, handleDeleteMultipleFiles),
+        takeLatest(fetchFiles.type, handleFetchFiles),
+        takeLatest(fetchFilesByFolder.type, handleFetchFilesByFolder),
+        takeLatest(fetchFilesByCollection.type, handleFetchFilesByCollection),
+        takeLatest(addFile.type, handleAddFile),
+        takeLatest(deleteFile.type, handleDeleteFile),
+        takeLatest(deleteMultipleFiles.type, handleDeleteMultipleFiles),
+        takeLatest(addFileToCollection.type, handleAddFileToCollection),
+        takeLatest(removeFileFromCollection.type, handleRemoveFileFromCollection)
     ])
 }
 

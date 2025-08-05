@@ -16,8 +16,6 @@ const FolderDetailPage = () => {
 
     const isLoading = folderStatus === 'loading' || status === 'loading'
 
-    console.log("Check cur folder:", currentFolder)
-
     if (isLoading) {
         return <div className='p-4 text-center'>Dang tai du lieu thu muc</div>
     }

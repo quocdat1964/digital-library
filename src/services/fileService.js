@@ -139,8 +139,6 @@ const fileService = {
             })
 
             if (response.data) {
-                // const blob = new Blob([response.data], { type: fileType })
-                // const url = window.URL.createObjectURL(blob)
                 const url = window.URL.createObjectURL(response.data)
                 return url
             } else {

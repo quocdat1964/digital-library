@@ -9,7 +9,8 @@ import { closeFileDetailPanel } from '../../features/files/fileDetailSlice';
 import {
   deleteFile,
   deleteMultipleFiles,
-  clearFileSelection
+  clearFileSelection,
+  addFileToCollection
 } from '../../features/files/fileSlice';
 import ConfirmationModal from '../common/ConfirmationModal';
 import AssignmentModal from '../common/AssignmentModal';
@@ -47,14 +48,21 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
   };
 
   const handleConfirmAssignment = (selectedId) => {
+    
     const { file, type } = assignmentModal
     if (!file || !type || !selectedId) return
+    // const updatedFile = type === 'folder'
+    //   ? { ...file, folderId: selectedId }
+    //   : { ...file, collectionId: selectedId }
 
-    const updatedFile = type === 'folder'
-      ? { ...file, folderId: selectedId }
-      : { ...file, collectionId: selectedId }
-    console.log("Check updatedFile:", updatedFile)
-    dispatch(updateFileDetails(updatedFile))
+    if(type === 'folder'){
+      const updatedFile = {...file, folderId: selectedId}
+      dispatch(updateFileDetails(updatedFile))
+    } else {
+      console.log("Checkkkk:", file.name, selectedId)
+      dispatch(addFileToCollection({fileId: file.fileId, collectionId: selectedId}))
+    }
+    
     handleCloseAssignmentModal()
   }
   // Kết thúc modal di chuyển file
