@@ -26,7 +26,11 @@ export const store = configureStore({
     },
 
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(sagaMiddleware),
+        getDefaultMiddleware({
+            // serializableCheck: {
+            //     ignoreActions: ['files/uploadAndSaveFile']
+            // }
+        }).concat(sagaMiddleware),
 });
 
 sagaMiddleware.run(rootSaga);

@@ -25,11 +25,6 @@ const Sidebar = () => {
         `
     }
 
-    const handleDispatch = (name) => {
-        if(name === 'Home Page'){
-            dispatch(fetchFiles())
-        }
-    }
     return (
         <aside className="w-64 bg-[#282733] h-full text-white p-4 transition-all duration-300">
             <nav className="space-y-2">
@@ -39,7 +34,6 @@ const Sidebar = () => {
                         to={link.to}
                         end={link.to === '/'}
                         className={getLinkClass}
-                        onClick={handleDispatch(link.label)}
                     >
                         <link.icon className="h-5 w-5 mr-3 flex-shrink-0" />
                         <span>{link.label}</span>

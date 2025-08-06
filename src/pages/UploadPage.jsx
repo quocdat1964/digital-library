@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchFolders } from '../features/folders/foldersSlice';
-import { uploadFiles, resetUploadState } from '../features/upload/uploadSlice';
+import { uploadAndSaveFile, uploadAndSaveFileSuccess, uploadAndSaveFileFailure } from '../features/files/fileSlice';
 import StagedFileCard from '../components/common/StagedFileCard';
 import { ArrowUpTrayIcon, FolderPlusIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
@@ -12,14 +12,14 @@ const UploadPage = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [stagedFiles, setStagedFiles] = useState([])
-    const {user: currentUser} = useSelector((state) => state.auth)
+    const { user: currentUser } = useSelector((state) => state.auth)
     const { folderList = [] } = useSelector(state => state.folders || {})
 
-    const { status: uploadStatus, progress, error: uploadError } = useSelector(state => state.upload)
+    const { status: uploadStatus, error: uploadError } = useSelector(state => state.files)
 
     useEffect(() => {
         dispatch(fetchFolders())
-        dispatch(resetUploadState())
+        // dispatch(resetUploadState())
     }, [dispatch])
 
     const onDrop = useCallback((acceptedFiles) => {
@@ -59,7 +59,7 @@ const UploadPage = () => {
     }
 
     const handleSave = () => {
-        if(!currentUser) return
+        if (!currentUser) return
         const filesToSave = stagedFiles.filter(f => f.isSelectedToSave)
         if (filesToSave.length === 0) {
             toast.error('Vui long chon it nhat 1 file de luu')
@@ -71,21 +71,27 @@ const UploadPage = () => {
             toast.error('Vui long chon kho luu tru cho tat ca file duoc chon')
             return
         }
-        const payload = filesToSave.map(file => ({
-            ...file,
-            ownerId: currentUser.id,
-            uploaderName: currentUser.name,
-        }))
-        dispatch(uploadFiles(payload))
+
+        filesToSave.forEach(file => {
+            const payload = {
+                fileObject: file.fileObject,
+                name: file.name,
+                description: file.description,
+                author: file.author,
+                folderId: file.folderId,
+                uploaderId: currentUser.userId
+            }
+            dispatch(uploadAndSaveFile(payload))
+        })
     }
 
     useEffect(() => {
         if (uploadStatus === 'succeeded') {
-            toast.success('Upload thanh cong')
             setStagedFiles([])
-            dispatch(resetUploadState())
+            // dispatch(resetUploadState())
+        } else if (uploadStatus === 'failed' && uploadError) {
         }
-    }, [uploadStatus, dispatch])
+    }, [uploadStatus, uploadError, dispatch])
 
     const filesSelectedToSaveCount = stagedFiles.filter(f => f.isSelectedToSave).length;
 
@@ -127,7 +133,7 @@ const UploadPage = () => {
                         onClick={() => navigate('/archive')}
                         className='mt-2 inline-flex items-center bg-red-600 px-4 py-2 text-sm font-semibold text-white rounded-md hover:bg-red-700'
                     >
-                        <FolderPlusIcon className='h-5 w-5 mr-2'/>
+                        <FolderPlusIcon className='h-5 w-5 mr-2' />
                         Tới trang kho lưu trữ
                     </button>
                 </div>

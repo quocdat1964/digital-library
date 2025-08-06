@@ -4,6 +4,7 @@ import { fetchFiles } from '../features/files/fileSlice';
 import FileExplorerLayout from '../components/layout/FileExplorerLayout';
 import { fetchFolders } from '../features/folders/foldersSlice';
 import { fetchCollections } from '../features/collections/collectionSlice';
+import { closeFileDetailPanel } from '../features/files/fileDetailSlice';
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ const HomePage = () => {
     dispatch(fetchFiles())
     dispatch(fetchFolders())
     dispatch(fetchCollections())
+    dispatch(closeFileDetailPanel())
   }, [])
 
   return (

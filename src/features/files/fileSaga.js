@@ -31,6 +31,7 @@ import {
 import { closeFileDetailPanel } from './fileDetailSlice';
 
 import { loginSuccess, logout, setAuthFromLocalStorage } from '../auth/authSlice';
+import toast from 'react-hot-toast';
 
 function* handleFetchFiles() {
     try {
@@ -88,52 +89,109 @@ function* handleUploadAndSaveFile(action) {
         formData.append('uploaderId', uploaderId)
         
         const savedFile = yield call(fileService.uploadAndSaveFile, formData)
-
+        toast.success("Upload file thành công")
         yield put(uploadAndSaveFileSuccess(savedFile))
+        
         yield put(fetchFiles()) // Sửa lại sau
 
     } catch (error) {
         yield put(uploadAndSaveFileFailure(error.message))
+        toast.error("Có lỗi:", error)
     }
 }
 
 function* handleDeleteFile(action) {
+    const fileIdToDelete = action.payload
     try {
-        const fileIdToDelete = action.payload
         const selectedFile = yield select(state => state.fileDetail.selectedFile)
+        
         yield call(fileService.deleteFile, fileIdToDelete)
         yield put(deleteFileSuccess(fileIdToDelete))
-        if (selectedFile && selectedFile.id === fileIdToDelete) {
+        toast.success("Xóa file thành công")
+        
+        if (selectedFile && selectedFile.fileId === fileIdToDelete) {
             yield put(closeFileDetailPanel())
         }
     } catch (error) {
-        yield put(deleteFileFailure(error.message))
+        yield put(deleteFileFailure({ fileId: fileIdToDelete, error: error.message })); // Reducer deleteFileFailure sẽ khôi phục file
+        toast.error(`Xóa file thất bại: ${error.message || String(error)}`);
     }
 }
 
 function* handleDeleteMultipleFiles(action) {
-    try {
-        const fileIds = action.payload
-        // for (const id of fileIds) {
-        //     yield call(fileService.deleteFile, id)
-        // }
-        yield all(fileIds.map(id => call((fileService.deleteFile, id))))
-        yield put(deleteMultipleFilesSuccess(fileIds))
+    const fileIdsToDelete = action.payload; // Mảng các fileId
+    const selectedFile = yield select(state => state.fileDetail.selectedFile);
 
-        const selectedFile = yield select(state => state.fileDetail.selectedFile)
-        if (selectedFile && fileIds.includes(selectedFile.id)) {
-            yield put(closeFileDetailPanel())
+    try {
+        // 1. Optimistic update: Dispatch deleteMultipleFiles để xóa file khỏi UI ngay lập tức
+        yield put(deleteMultipleFiles(fileIdsToDelete)); // Reducer sẽ xử lý việc xóa khỏi state và lưu vào tempDeletedFiles
+
+        // 2. Gọi API để xóa từng file ở backend một cách song song
+        // Sử dụng Promise.allSettled để xử lý các promise thành công/thất bại riêng lẻ
+        const results = yield all(
+            fileIdsToDelete.map(id => 
+                call(function*() {
+                    try {
+                        yield call(fileService.deleteFile, id);
+                        return { id: id, status: 'fulfilled' };
+                    } catch (e) {
+                        return { id: id, status: 'rejected', error: e.message };
+                    }
+                })
+            )
+        );
+
+        const failedDeletions = results.filter(result => result.status === 'rejected');
+        const successfulDeletions = results.filter(result => result.status === 'fulfilled');
+
+        if (failedDeletions.length > 0) {
+            // Nếu có bất kỳ lỗi nào, khôi phục tất cả các file đã cố gắng xóa (đơn giản hóa)
+            // Hoặc phức tạp hơn: chỉ khôi phục những file thất bại và thông báo rõ ràng
+            // Để đơn giản UX cho optimistic update, nếu có lỗi, ta khôi phục tất cả
+            const failedFileIds = failedDeletions.map(f => f.id);
+            yield put(deleteMultipleFilesFailure({ fileIds: failedFileIds, error: "Một số file không thể xóa." }));
+            toast.error(`Xóa một số file thất bại. Vui lòng thử lại.`);
+        } else {
+            // 3. Nếu tất cả API thành công: Dispatch success action
+            yield put(deleteMultipleFilesSuccess(fileIdsToDelete)); // Reducer sẽ dọn dẹp tempDeletedFiles
+            toast.success("Xóa các file đã chọn thành công!");
         }
-        yield put(fetchFiles())
+
+        // 4. Đóng panel chi tiết nếu file bị xóa đang được chọn
+        if (selectedFile && fileIdsToDelete.includes(selectedFile.fileId)) {
+            yield put(closeFileDetailPanel());
+        }
     } catch (error) {
-        yield put(deleteMultipleFilesFailure(error.message))
+        // Đây là catch cho lỗi từ `yield all` nếu nó không phải là allSettled
+        // Với allSettled, hầu hết lỗi sẽ được bắt bên trong map.
+        // Tuy nhiên, vẫn giữ để phòng trường hợp lỗi không mong muốn khác.
+        yield put(deleteMultipleFilesFailure({ fileIds: fileIdsToDelete, error: error.message || String(error) }));
+        toast.error(`Xóa các file đã chọn thất bại: ${error.message || String(error)}`);
     }
 }
+
+// function* handleDeleteMultipleFiles(action) {
+//     try {
+//         const fileIds = action.payload
+//         for (const id of fileIds) {
+//             yield call(fileService.deleteFile, id)
+//         }
+//         // yield all(fileIds.map(id => call((fileService.deleteFile, id))))
+//         yield put(deleteMultipleFilesSuccess(fileIds))
+
+//         const selectedFile = yield select(state => state.fileDetail.selectedFile)
+//         if (selectedFile && fileIds.includes(selectedFile.id)) {
+//             yield put(closeFileDetailPanel())
+//         }
+//         yield put(fetchFiles())
+//     } catch (error) {
+//         yield put(deleteMultipleFilesFailure(error.message))
+//     }
+// }
 
 function* handleAddFileToCollection(action){
     try {
         const {fileId, collectionId} = action.payload
-        console.log("Here:", fileId, collectionId)
         yield call(fileService.addFileToCollection, fileId, collectionId)
         yield put(addFileToCollectionSuccess())
     } catch (error) {

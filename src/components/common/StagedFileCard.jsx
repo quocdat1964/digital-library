@@ -1,7 +1,10 @@
 import { XMarkIcon } from '@heroicons/react/24/solid'
 
+import { useSelector } from 'react-redux'
+
 const StagedFileCard = ({ stagedFile, onUpdate, onRemove, onToggleSelect, folderList = [] }) => {
     const { fileObject, previewUrl, name, description, author, folderId, isSelectedToSave } = stagedFile
+    const { user: currentUser } = useSelector((state) => state.auth)
     return (
         <div className={`bg-gray-800 rounded-lg p-4 flex flex-col md:flex-row gap-4 relative border-2 ${isSelectedToSave ? 'border-red-500/50' : 'border-transparent'}`}>
             <button onClick={onRemove} className='absolute top-2 right-2 text-gray-500 hover:text-white z-10'>
@@ -49,8 +52,8 @@ const StagedFileCard = ({ stagedFile, onUpdate, onRemove, onToggleSelect, folder
                         className="w-full bg-gray-700 text-white rounded-md px-3 py-2 text-sm"
                     >
                         <option value="" disabled>-- Chọn kho lưu trữ --</option>
-                        {folderList.map(folder => (
-                            <option key={folder.id} value={folder.id}>{folder.name}</option>
+                        {folderList.filter(folder => folder.ownerId === currentUser.userId).map(folder => (
+                            <option key={folder.folderId} value={folder.folderId}>{folder.name}</option>
                         ))}
                     </select>
                 </div>
@@ -58,11 +61,11 @@ const StagedFileCard = ({ stagedFile, onUpdate, onRemove, onToggleSelect, folder
 
             <div className="absolute bottom-2 right-2 flex items-center space-x-2 bg-gray-900/50 p-1 rounded-md">
                 <label
-                    htmlFor={`save-${stagedFile.id}`}
+                    htmlFor={`save-${stagedFile.fileId}`}
                     className="text-xs text-gray-300 cursor-pointer"
                 >Lưu file này</label>
                 <input
-                    id={`save-${stagedFile.id}`}
+                    id={`save-${stagedFile.fileId}`}
                     type='checkbox'
                     checked={isSelectedToSave}
                     onChange={onToggleSelect}

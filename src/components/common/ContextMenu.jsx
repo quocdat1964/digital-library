@@ -41,7 +41,7 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick,
     if (!file) return null
 
     const canPerformActions = currentUser && file &&
-        (currentUser.userId === file.ownerId || currentUser.role === 'BOSS');
+        (currentUser.userId === file.uploaderId || currentUser.role === 'BOSS');
 
     const handleItemClick = (action) => {
         const file = menuState.file
