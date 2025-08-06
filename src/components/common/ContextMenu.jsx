@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import {
     ArchiveBoxArrowDownIcon,
     FolderPlusIcon,
+    FolderMinusIcon,
     PrinterIcon,
     TagIcon,
     ArrowDownTrayIcon,
@@ -11,7 +12,7 @@ import {
     ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
-const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick, onAddToCollectionClick, currentUser }) => {
+const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick, onAddToCollectionClick, onRemoveFromCollection, currentUser, isInCollection }) => {
     const menuRef = useRef(null)
 
     useEffect(() => {
@@ -55,6 +56,8 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick,
             case 'addToCollection':
                 onAddToCollectionClick(file)
                 break
+            case 'removeFromCollection':
+                onRemoveFromCollection(file)
             default:
                 break
         }
@@ -82,6 +85,12 @@ const ContextMenu = ({ menuState, closeMenu, onDeleteClick, onMoveToFolderClick,
                         <FolderPlusIcon className="h-5 w-5 mr-3" />
                         <span>Thêm vào bộ sưu tập</span>
                     </li>
+                    {isInCollection && (
+                        <li onClick={() => handleItemClick('removeFromCollection')} className="flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-600/50">
+                            <FolderMinusIcon className="h-5 w-5 mr-3" />
+                            <span>Xóa khỏi bộ sưu tập</span>
+                        </li>
+                    )}
                     <div className="my-1 h-px bg-gray-700"></div> {/* Dòng kẻ phân cách */}
                     <li onClick={() => handleItemClick('delete')} className="flex items-center p-2 rounded-md cursor-pointer text-red-400 hover:bg-red-500/20">
                         <TrashIcon className="h-5 w-5 mr-3" />

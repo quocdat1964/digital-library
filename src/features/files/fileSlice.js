@@ -1,4 +1,3 @@
-// Thêm tính năng instant add/delete sau(Để tạm để test trước, sau khi làm api thì tính tiếp)
 
 import { createSlice } from "@reduxjs/toolkit";
 import { format, parseISO } from 'date-fns'
@@ -134,16 +133,16 @@ const fileSlice = createSlice({
             state.deleteStatus = 'failed'
             state.error = action.payload
         },
-        addFile(state){
+        uploadAndSaveFile(state){
             state.status = 'loading'
             state.error = null
         },
-        addFileSuccess(state, action){
+        uploadAndSaveFileSuccess(state, action){
             state.status = 'succeeded'
             state.allFiles.push(action.payload)
             state.filesByDate = filterAndGroupFiles(state.allFiles, state.searchTerm, state.fileTypeFilter)
         },
-        addFileFailure(state, action){
+        uploadAndSaveFileFailure(state, action){
             state.status = 'failed'
             state.error = action.payload
         },
@@ -205,9 +204,9 @@ export const {
     deleteMultipleFiles,
     deleteMultipleFilesSuccess,
     deleteMultipleFilesFailure,
-    addFile,
-    addFileSuccess,
-    addFileFailure,
+    uploadAndSaveFile,
+    uploadAndSaveFileSuccess,
+    uploadAndSaveFileFailure,
     addFileToCollection,
     addFileToCollectionFailure,
     addFileToCollectionSuccess,

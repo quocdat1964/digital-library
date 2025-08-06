@@ -10,7 +10,8 @@ import {
   deleteFile,
   deleteMultipleFiles,
   clearFileSelection,
-  addFileToCollection
+  addFileToCollection,
+  removeFileFromCollection
 } from '../../features/files/fileSlice';
 import ConfirmationModal from '../common/ConfirmationModal';
 import AssignmentModal from '../common/AssignmentModal';
@@ -18,15 +19,15 @@ import { updateFileDetails } from '../../features/files/fileDetailSlice';
 import { fetchFolders } from '../../features/folders/foldersSlice'
 import { fetchCollections } from '../../features/collections/collectionSlice'
 
-const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
+const FileExplorerLayout = ({ pageTitle, filesByDate, status, error, isInCollection = false }) => {
   const { isPanelOpen, selectedFile } = useSelector((state) => state.fileDetail);
   const { folderList } = useSelector(state => state.folders)
-  const { collectionList } = useSelector(state => state.collections)
+  const { collectionList, currentCollection } = useSelector(state => state.collections)
   const selectedFileIds = useSelector((state) => state.files.selectedFileIds)
   const { menuState, showContextMenu, closeContextMenu } = useContextMenu();
   const [openSections, setOpenSections] = useState({});
   const dispatch = useDispatch()
-  const {user: currentUser} = useSelector((state) => state.auth)
+  const { user: currentUser } = useSelector((state) => state.auth)
 
   //Quản lí modal  di chuyển file
   const [assignmentModal, setAssignmentModal] = useState({
@@ -48,21 +49,21 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
   };
 
   const handleConfirmAssignment = (selectedId) => {
-    
+
     const { file, type } = assignmentModal
     if (!file || !type || !selectedId) return
     // const updatedFile = type === 'folder'
     //   ? { ...file, folderId: selectedId }
     //   : { ...file, collectionId: selectedId }
 
-    if(type === 'folder'){
-      const updatedFile = {...file, folderId: selectedId}
+    if (type === 'folder') {
+      const updatedFile = { ...file, folderId: selectedId }
       dispatch(updateFileDetails(updatedFile))
     } else {
       console.log("Checkkkk:", file.name, selectedId)
-      dispatch(addFileToCollection({fileId: file.fileId, collectionId: selectedId}))
+      dispatch(addFileToCollection({ fileId: file.fileId, collectionId: selectedId }))
     }
-    
+
     handleCloseAssignmentModal()
   }
   // Kết thúc modal di chuyển file
@@ -84,6 +85,24 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
     }
     handleCloseDeleteModal();
   };
+
+  // Quản lí modal xóa file khỏi collection
+  const [removeFromCollectionModal, setRemoveFromCollectionModal] = useState({ isOpen: false, file: null })
+
+  const handleOpenRemoveFromCollection = (file) => {
+    setRemoveFromCollectionModal({ isOpen: true, file: file });
+  }
+
+  const handleCloseRemoveFromCollectionModal = () => {
+    setRemoveFromCollectionModal({ isOpen: false, file: null });
+  }
+
+  const handleConfirmRemoveFromCollection = () => {
+    if (removeFromCollectionModal.file) {
+      dispatch(removeFileFromCollection({ fileId: removeFromCollectionModal.file.fileId, collectionId: currentCollection.collectionId }))
+    }
+    handleCloseRemoveFromCollectionModal();
+  }
 
   // Quản lí modal xóa nhiều file
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false)
@@ -204,6 +223,8 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
         onDeleteClick={handleOpenDeleteModal}
         onMoveToFolderClick={handleOpenMoveToFolderModal}
         onAddToCollectionClick={handleOpenAddToCollectionModal}
+        onRemoveFromCollection={handleOpenRemoveFromCollection}
+        isInCollection={isInCollection}
       />
 
       <AssignmentModal
@@ -214,6 +235,17 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error }) => {
         items={assignmentModal.type === 'folder' ? folderList : collectionList}
         currentItemId={assignmentModal.type === 'folder' ? assignmentModal.file?.folderId : assignmentModal.file?.collectionId}
       />
+
+      {/* Modal xác nhận xóa 1 file khỏi collection */}
+      <ConfirmationModal
+        isOpen={removeFromCollectionModal.isOpen}
+        onClose={handleCloseRemoveFromCollectionModal}
+        onConfirm={handleConfirmRemoveFromCollection}
+        title="Xác nhận xóa file khỏi collection"
+      >
+        <p>Bạn có chắc chắn muốn xóa file <strong className="text-white">{removeFromCollectionModal.file?.name}</strong> khỏi collection không?</p>
+        <p className="mt-2 text-sm text-red-400">Hành động này không thể hoàn tác.</p>
+      </ConfirmationModal>
 
       {/* Modal xác nhận xóa 1 file */}
       <ConfirmationModal

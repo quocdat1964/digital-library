@@ -18,9 +18,9 @@ import {
     deleteMultipleFiles,
     deleteMultipleFilesSuccess,
     deleteMultipleFilesFailure,
-    addFile,
-    addFileSuccess,
-    addFileFailure,
+    uploadAndSaveFile,
+    uploadAndSaveFileSuccess,
+    uploadAndSaveFileFailure,
     addFileToCollection,
     addFileToCollectionFailure,
     addFileToCollectionSuccess,
@@ -75,12 +75,25 @@ function* handleFetchFilesByCollection(action) {
     }
 }
 
-function* handleAddFile(action) {
+function* handleUploadAndSaveFile(action) {
     try {
-        const newFile = yield call(fileService.createFile, action.payload)
-        yield put(addFileSuccess(newFile))
+        const { fileObject, name, description, author, folderId, uploaderId } = action.payload
+
+        const formData = new FormData()
+        formData.append('file', fileObject)
+        formData.append('title', name)
+        formData.append('description', description)
+        formData.append('author', author)
+        formData.append('folderId', folderId)
+        formData.append('uploaderId', uploaderId)
+        
+        const savedFile = yield call(fileService.uploadAndSaveFile, formData)
+
+        yield put(uploadAndSaveFileSuccess(savedFile))
+        yield put(fetchFiles()) // Sửa lại sau
+
     } catch (error) {
-        yield put(addFileFailure(error.message))
+        yield put(uploadAndSaveFileFailure(error.message))
     }
 }
 
@@ -143,7 +156,7 @@ function* authenticatedFileTasks() {
         takeLatest(fetchFiles.type, handleFetchFiles),
         takeLatest(fetchFilesByFolder.type, handleFetchFilesByFolder),
         takeLatest(fetchFilesByCollection.type, handleFetchFilesByCollection),
-        takeLatest(addFile.type, handleAddFile),
+        takeLatest(uploadAndSaveFile.type, handleUploadAndSaveFile),
         takeLatest(deleteFile.type, handleDeleteFile),
         takeLatest(deleteMultipleFiles.type, handleDeleteMultipleFiles),
         takeLatest(addFileToCollection.type, handleAddFileToCollection),

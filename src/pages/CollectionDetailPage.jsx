@@ -46,6 +46,7 @@ const CollectionDetailPage = () => {
             filesByDate={filesByDate}
             status={status}
             error={error}
+            isInCollection={true}
         />
     )
 }

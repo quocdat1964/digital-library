@@ -149,6 +149,19 @@ const fileService = {
             console.error(`Failed to view file ${storagePath}:`, error.response?.data || error.message);
             throw error;
         }
+    },
+    uploadAndSaveFile: async (formData) => {
+        try {
+            const response = await axiosInstance.post('/files/upload-and-save', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+            })
+            return response.data
+        } catch (error) {
+            console.error('Failed to upload and save file:', error.response?.data || error.message);
+            throw error;
+        }
     }
 }
 

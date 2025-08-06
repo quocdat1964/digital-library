@@ -53,7 +53,6 @@ const UploadPage = () => {
     }
 
     const handleToggleSelect = (id) => {
-        console.log("Check folder list 2: ", folderList)
         setStagedFiles(prev => prev.map(file =>
             file.id === id ? { ...file, isSelectedToSave: !file.isSelectedToSave } : file
         ))
@@ -100,12 +99,12 @@ const UploadPage = () => {
             >
                 <input {...getInputProps()} />
                 <ArrowUpTrayIcon className="h-12 w-12 mx-auto text-gray-400" />
-                <p className='mt-2'>Keo tha hoac click de chon file</p>
+                <p className='mt-2'>Kéo thả hoặc click để chọn file</p>
             </div>
 
             {stagedFiles.length > 0 && (
                 <div className='mt-8'>
-                    <h2 className='text-xl font-semibold mb-4'>Xem truoc va chinh sua</h2>
+                    <h2 className='text-xl font-semibold mb-4'>Xem trước và chỉnh sửa</h2>
                     <div className='space-y-4'>
                         {stagedFiles.map(file => (
                             <StagedFileCard
@@ -123,20 +122,20 @@ const UploadPage = () => {
 
             {folderList.length === 0 && stagedFiles.length > 0 && (
                 <div className="mt-6 text-center p-4 bg-yellow-900/50 rounded-lg">
-                    <p className='text-yellow-300'>Ban chua co kho luu tru nao, hay tao 1 kho truoc khi luu file</p>
+                    <p className='text-yellow-300'>Bạn chưa có kho lưu trữ nào, hãy tạo 1 kho để lưu file</p>
                     <button
                         onClick={() => navigate('/archive')}
                         className='mt-2 inline-flex items-center bg-red-600 px-4 py-2 text-sm font-semibold text-white rounded-md hover:bg-red-700'
                     >
                         <FolderPlusIcon className='h-5 w-5 mr-2'/>
-                        Toi trang Kho luu tru
+                        Tới trang kho lưu trữ
                     </button>
                 </div>
             )}
 
             {stagedFiles.length > 0 && (
                 <div className="sticky bottom-0 bg-gray-900/80 backdrop-blur-sm p-4 -m-6 mt-8 flex justify-between items-center">
-                    <p className='font-semibold'>{filesSelectedToSaveCount} file se duoc luu</p>
+                    <p className='font-semibold'>{filesSelectedToSaveCount} file sẽ được lưu</p>
                     <button
                         onClick={handleSave}
                         disabled={uploadStatus === 'uploading' || filesSelectedToSaveCount === 0}
