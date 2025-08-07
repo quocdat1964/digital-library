@@ -5,7 +5,7 @@ import axios from "axios";
 import { closeFileDetailPanel, updateFileDetails, fetchFilePreview } from "../../features/files/fileDetailSlice";
 import { XMarkIcon, ArrowDownTrayIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
 
-const FilePreviewer = ({ file }) => {
+export const FilePreviewer = ({ file }) => {
 
     const dispatch = useDispatch()
     const { filePreviewUrl, previewStatus, previewError } = useSelector(state => state.fileDetail)

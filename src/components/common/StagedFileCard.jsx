@@ -12,14 +12,15 @@ const StagedFileCard = ({ stagedFile, onUpdate, onRemove, onToggleSelect, folder
             </button>
 
             <div className="w-full md:w-1/3 flex-shrink-0 aspect-video bg-black rounded-md flex items-center justify-center overflow-hidden">
-                {fileObject.type.startsWith('image/') ? (
+                {/* {fileObject.type.startsWith('image/') ? (
                     <img src={previewUrl} alt="Preview" className='w-full h-full object-cover' />
                 ) : (
                     <div className='text-center text-gray-400 p-2'>
                         <p className='font-bold text-lg'>{fileObject.type.split('/')[1]?.toUpperCase()}</p>
                         <p className='text-xs truncate'>{fileObject.name}</p>
                     </div>
-                )}
+                )} */}
+                <img src={previewUrl} alt="Preview" className='w-full h-full object-cover' />
             </div>
 
             <div className='flex-1 space-y-3'>

@@ -180,6 +180,7 @@ const FileExplorerLayout = ({ pageTitle, filesByDate, status, error, isInCollect
                       onContextMenu={showContextMenu}
                       isSelected={selectedFileIds.includes(file.fileId)}
                       isTicked={selectedFile?.fileId === file.fileId}
+                      isOwner={file.uploaderId === currentUser.userId}
                     />
                   ))}
                 </div>

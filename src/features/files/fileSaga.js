@@ -78,7 +78,7 @@ function* handleFetchFilesByCollection(action) {
 
 function* handleUploadAndSaveFile(action) {
     try {
-        const { fileObject, name, description, author, folderId, uploaderId } = action.payload
+        const { fileObject, name, description, author, folderId, uploaderId, thumbnailUrl } = action.payload
 
         const formData = new FormData()
         formData.append('file', fileObject)
@@ -87,6 +87,7 @@ function* handleUploadAndSaveFile(action) {
         formData.append('author', author)
         formData.append('folderId', folderId)
         formData.append('uploaderId', uploaderId)
+        formData.append('thumbnailUrl', thumbnailUrl)
         
         const savedFile = yield call(fileService.uploadAndSaveFile, formData)
         toast.success("Upload file thành công")
@@ -124,7 +125,7 @@ function* handleDeleteMultipleFiles(action) {
 
     try {
         // 1. Optimistic update: Dispatch deleteMultipleFiles để xóa file khỏi UI ngay lập tức
-        yield put(deleteMultipleFiles(fileIdsToDelete)); // Reducer sẽ xử lý việc xóa khỏi state và lưu vào tempDeletedFiles
+        // yield put(deleteMultipleFiles(fileIdsToDelete)); // Reducer sẽ xử lý việc xóa khỏi state và lưu vào tempDeletedFiles
 
         // 2. Gọi API để xóa từng file ở backend một cách song song
         // Sử dụng Promise.allSettled để xử lý các promise thành công/thất bại riêng lẻ

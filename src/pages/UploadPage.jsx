@@ -5,7 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { fetchFolders } from '../features/folders/foldersSlice';
 import { uploadAndSaveFile, uploadAndSaveFileSuccess, uploadAndSaveFileFailure } from '../features/files/fileSlice';
 import StagedFileCard from '../components/common/StagedFileCard';
-import { ArrowUpTrayIcon, FolderPlusIcon } from '@heroicons/react/24/solid';
+import { ArrowUpTrayIcon, FolderPlusIcon, DocumentIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
+import pdf from '../assets/pdf.png'
+import txt from '../assets/txt.png'
+import img from '../assets/image.png'
 import toast from 'react-hot-toast';
 
 const UploadPage = () => {
@@ -23,16 +26,31 @@ const UploadPage = () => {
     }, [dispatch])
 
     const onDrop = useCallback((acceptedFiles) => {
-        const newFiles = acceptedFiles.map(file => ({
-            id: `temp_${Math.random().toString(36).substr(2, 9)}`,
-            fileObject: file,
-            previewUrl: URL.createObjectURL(file),
-            name: file.name.split('.').slice(0, -1).join('.'), // Bỏ phần đuôi file
-            description: '',
-            author: '',
-            folderId: null,
-            isSelectedToSave: true,
-        }))
+        const newFiles = acceptedFiles.map(file => {
+            let preview = null
+            let thumbnail = null
+            if(file.type.startsWith('image/')){
+                preview = URL.createObjectURL(file)
+                thumbnail = img
+            } else if(file.type.startsWith('application/pdf')){
+                preview = pdf
+                thumbnail = pdf
+            } else if(file.type.startsWith('text/')) {
+                preview = txt
+                thumbnail = pdf
+            }
+            return {
+                id: `temp_${Math.random().toString(36).substr(2, 9)}`,
+                fileObject: file,
+                previewUrl: preview,
+                thumbnailUrl: thumbnail,
+                name: file.name.split('.').slice(0, -1).join('.'), // Bỏ phần đuôi file
+                description: '',
+                author: '',
+                folderId: null,
+                isSelectedToSave: true,
+            }
+        })
         setStagedFiles(prev => [...prev, ...newFiles])
     }, [])
 
@@ -46,9 +64,9 @@ const UploadPage = () => {
 
     const handleRemoveStagedFile = (id) => {
         const fileToRemove = stagedFiles.find(f => f.id === id)
-        if (fileToRemove) {
-            URL.revokeObjectURL(fileToRemove.previewUrl)
-        }
+        // if (fileToRemove) {
+        //     URL.revokeObjectURL(fileToRemove.previewUrl)
+        // }
         setStagedFiles(prev => prev.filter(file => file.id !== id))
     }
 
@@ -79,7 +97,8 @@ const UploadPage = () => {
                 description: file.description,
                 author: file.author,
                 folderId: file.folderId,
-                uploaderId: currentUser.userId
+                uploaderId: currentUser.userId,
+                thumbnailUrl: file.thumbnailUrl
             }
             dispatch(uploadAndSaveFile(payload))
         })
