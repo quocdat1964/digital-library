@@ -4,16 +4,6 @@ import { toggleFileSelection } from "../../features/files/fileSlice";
 
 const FileCard = ({ file, onContextMenu, isSelected, isTicked, isOwner }) => {
     const dispatch = useDispatch()
-    // const getFileTypeColor = (type) => {
-
-    //     switch (type) {
-    //         case 'application/pdf': return 'bg-red-500';
-    //         case 'image/jpg':
-    //         case 'image/jpeg':
-    //         case 'image/png': return 'bg-yellow-500';
-    //         default: return 'bg-gray-500';
-    //     }
-    // }
 
     const getFileTypeColor = (fileType) => {
         if (!fileType) return '#6B7280'; // Default gray-500 hex
@@ -73,7 +63,7 @@ const FileCard = ({ file, onContextMenu, isSelected, isTicked, isOwner }) => {
 
             </div>
             <div className="p-3">
-                <p className="text-white text-sm truncate group-hover:underline">{file.fileName}</p>
+                <p className="text-white text-sm truncate group-hover:underline">{file.title}</p>
             </div>
         </div>
     )

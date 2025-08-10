@@ -7,6 +7,7 @@ import {
     deleteCollection, deleteCollectionFailure, deleteCollectionSuccess,
     fetchCollectionDetails, fetchCollectionDetailsFailure, fetchCollectionDetailsSuccess
 } from './collectionSlice'
+import toast from 'react-hot-toast'
 
 function* handleFetchCollections() {
     try {
@@ -22,21 +23,24 @@ function* handleCreateCollection(action) {
     try {
         const newCollection = yield call(collectionService.createCollection, action.payload)
         yield put(createCollectionSuccess(newCollection))
+        toast.success("Tạo bộ sưu tập thành công")
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Lỗi khi tạo collection mới.";
         yield put(createCollectionFailure(errorMessage));
+        toast.error("Lỗi khi tạo bộ sưu tập")
     }
 }
 
 function* handleUpdateCollection(action) {
     try {
         const collectionData = action.payload
-        console.log("Check Saga: ", collectionData.collectionId, collectionData.name)
         const updatedCollection = yield call(collectionService.updateCollection, collectionData.collectionId, collectionData.name)
         yield put(updateCollectionSuccess(updatedCollection))
+        toast.success("Cập nhật bộ sưu tập thành công")
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Lỗi khi cập nhật collection.";
         yield put(updateCollectionFailure(errorMessage));
+        toast.error("Lỗi khi cập nhật bộ sưu tập")
     }
 }
 
@@ -45,9 +49,11 @@ function* handleDeleteCollection(action) {
         const collectionId = action.payload
         yield call(collectionService.deleteCollection, collectionId)
         yield put(deleteCollectionSuccess(collectionId))
+        toast.success("Xóa bộ sưu tập thành công")
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Lỗi khi xóa collection.";
         yield put(deleteCollectionFailure(errorMessage));
+        toast.error("Lỗi khi xóa bộ sưu tập")
     }
 }
 

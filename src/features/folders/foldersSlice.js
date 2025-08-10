@@ -5,7 +5,9 @@ const initialState = {
     currentFolder: null,
     status: 'idle',
     updateStatus: 'idle',
-    error: null
+    error: null,
+    _backupFolderList: null,   // backup khi update/delete
+    _backupCurrentFolder: null
 }
 
 const foldersSlice = createSlice({
@@ -24,7 +26,7 @@ const foldersSlice = createSlice({
             state.error = action.payload;
         },
 
-        createFolder(state, action) {
+        createFolder(state) {
             state.updateStatus = 'loading'
         },
         createFolderSuccess(state, action) {
@@ -35,44 +37,74 @@ const foldersSlice = createSlice({
         createFolderFailure(state, action) {
             state.updateStatus = 'failed'
             state.error = action.payload
-            // lỗi thì xóa bỏ ở hàm này sau
         },
+
+        // ⬇ Optimistic update
         updateFolder(state, action) {
             state.updateStatus = 'loading';
             state.error = null;
-        },
-        updateFolderSuccess(state) {
-            state.updateStatus = 'succeeded';
-            const updatedFolder = action.payload
-            const index = state.folderList.findIndex(f => f.folder === updatedFolder.folderId)
+
+            const updatedFolder = action.payload;
+            // Lưu backup trước khi thay đổi
+            state._backupFolderList = [...state.folderList];
+            state._backupCurrentFolder = state.currentFolder ? { ...state.currentFolder } : null;
+
+            const index = state.folderList.findIndex(f => f.folderId === updatedFolder.folderId);
             if (index !== -1) {
-                state.folderList[index] = updatedFolder
+                state.folderList[index] = updatedFolder;
             }
             if (state.currentFolder?.folderId === updatedFolder.folderId) {
                 state.currentFolder = updatedFolder;
             }
         },
+        updateFolderSuccess(state) {
+            state.updateStatus = 'succeeded';
+            // Xoá backup khi thành công
+            state._backupFolderList = null;
+            state._backupCurrentFolder = null;
+        },
         updateFolderFailure(state, action) {
             state.updateStatus = 'failed';
             state.error = action.payload;
+            // Khôi phục dữ liệu cũ
+            if (state._backupFolderList) state.folderList = state._backupFolderList;
+            if (state._backupCurrentFolder) state.currentFolder = state._backupCurrentFolder;
+            state._backupFolderList = null;
+            state._backupCurrentFolder = null;
         },
+
+        // ⬇ Optimistic delete
         deleteFolder(state, action) {
             state.updateStatus = 'loading';
             state.error = null;
+
+            const deletedId = action.payload;
+            // Lưu backup
+            state._backupFolderList = [...state.folderList];
+            state._backupCurrentFolder = state.currentFolder ? { ...state.currentFolder } : null;
+
+            state.folderList = state.folderList.filter(f => f.folderId !== deletedId);
+            if (state.currentFolder?.folderId === deletedId) {
+                state.currentFolder = null;
+            }
         },
         deleteFolderSuccess(state) {
-            state.updateStatus = 'succeeded'
-            const deletedId = action.payload
-            state.folderList = state.folderList.filter(f => f.folderId !== deletedId)
-            if (state.currentFolder?.folderId === deletedId) {
-                state.currentFolder = null
-            }
+            state.updateStatus = 'succeeded';
+            // Xoá backup
+            state._backupFolderList = null;
+            state._backupCurrentFolder = null;
         },
         deleteFolderFailure(state, action) {
             state.updateStatus = 'failed';
             state.error = action.payload;
+            // Khôi phục dữ liệu
+            if (state._backupFolderList) state.folderList = state._backupFolderList;
+            if (state._backupCurrentFolder) state.currentFolder = state._backupCurrentFolder;
+            state._backupFolderList = null;
+            state._backupCurrentFolder = null;
         },
-        fetchFolderDetails(state, action) {
+
+        fetchFolderDetails(state) {
             state.status = 'loading'
             state.currentFolder = null
         },
@@ -105,4 +137,4 @@ export const {
     fetchFolderDetailsFailure
 } = foldersSlice.actions
 
-export default foldersSlice.reducer
+export default foldersSlice.reducer;

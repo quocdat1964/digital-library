@@ -17,6 +17,7 @@ import {
     fetchFolderDetailsSuccess,
     fetchFolderDetailsFailure
 } from './foldersSlice'
+import toast from 'react-hot-toast'
 
 function* handleFetchFolders() {
     try {
@@ -32,20 +33,25 @@ function* handleCreateFolder(action) {
     try {
         const newFolder = yield call(folderService.createFolder, action.payload)
         yield put(createFolderSuccess(newFolder))
+        toast.success("Tạo kho lưu trữ thành công")
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Lỗi khi tạo folder mới.";
         yield put(createFolderFailure(errorMessage));
+        toast.error("Có lỗi xảy ra khi tạo kho lưu trữ")
     }
 }
 
 function* handleUpdateFolder(action) {
     try {
         const folderData = action.payload
-        const updatedFolder = yield call(folderService.updateFolder, folderData.folderId, {name: folderData.name, isPublic: folderData.isPublic})
+        const updatedFolder = yield call(folderService.updateFolder, folderData.folderId, { name: folderData.name, isPublic: folderData.isPublic })
         yield put(updateFolderSuccess(updatedFolder))
+        toast.success("Cập nhật kho lưu trữ thành công")
+
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Lỗi khi cập nhật folder.";
         yield put(updateFolderFailure(errorMessage));
+        toast.error("Có lỗi xảy ra khi cập nhật kho lưu trữ")
     }
 }
 
@@ -54,13 +60,14 @@ function* handleDeleteFolder(action) {
         const folderId = action.payload
         const response = yield call(folderService.deleteFolder, folderId);
         yield put(deleteFolderSuccess(folderId));
+        toast.success("Xóa kho lưu trữ thành công")
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Lỗi khi xóa folder.";
         yield put(deleteFolderFailure(errorMessage));
+        toast.error("Có lỗi xảy ra khi xóa kho lưu trữ")
     }
 }
 
-// Chỗ này nên là getFilesByFolder
 function* handleFetchFolderDetails(action) {
     try {
         const folderId = action.payload

@@ -1,11 +1,103 @@
+// import { createSlice } from "@reduxjs/toolkit";
+
+// const filterUsers = (allUsers, roleFilter) => {
+//     if (roleFilter === 'all') {
+//         return allUsers
+//     }
+//     return allUsers.filter(u => u.role === roleFilter)
+// }
+
+// const initialState = {
+//     userList: [],
+//     filteredUserList: [],
+//     status: 'idle',
+//     error: null,
+//     roleFilter: 'all',
+//     currentPage: 1,
+//     usersPerPage: 5
+// }
+
+// const userSlice = createSlice({
+//     name: 'users',
+//     initialState,
+//     reducers: {
+//         // Sau khi thực hiện xong api sẽ chỉnh lại cho instant update,add,...
+//         fetchUsers(state) { state.status = 'loading'; },
+//         fetchUsersSuccess(state, action) {
+//             state.status = 'succeeded';
+//             state.userList = action.payload;
+//             state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+//         },
+//         fetchUsersFailure(state, action) { state.status = 'failed'; state.error = action.payload; },
+
+//         setRoleFilter(state, action) {
+//             state.roleFilter = action.payload
+//             state.currentPage = 1
+//             state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+//         },
+//         setCurrentPage(state, action) {
+//             state.currentPage = action.payload
+//         },
+
+//         createUser(state, action) { state.status = 'loading' },
+//         createUserSuccess(state) {
+//             state.status = 'succeeded'
+//             const newUser = action.payload
+//             state.userList.push(newUser)
+//             state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+//             state.error = null
+//         },
+//         createUserFailure(state, action) {
+//             state.status = 'failed'
+//             state.error = action.payload;
+//         },
+
+//         updateUserRole(state, action) { state.status = 'loading' },
+//         updateUserRoleSuccess(state) {
+//             state.status = 'succeeded'
+//             const updatedUser = action.payload
+//             const userIndex = state.userList.findIndex(u => u.userId === updatedUser.userId)
+//             if (userIndex !== -1) {
+//                 state.userList[userIndex] = updatedUser
+//                 state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+//             }
+//             state.error = null
+//         },
+//         updateUserRoleFailure(state, action) { state.error = action.payload; },
+
+//         deleteUser(state, action) { state.status = 'loading' },
+//         deleteUserSuccess(state) {
+//             state.status = 'succeeded'
+//             const deletedUserId = action.payload
+//             state.userList = state.userList.filter(u => u.userId !== deletedUserId)
+//             state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+//             state.error = null
+//         },
+//         deleteUserFailure(state, action) {
+//             state.error = action.payload;
+//             state.status = 'failed'
+//         },
+//     },
+// })
+
+// export const {
+//     fetchUsers, fetchUsersFailure, fetchUsersSuccess,
+//     createUser, createUserFailure, createUserSuccess,
+//     updateUserRole, updateUserRoleFailure, updateUserRoleSuccess,
+//     deleteUser, deleteUserFailure, deleteUserSuccess,
+//     setRoleFilter, setCurrentPage,
+// } = userSlice.actions
+
+// export default userSlice.reducer
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const filterUsers = (allUsers, roleFilter) => {
     if (roleFilter === 'all') {
-        return allUsers
+        return allUsers;
     }
-    return allUsers.filter(u => u.role === roleFilter)
-}
+    return allUsers.filter(u => u.role === roleFilter);
+};
 
 const initialState = {
     userList: [],
@@ -14,71 +106,134 @@ const initialState = {
     error: null,
     roleFilter: 'all',
     currentPage: 1,
-    usersPerPage: 5
-}
+    usersPerPage: 5,
+    _backupUserList: null,
+    _backupFilteredUserList: null
+};
 
 const userSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
-        // Sau khi thực hiện xong api sẽ chỉnh lại cho instant update,add,...
         fetchUsers(state) { state.status = 'loading'; },
         fetchUsersSuccess(state, action) {
             state.status = 'succeeded';
             state.userList = action.payload;
-            state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+            state.filteredUserList = filterUsers(state.userList, state.roleFilter);
         },
         fetchUsersFailure(state, action) { state.status = 'failed'; state.error = action.payload; },
 
         setRoleFilter(state, action) {
-            state.roleFilter = action.payload
-            state.currentPage = 1
-            state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+            state.roleFilter = action.payload;
+            state.currentPage = 1;
+            state.filteredUserList = filterUsers(state.userList, state.roleFilter);
         },
         setCurrentPage(state, action) {
-            state.currentPage = action.payload
+            state.currentPage = action.payload;
         },
 
-        createUser(state, action) { state.status = 'loading' },
-        createUserSuccess(state) {
-            state.status = 'succeeded'
-            const newUser = action.payload
-            state.userList.push(newUser)
-            state.filteredUserList = filterUsers(state.userList, state.roleFilter)
-            state.error = null
+        // ⬇ Optimistic create (kèm backup)
+        createUser(state, action) {
+            state.status = 'loading';
+            state.error = null;
+            const newUser = action.payload || {};
+            state._backupUserList = [...state.userList];
+            state._backupFilteredUserList = [...state.filteredUserList];
+
+            // nếu server chưa trả userId, cấp tạm id
+            const userToInsert = {
+                ...newUser,
+                userId: newUser.userId ?? `temp-${Date.now()}`
+            };
+            state.userList.push(userToInsert);
+            state.filteredUserList = filterUsers(state.userList, state.roleFilter);
+        },
+        createUserSuccess(state, action) {
+            state.status = 'succeeded';
+            // nếu muốn, ở đây có thể replace temp-id bằng server-id nếu action.payload chứa mapping
+            state._backupUserList = null;
+            state._backupFilteredUserList = null;
         },
         createUserFailure(state, action) {
-            state.status = 'failed'
+            state.status = 'failed';
             state.error = action.payload;
+            if (state._backupUserList) state.userList = state._backupUserList;
+            if (state._backupFilteredUserList) state.filteredUserList = state._backupFilteredUserList;
+            state._backupUserList = null;
+            state._backupFilteredUserList = null;
         },
 
-        updateUserRole(state, action) { state.status = 'loading' },
-        updateUserRoleSuccess(state) {
-            state.status = 'succeeded'
-            const updatedUser = action.payload
-            const userIndex = state.userList.findIndex(u => u.userId === updatedUser.userId)
-            if (userIndex !== -1) {
-                state.userList[userIndex] = updatedUser
-                state.filteredUserList = filterUsers(state.userList, state.roleFilter)
+        // ⬇ Optimistic update role (merge thay vì replace)
+        updateUserRole(state, action) {
+            state.status = 'loading';
+            state.error = null;
+            const payload = action.payload || {};
+
+            // chuẩn hóa: payload có thể là { userId, newRole } hoặc full user object
+            const candidateUserId = payload.userId ?? payload.id ?? payload.userId;
+            const roleFromPayload = payload.newRole ?? payload.role;
+
+            state._backupUserList = [...state.userList];
+            state._backupFilteredUserList = [...state.filteredUserList];
+
+            const idx = state.userList.findIndex(u => (u.userId ?? u.id) === candidateUserId);
+            if (idx !== -1) {
+                const existing = state.userList[idx];
+                // merge: chỉ overwrite các trường có trong payload (và normalize role)
+                const merged = {
+                    ...existing,
+                    ...payload,
+                    ...(roleFromPayload !== undefined ? { role: roleFromPayload } : {})
+                };
+                // ensure userId preserved
+                merged.userId = existing.userId ?? existing.id ?? merged.userId;
+                state.userList[idx] = merged;
+                state.filteredUserList = filterUsers(state.userList, state.roleFilter);
             }
-            state.error = null
         },
-        updateUserRoleFailure(state, action) { state.error = action.payload; },
+        updateUserRoleSuccess(state, action) {
+            state.status = 'succeeded';
+            state._backupUserList = null;
+            state._backupFilteredUserList = null;
+            // if backend returned authoritative user object, you could replace it here:
+            // const updatedUser = action.payload ?? null;
+            // if (updatedUser) { ...replace matching user... }
+        },
+        updateUserRoleFailure(state, action) {
+            state.status = 'failed';
+            state.error = action.payload;
+            if (state._backupUserList) state.userList = state._backupUserList;
+            if (state._backupFilteredUserList) state.filteredUserList = state._backupFilteredUserList;
+            state._backupUserList = null;
+            state._backupFilteredUserList = null;
+        },
 
-        deleteUser(state, action) { state.status = 'loading' },
+        // ⬇ Optimistic delete
+        deleteUser(state, action) {
+            state.status = 'loading';
+            state.error = null;
+            const deletedUserId = action.payload;
+            state._backupUserList = [...state.userList];
+            state._backupFilteredUserList = [...state.filteredUserList];
+
+            state.userList = state.userList.filter(u => (u.userId ?? u.id) !== deletedUserId);
+            state.filteredUserList = filterUsers(state.userList, state.roleFilter);
+        },
         deleteUserSuccess(state) {
-            state.status = 'succeeded'
-            const deletedUserId = action.payload
-            state.userList = state.userList.filter(u => u.userId !== deletedUserId)
-            state.filteredUserList = filterUsers(state.userList, state.roleFilter)
-            state.error = null
+            state.status = 'succeeded';
+            state._backupUserList = null;
+            state._backupFilteredUserList = null;
         },
         deleteUserFailure(state, action) {
+            state.status = 'failed';
             state.error = action.payload;
-            state.status = 'failed'
+            if (state._backupUserList) state.userList = state._backupUserList;
+            if (state._backupFilteredUserList) state.filteredUserList = state._backupFilteredUserList;
+            state._backupUserList = null;
+            state._backupFilteredUserList = null;
         },
     },
-})
+});
 
 export const {
     fetchUsers, fetchUsersFailure, fetchUsersSuccess,
@@ -86,6 +241,6 @@ export const {
     updateUserRole, updateUserRoleFailure, updateUserRoleSuccess,
     deleteUser, deleteUserFailure, deleteUserSuccess,
     setRoleFilter, setCurrentPage,
-} = userSlice.actions
+} = userSlice.actions;
 
-export default userSlice.reducer
+export default userSlice.reducer;

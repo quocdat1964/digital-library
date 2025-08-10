@@ -21,7 +21,6 @@ const folderService = {
     },
     deleteFolder: async (folderId) => {
         try {
-            console.log("Checkkkkk: ",`/folders/${folderId}`)
             await axiosInstance.delete(`/folders/${folderId}`)
         } catch (error) {
             console.error(`Failed to delete folder with ID ${folderId}:`, error.response?.data || error.message);

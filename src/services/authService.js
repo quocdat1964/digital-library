@@ -3,6 +3,7 @@ import axiosInstance from "../utils/axiosInstance";
 const authService = {
     login: async (email, password) => {
         try {
+            localStorage.removeItem('jwtToken');
             const response = await axiosInstance.post('/auth/login', { email, password })
             const token = response.data.token
             if (token) {
