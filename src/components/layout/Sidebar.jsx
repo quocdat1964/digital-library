@@ -10,7 +10,7 @@ const Sidebar = () => {
 
     const navLinks = [
         { to: '/', label: 'Home Page', icon: Home },
-        { to: '/archive', label: 'Archive', icon: Archive },
+        { to: '/archive', label: 'Folder', icon: Archive },
         { to: '/collections', label: 'Collection', icon: Library },
         { to: '/upload', label: 'Upload', icon: UploadCloud },
         isAdminOrBoss && {to: '/users', label: 'Account', icon: Users}

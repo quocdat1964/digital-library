@@ -37,7 +37,7 @@ const UploadPage = () => {
                 thumbnail = pdf
             } else if(file.type.startsWith('text/')) {
                 preview = txt
-                thumbnail = pdf
+                thumbnail = txt
             }
             return {
                 id: `temp_${Math.random().toString(36).substr(2, 9)}`,

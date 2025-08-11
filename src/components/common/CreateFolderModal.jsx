@@ -24,20 +24,20 @@ const CreateFolderModal = ({ isOpen, onClose, onCreate, showPrivacyOptions = tru
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             <div className="relative bg-gray-800 rounded-lg shadow-xl w-full max-w-md text-white">
                 <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                    <h3 className="text-lg font-semibold">Tạo thư mục mới</h3>
+                    <h3 className="text-lg font-semibold">{showPrivacyOptions ? "Tạo thư mục mới" : "Tạo bộ sưu tập mới"}</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-white">
                         <XMarkIcon className="h-6 w-6" />
                     </button>
                 </div>
                 <div className="p-6 space-y-4">
                     <div>
-                        <label htmlFor="folder-name" className="block text-sm font-medium text-gray-300 mb-1">Tên thư mục</label>
+                        <label htmlFor="folder-name" className="block text-sm font-medium text-gray-300 mb-1">{showPrivacyOptions ? "Tên thư mục" : "Tên bộ sưu tập"}</label>
                         <input
                             type="text"
                             id="folder-name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="Ví dụ: Tài liệu Marketing Q3"
+                            placeholder={showPrivacyOptions ? "Nhập tên thư mục" : "Nhập tên bộ sưu tập"}
                             className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-red-500 focus:border-red-500"
                         />
                     </div>

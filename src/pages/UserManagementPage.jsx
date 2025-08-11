@@ -83,7 +83,7 @@ const UserManagementPage = () => {
     return (
         <div className="p-4">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-white">Quan li nguoi dung</h1>
+                <h1 className="text-2xl font-bold text-white">Quản lí người dùng</h1>
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
                     className="flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg"
@@ -121,7 +121,7 @@ const UserManagementPage = () => {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-10 w-10">
-                                            <img className="h-10 w-10 rounded-full object-cover" src={user.avatarUrl} alt="" />
+                                            <img className="h-10 w-10 rounded-full object-cover" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff&size=128&bold=true`} alt="" />
                                         </div>
                                         <div className="ml-4">
                                             <div className="text-sm font-medium text-white">{user.name}</div>

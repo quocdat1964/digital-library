@@ -1,5 +1,4 @@
 import { call, put, takeLatest, all } from 'redux-saga/effects'
-import { fileApi } from '../../api/fileApi'
 import { fetchFiles } from '../files/fileSlice'
 import { fetchFolders } from '../folders/foldersSlice'
 import {

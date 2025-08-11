@@ -13,7 +13,7 @@ const CollectionDetailPage = () => {
     const { collectionId } = useParams()
 
     const { currentCollection, status: collectionStatus } = useSelector(state => state.collections)
-    const { filesByDate, status, error} = useSelector((state) => state.files)
+    const { filesByDateInCollection, status, error} = useSelector((state) => state.files)
 
     const isLoading = collectionStatus === 'loading' || status === 'loading'
 
@@ -31,7 +31,7 @@ const CollectionDetailPage = () => {
     }
 
     const breadcrumbTitle = (
-        <div className="flex items-center space-x-2 text-2xl font-bold">
+        <div className="flex items-center space-x-2 text-xl font-bold">
             <Link to='/collections' className='text-gray-400 hover:text-white hover:underline transition-colors'>
                 Bộ sưu tập
             </Link>
@@ -43,7 +43,7 @@ const CollectionDetailPage = () => {
     return (
         <FileExplorerLayout 
             pageTitle={breadcrumbTitle}
-            filesByDate={filesByDate}
+            filesByDate={filesByDateInCollection}
             status={status}
             error={error}
             isInCollection={true}

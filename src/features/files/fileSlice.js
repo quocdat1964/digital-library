@@ -8,14 +8,14 @@ const filterAndGroupFiles = (allFiles, searchTerm, fileTypeFilter) => {
     if (fileTypeFilter && fileTypeFilter !== 'all') {
         const imgTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg']
         if (fileTypeFilter === 'image') {
-            filteredFiles = filteredFiles.filter(file => imgTypes.includes(file.type?.toLowerCase()))
+            filteredFiles = filteredFiles.filter(file => imgTypes.includes(file.fileType?.toLowerCase()))
         } else {
-            filteredFiles = filteredFiles.filter(file => file.type?.toLowerCase() === fileTypeFilter.toLowerCase())
+            filteredFiles = filteredFiles.filter(file => file.fileType?.toLowerCase().includes(fileTypeFilter.toLowerCase()))
         }
     }
 
     if (searchTerm) {
-        filteredFiles = filteredFiles.filter(file => file.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        filteredFiles = filteredFiles.filter(file => file.title?.toLowerCase().includes(searchTerm.toLowerCase()))
     }
 
     return filteredFiles.reduce((acc, file) => {
@@ -68,7 +68,7 @@ const fileSlice = createSlice({
         fetchFilesByFolderSuccess(state, action) {
             state.status = 'succeeded'
             state.allFolderFiles = action.payload
-            state.filesByDate = filterAndGroupFiles(state.allFolderFiles, state.searchTerm, state.fileTypeFilter)
+            state.filesByDateInFolder = filterAndGroupFiles(state.allFolderFiles, state.searchTerm, state.fileTypeFilter)
         },
         fetchFilesByFolderFailure(state, action) {
             state.status = 'failed'
@@ -81,7 +81,7 @@ const fileSlice = createSlice({
         fetchFilesByCollectionSuccess(state, action) {
             state.status = 'succeeded'
             state.allCollectionFiles = action.payload
-            state.filesByDate = filterAndGroupFiles(state.allCollectionFiles, state.searchTerm, state.fileTypeFilter)
+            state.filesByDateInCollection = filterAndGroupFiles(state.allCollectionFiles, state.searchTerm, state.fileTypeFilter)
         },
         fetchFilesByCollectionFailure(state, action) {
             state.status = 'failed'
@@ -90,10 +90,14 @@ const fileSlice = createSlice({
         setSearchTerm(state, action) {
             state.searchTerm = action.payload
             state.filesByDate = filterAndGroupFiles(state.allFiles, state.searchTerm, state.fileTypeFilter)
+            state.filesByDateInFolder = filterAndGroupFiles(state.allFolderFiles, state.searchTerm, state.fileTypeFilter)
+            state.filesByDateInCollection = filterAndGroupFiles(state.allCollectionFiles, state.searchTerm, state.fileTypeFilter)
         },
         setFileTypeFilter(state, action) {
             state.fileTypeFilter = action.payload
             state.filesByDate = filterAndGroupFiles(state.allFiles, state.searchTerm, state.fileTypeFilter)
+            state.filesByDateInFolder = filterAndGroupFiles(state.allFolderFiles, state.searchTerm, state.fileTypeFilter)
+            state.filesByDateInCollection = filterAndGroupFiles(state.allCollectionFiles, state.searchTerm, state.fileTypeFilter)
         },
         // DONE
         deleteFile: (state, action) => {
@@ -178,15 +182,6 @@ const fileSlice = createSlice({
             fileIds.forEach(fileId => {
                 const tempFileEntry = state.tempDeletedFiles[fileId];
                 if (tempFileEntry) {
-                    // Để chèn vào đúng vị trí, cần tạo một bản sao mới của mảng và chèn vào
-                    // hoặc sắp xếp lại sau khi chèn tất cả.
-                    // Cách đơn giản nhất là thêm lại và sau đó sắp xếp lại toàn bộ allFiles
-                    // hoặc chèn từng cái một và đảm bảo không bị trùng lặp.
-                    // Để giữ đúng index, chúng ta phải cẩn thận khi splice nhiều lần.
-                    // Cách an toàn hơn là thêm lại tất cả và sau đó sắp xếp lại toàn bộ `allFiles`
-                    // hoặc chèn vào vị trí gần đúng và sau đó sắp xếp lại.
-                    // Với splice, nếu chèn nhiều lần, index sẽ thay đổi.
-                    // Để giữ nguyên thứ tự ban đầu, ta sẽ thêm lại và sắp xếp lại toàn bộ.
                     state.allFiles.push(tempFileEntry.file);
                     delete state.tempDeletedFiles[fileId];
                 }
@@ -197,21 +192,6 @@ const fileSlice = createSlice({
             state.deleteStatus = 'failed';
             state.error = error;
         },
-        // deleteMultipleFiles(state, action) {
-        //     state.deleteStatus = 'loading'
-        //     state.error = null
-        // },
-        // deleteMultipleFilesSuccess(state) {
-        //     state.deleteStatus = 'succeeded'
-        //     const fileIdsToDelete = action.payload
-        //     state.allFiles = state.allFiles.filter(file => !fileIdsToDelete.includes(file.fileId))
-        //     state.filesByDate = filterAndGroupFiles(state.allFiles, state.searchTerm, state.fileTypeFilter)
-        //     state.selectedFileIds = []
-        // },
-        // deleteMultipleFilesFailure(state, action) {
-        //     state.deleteStatus = 'failed'
-        //     state.error = action.payload
-        // },
         uploadAndSaveFile(state) {
             state.status = 'loading'
             state.error = null
@@ -232,34 +212,44 @@ const fileSlice = createSlice({
         },
         addFileToCollectionSuccess: (state, action) => {
             state.status = 'succeeded';
-            // const updatedFile = action.payload;
-            // const index = state.files.findIndex(f => f.id === updatedFile.id);
-            // if (index !== -1) {
-            //     // Cập nhật file trong danh sách hiện tại
-            //     state.files[index] = updatedFile;
-            // }
         },
         addFileToCollectionFailure: (state, action) => {
-            state.status = 'failed';
+            state.status = 'succeeded';
             state.error = action.payload;
         },
         // Reducers mới để xử lý xóa file khỏi collection
-        removeFileFromCollection: (state) => {
-            state.status = 'loading';
-            state.error = null;
+        removeFileFromCollection: (state, action) => {
+            // state.status = 'loading';
+            // state.error = null;
+            // const { fileId, collectionId } = action.payload;
+            // state.allCollectionFiles = state.allCollectionFiles.filter(file => file.fileId !== fileId)
+            const {fileId, collectionId} = action.payload
+            const fileIndex = state.allCollectionFiles.findIndex(file => fileId === fileId)
+
+            if(fileIndex !== -1){
+                const fileToDelete = state.allCollectionFiles[fileIndex]
+                state.allCollectionFiles.splice(fileIndex, 1);
+                state.filesByDateInCollection = filterAndGroupFiles(state.allCollectionFiles, state.searchTerm, state.fileTypeFilter);
+                state.deleteStatus = 'loading';
+                state.error = null;
+            }
         },
         removeFileFromCollectionSuccess: (state, action) => {
-            state.status = 'succeeded';
-            // const { fileId, collectionId } = action.payload;
-            // const file = state.files.find(f => f.id === fileId);
-            // if (file) {
-            //     // Lọc bỏ collectionId khỏi mảng collections của file
-            //     file.collections = file.collections.filter(c => c !== collectionId);
-            // }
+            state.deleteStatus = 'succeeded';
+            delete state.tempDeletedFiles[action.payload];
         },
         removeFileFromCollectionFailure: (state, action) => {
-            state.status = 'failed';
-            state.error = action.payload;
+            const { fileId, error } = action.payload;
+            const tempFileEntry = state.tempDeletedFiles[fileId];
+
+            if (tempFileEntry) {
+                // Chèn file vào đúng vị trí ban đầu
+                state.allCollectionFiles.splice(tempFileEntry.originalIndex, 0, tempFileEntry.file);
+                state.filesByDateInCollection = filterAndGroupFiles(state.allCollectionFiles, state.searchTerm, state.fileTypeFilter);
+                delete state.tempDeletedFiles[fileId];
+            }
+            state.deleteStatus = 'failed';
+            state.error = error;
         },
     }
 })

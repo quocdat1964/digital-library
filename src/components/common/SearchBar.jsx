@@ -10,7 +10,7 @@ const SearchBar = () => {
     const currentFileType = useSelector(state => state.files.fileTypeFilter)
     const [localSearchTerm, setLocalSearchTerm] = useState(currentSearchTerm)
 
-    const fileTypes = ['All', 'Image', 'Video', 'PDF', 'Word', 'Excel', 'HTML']
+    const fileTypes = ['All', 'Image', 'PDF', 'Text', 'Word', 'Excel']
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -19,7 +19,7 @@ const SearchBar = () => {
             }
         }, 500);
         return () => clearTimeout(timer);
-    }, [localSearchTerm, dispatch]);
+    }, [localSearchTerm]);
 
     const handleFileTypeClick = (type) => {
         const typeValue = type === 'All' ? 'all' : type === 'Image' ? 'image' : type.toLowerCase();
@@ -35,7 +35,7 @@ const SearchBar = () => {
             <div className="relative w-full">
                 <input
                     type="text"
-                    placeholder="Tìm kiếm theo tên file, người đăng, tag..."
+                    placeholder="Tìm kiếm theo tên file"
                     value={localSearchTerm}
                     onChange={(e) => setLocalSearchTerm(e.target.value)}
                     className="w-full bg-white text-black placeholder-gray-400 rounded-full text-md py-1.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"

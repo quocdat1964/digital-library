@@ -23,20 +23,22 @@ function* handleLogout() {
 
 function* checkAuthOnAppLoad() {
     try {
-        const token = localStorage.getItem('jwtToken')
-        if (token) {
-            let user = null;
-            yield put(setAuthFromLocalStorage({ token, user }))
+        const token = localStorage.getItem('jwtToken');
+        const userStr = localStorage.getItem('user');
+
+        if (token && userStr) {
+            const user = JSON.parse(userStr);
+            yield put(setAuthFromLocalStorage({ token, user }));
         }
     } catch (error) {
         console.error("Lỗi khi kiểm tra xác thực từ localStorage:", error);
-        // Nếu có lỗi, đảm bảo state được reset để tránh các hành vi không mong muốn
         yield put(logout());
     }
 }
 
+
 export function* watchLogin() {
+    yield call(checkAuthOnAppLoad)
     yield takeLatest(loginStart.type, handleLogin)
     yield takeLatest(logout.type, handleLogout)
-    call(checkAuthOnAppLoad)
 }

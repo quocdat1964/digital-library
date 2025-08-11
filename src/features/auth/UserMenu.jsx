@@ -24,7 +24,7 @@ const UserMenu = () => {
             </div>
             <div className="relative group">
                 <img
-                    // src={user.avatarUrl}
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff&size=128&bold=true`}
                     alt="User Avatar"
                     className="w-10 h-10 rounded-full cursor-pointer border-2 border-gray-600"
                     onClick={() => setIsOptionOpen(!isOptionOpen)}

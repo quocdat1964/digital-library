@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useMediaQuery } from "react-responsive";
-import axios from "axios";
+import fileService from "../../services/fileService";
 import { closeFileDetailPanel, updateFileDetails, fetchFilePreview } from "../../features/files/fileDetailSlice";
 import { XMarkIcon, ArrowDownTrayIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
 
@@ -38,7 +38,7 @@ export const FilePreviewer = ({ file }) => {
 
     // Phân tích loại file để hiển thị đúng component
     const typeSplit = file.fileType.split('/');
-    if(typeSplit[0] === 'text'){
+    if (typeSplit[0] === 'text') {
         return <iframe src={filePreviewUrl} title={file.fileName} className="w-full h-full border-0" />;
 
     }
@@ -124,32 +124,18 @@ const FileDetailPanel = () => {
     }
 
     const handleDownload = async () => {
-        if (!selectedFile || !selectedFile.contentUrl) return;
+        if (!selectedFile || !selectedFile.storagePath) {
+            alert("Không có file nào được chọn để tải!");
+            return;
+        }
         try {
-            const response = await axios({
-                url: selectedFile.contentUrl,
-                method: 'GET',
-                responseType: 'blob',
-            })
-
-            const blob = response.data
-
-            const url = window.URL.createObjectURL(blob)
-
-            const a = document.createElement('a')
-            a.style.display = 'none'
-            a.href = url
-            a.download = selectedFile.name
-            document.body.appendChild(a)
-            a.click()
-
-            window.URL.revokeObjectURL(url)
-            document.body.removeChild(a)
+            await fileService.downloadFile(selectedFile.storagePath, selectedFile.title + selectedFile.storagePath.slice(-4));
         } catch (error) {
-            console.error('Lỗi khi tải file bằng axios:', error);
+            console.error('Lỗi khi tải file:', error);
             alert('Không thể tải file. Vui lòng thử lại.');
         }
-    }
+    };
+
     const isLoading = status === 'loading'
     const isUpdating = status === 'updating'
     const canEdit = selectedFile && currentUser &&

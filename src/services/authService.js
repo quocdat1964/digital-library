@@ -3,11 +3,17 @@ import axiosInstance from "../utils/axiosInstance";
 const authService = {
     login: async (email, password) => {
         try {
-            localStorage.removeItem('jwtToken');
+            // localStorage.removeItem('jwtToken');
             const response = await axiosInstance.post('/auth/login', { email, password })
             const token = response.data.token
             if (token) {
                 localStorage.setItem('jwtToken', token);
+                localStorage.setItem('user', JSON.stringify({
+                    userId: response.data.userId,
+                    role: response.data.role,
+                    email: response.data.email,
+                    name: response.data.name
+                }));
             }
             return response.data;
         } catch (error) {
@@ -16,7 +22,8 @@ const authService = {
         }
     },
     logout: () => {
-        localStorage.removeItem('jwtToken')
+        localStorage.removeItem('jwtToken');
+        localStorage.removeItem('user');
     },
     isAuthenticated: () => {
         return !!localStorage.getItem('jwtToken')

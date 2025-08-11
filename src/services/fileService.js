@@ -105,28 +105,84 @@ const fileService = {
             throw error;
         }
     },
-    downloadFile: async (fileName) => {
+    // downloadFile: async (fileName) => {
+    //     try {
+    //         const response = await axiosInstance.get(`/files/download/${fileName}`, {
+    //             responseType: 'blob'
+    //         });
+
+    //         // Lấy content-type từ header để giữ đúng định dạng
+    //         const contentType = response.headers['content-type'] || 'application/octet-stream';
+    //         const blob = new Blob([response.data], { type: contentType });
+    //         const url = window.URL.createObjectURL(blob);
+
+    //         // Tạo tên file mặc định
+    //         let originalFileName = fileName;
+
+    //         // Lấy tên file từ Content-Disposition (nếu có)
+    //         const contentDisposition = response.headers['content-disposition'];
+    //         if (contentDisposition) {
+    //             const utf8FilenameRegex = /filename\*=(?:UTF-8'')?([^;]+)/i;
+    //             const asciiFilenameRegex = /filename="([^"]+)"/i;
+
+    //             let match = contentDisposition.match(utf8FilenameRegex);
+    //             if (match && match[1]) {
+    //                 originalFileName = decodeURIComponent(match[1]);
+    //             } else {
+    //                 match = contentDisposition.match(asciiFilenameRegex);
+    //                 if (match && match[1]) {
+    //                     originalFileName = match[1];
+    //                 }
+    //             }
+    //         }
+
+    //         // Tạo thẻ a để tải file
+    //         const link = document.createElement('a');
+    //         link.href = url;
+    //         link.setAttribute('download', originalFileName);
+    //         document.body.appendChild(link);
+    //         link.click();
+
+    //         // Dọn dẹp
+    //         link.remove();
+    //         window.URL.revokeObjectURL(url);
+
+    //         return "File download initiated";
+    //     } catch (error) {
+    //         console.error(`Failed to download file ${fileName}:`, error.response?.data || error.message);
+    //         throw error;
+    //     }
+    // },
+
+    downloadFile: async (fileName, customName) => {
         try {
             const response = await axiosInstance.get(`/files/download/${fileName}`, {
                 responseType: 'blob'
-            })
-            const url = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = url
-            const contentDisposition = response.headers['content-disposition']
-            let originalFileName = fileName
-            if (contentDisposition) {
-                const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                if (fileNameMatch && fileNameMatch.length > 1) {
-                    originalFileName = fileNameMatch[1]
+            });
+
+            const blob = new Blob([response.data]);
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+
+            // Nếu có customName thì dùng, không thì lấy từ Content-Disposition
+            let downloadName = customName || fileName;
+            const contentDisposition = response.headers['content-disposition'];
+            if (!customName && contentDisposition) {
+                const match = contentDisposition.match(/filename="(.+)"/);
+                if (match && match.length > 1) {
+                    downloadName = match[1];
                 }
             }
-            link.setAttribute('download', originalFileName)
-            document.body.appendChild(link)
+
+            link.setAttribute('download', downloadName);
+            document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-            return "File download initiated"
+
+            return "File download initiated";
         } catch (error) {
             console.error(`Failed to download file ${fileName}:`, error.response?.data || error.message);
             throw error;

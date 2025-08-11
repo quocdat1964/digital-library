@@ -33,7 +33,6 @@ const LoginPage = () => {
         <div className="min-h-screen bg-[#201f2b] text-white flex flex-col">
             <header className="p-4 sm:p-6">
                 <div className="flex items-center space-x-2">
-                    <span>Logo gì đó ở đây</span>
                     <span className="text-xl font-bold text-red-500">THƯ VIỆN SỐ</span>
                 </div>
             </header>

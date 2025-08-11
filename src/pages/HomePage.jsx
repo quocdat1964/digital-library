@@ -17,9 +17,15 @@ const HomePage = () => {
     dispatch(closeFileDetailPanel())
   }, [])
 
+  const breadcrumbTitle = (
+    <div className="flex items-center space-x-2 text-xl text-white font-bold">
+      Trang chủ
+    </div>
+  )
+
   return (
     <FileExplorerLayout
-      pageTitle="Trang chủ"
+      pageTitle={breadcrumbTitle}
       filesByDate={filesByDate}
       status={status}
       error={error}

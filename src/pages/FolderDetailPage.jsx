@@ -12,7 +12,7 @@ const FolderDetailPage = () => {
     const dispatch = useDispatch()
     const { folderId } = useParams()
     const { currentFolder, status: folderStatus } = useSelector(state => state.folders)
-    const { filesByDate, status, error} = useSelector((state) => state.files)
+    const { filesByDateInFolder, status, error} = useSelector((state) => state.files)
 
     const isLoading = folderStatus === 'loading' || status === 'loading'
 
@@ -30,7 +30,7 @@ const FolderDetailPage = () => {
     }
 
     const breadcrumbTitle = (
-        <div className="flex items-center space-x-2 text-2xl font-bold">
+        <div className="flex items-center space-x-2 text-xl font-bold">
             <Link to='/archive' className='text-gray-400 hover:text-white hover:underline transition-colors'>
                 Kho lưu trữ
             </Link>
@@ -42,7 +42,7 @@ const FolderDetailPage = () => {
     return (
         <FileExplorerLayout
             pageTitle={breadcrumbTitle}
-            filesByDate={filesByDate}
+            filesByDate={filesByDateInFolder}
             status={status}
             error={error}
         />

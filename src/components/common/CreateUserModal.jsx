@@ -22,16 +22,16 @@ const CreateUserModal = ({ isOpen, onClose, onCreate }) => {
 
     const validate = () => {
         const newErrors = {}
-        if (!formData.name.trim()) newErrors.name = 'Ho va ten khong duoc de trong'
+        if (!formData.name.trim()) newErrors.name = 'Tên không được để trống'
         if (!formData.email.trim()) {
-            newErrors.email = 'Email khong duoc de trong'
+            newErrors.email = 'Email không được để trống'
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = 'Dinh dang email khong hop le'
+            newErrors.email = 'Định dạng email không hợp lệ'
         }
         if (!formData.password) {
             newErrors.password = "Mật khẩu không được để trống.";
-        } else if (formData.password.length < 3) {
-            newErrors.password = "Mật khẩu phải có ít nhất 3 ký tự.";
+        } else if (formData.password.length < 6) {
+            newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
         }
         return newErrors;
     }
@@ -51,7 +51,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreate }) => {
             <div className="relative bg-gray-800 rounded-lg shadow-xl w-full max-w-lg text-white">
                 {/* Nút tạo tk và nút đóng */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                    <h3 className="text-lg font-semibold">Tao tai khoan moi</h3>
+                    <h3 className="text-lg font-semibold">Tạo tài khoản mới</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-white">
                         <XMarkIcon className="h-6 w-6" />
                     </button>
@@ -60,7 +60,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreate }) => {
                 <div className="p-6 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Ho va ten</label>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Tên người dùng</label>
                             <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:ring-red-500 focus:border-red-500" />
                             {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name}</p>}
                         </div>
