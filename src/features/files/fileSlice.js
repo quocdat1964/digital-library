@@ -224,7 +224,7 @@ const fileSlice = createSlice({
             // const { fileId, collectionId } = action.payload;
             // state.allCollectionFiles = state.allCollectionFiles.filter(file => file.fileId !== fileId)
             const {fileId, collectionId} = action.payload
-            const fileIndex = state.allCollectionFiles.findIndex(file => fileId === fileId)
+            const fileIndex = state.allCollectionFiles.findIndex(file => file.fileId === fileId)
 
             if(fileIndex !== -1){
                 const fileToDelete = state.allCollectionFiles[fileIndex]
